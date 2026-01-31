@@ -12,6 +12,11 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 
+import { Button } from "@/components/ui/button"
+import { Spinner } from "@/components/ui/spinner"
+
+import { Progress } from "@/components/ui/progress";
+
 import { MapsChart } from '@highcharts/react/Maps';
 
 import { MapSeries } from '@highcharts/react/series/Map';
@@ -26,7 +31,6 @@ import {
     Credits,
     Highcharts
 } from '@highcharts/react';
-import { useState } from 'react';
 import { type Filters } from '../compare'
 import { type Maximum } from '../../App'
 
@@ -59,7 +63,11 @@ export const Region = ({
     currentExposure,
     setExposure,
     currentHazard,
-    setHazard
+    setHazard,
+    progressBar,
+    setProgressBar,
+    progressTarget,
+    setProgressTarget
 }: Filters) => {
 
     var exposure: ExposureShape = [];
@@ -81,6 +89,25 @@ export const Region = ({
     }, [exposureState, currentTime, currentScenario]);
 
     var loadGeoJson = async (data: DataString) => {
+
+        const updateProgressBar = (position: number) => {
+            setProgressBar(prev => {
+                const next: [number, number] = [...prev];
+                next[position] = 0;
+                return next;
+            })
+        }
+        updateProgressBar(position);
+
+        const updateProgressTarget = (position: number) => {
+            setProgressTarget(prev => {
+                const next: [number, number] = [...prev];
+                next[position] = 0;
+                return next;
+            })
+        }
+        updateProgressTarget(position);
+
         var temp = {
             type: "FeatureCollection",
             features: [{}],
@@ -185,11 +212,21 @@ export const Region = ({
         });
         var x = await result.json();
         console.log(x);
+
+        const updateProgressTarget = (position: number) => {
+            setProgressTarget(prev => {
+                const next = prev;
+                next[position] = x.objectIds.length;
+                return next;
+            })
+        }
+        updateProgressTarget(position);
+
         var y = x.objectIds.filter((value: ObjectID) => value);
         console.log(y);
         console.log(y.join(","));
 
-        var count = 1;
+        var resultAmount = 0;
 
         type SliceNumber = {
             start: number,
@@ -217,16 +254,31 @@ export const Region = ({
                 .then(res => res.json())
                 .then(data => {
                     console.log(data);
+                    console.log(end);
                     tableData.push(data);
-                    if (end < y.length) {
-                        count += 10000;
-                        counter({ start: 0 + count, end: 10000 + count });
+                    resultAmount += data.features.length;
+                    console.log(tableData);
+                    console.log(tableData.length);
+                    console.log(resultAmount);
+                    if (resultAmount < y.length) {
+                        counter({ start: resultAmount, end: resultAmount + 10000 });
                     } else {
                         sumWeightedExposure(tableData);
                         // console.log(country);
                         console.log(tableData[0].features[0].attributes);
                     }
+
+                    const updateProgressBar = (position: number) => {
+                        setProgressBar(prev => {
+                            const next = prev;
+                            next[position] = resultAmount;
+                            return next;
+                        })
+                    }
+                    updateProgressBar(position);
                 });
+
+                console.log(tableData);
         }
 
         counter({ start: 0, end: 10000 });
@@ -395,32 +447,204 @@ export const Region = ({
 
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 overflow-y-auto overflow-x-hidden dark flex items-center shadow-md">
-            <ComboBox loadGeoJson={loadGeoJson} country={country} position={position}/>
-            <div className='flex flex-col '>
-                <MapsChart
-                    options={{
-                        chart: {
-                            map: country[position],
-                            backgroundColor: '#1E1E1E',
-                            animation: false,
-                        },
-                        mapView: {
-                            projection: {
-                                name: 'WebMercator',
-                                rotation: [-50, 0]
+            <ComboBox loadGeoJson={loadGeoJson} country={country} position={position} />
+            {progressTarget[position] !== 0
+                ?
+                <div className='flex flex-col'>
+                    <MapsChart
+                        options={{
+                            chart: {
+                                map: country[position],
+                                backgroundColor: '#1E1E1E',
+                                animation: false,
                             },
-                            padding: 15,
-                        },
-                        colorAxis: {
-                            min: 0,
-                            max: maxValue[position],
-                            minColor: '#F1A882',
-                            maxColor: '#E35205',
-                            labels: {
+                            mapView: {
+                                projection: {
+                                    name: 'WebMercator',
+                                    rotation: [-50, 0]
+                                },
+                                padding: 15,
+                            },
+                            colorAxis: {
+                                min: 0,
+                                max: maxValue[position],
+                                minColor: '#F1A882',
+                                maxColor: '#E35205',
+                                labels: {
+                                    style: {
+                                        color: "#999999",
+                                        fontWeight: "bold",
+                                        textOverflow: 'none'
+                                    },
+                                    formatter: function () {
+                                        if (this.value >= 1000000) {
+                                            return this.value / 1000000 + 'M';
+                                        } else if (this.value < 1000000 && this.value >= 1000) {
+                                            return this.value / 1000 + 'k';
+                                        } else {
+                                            return this.value;
+                                        }
+                                    }
+                                },
+                                width: '90%',
+
+                            },
+                            tooltip: {
+                                formatter: function () {
+                                    var value = Math.ceil(this.point.value).toString();
+                                    var counter = 0;
+
+                                    for (var i = value.length - 1; i > 0; i--) {
+                                        counter++;
+                                        if (counter % 3 === 0) {
+                                            value = value.slice(0, i) + "," + value.substring(i, value.length);
+                                        }
+                                    }
+
+                                    return `<b>${this.point.NAME_1}</b><br/>${value}`;
+                                },
+                                backgroundColor: "#212121",
                                 style: {
-                                    color: "#999999",
-                                    fontWeight: "bold",
-                                    textOverflow: 'none'
+                                    color: "white"
+                                },
+                            },
+                            credits: {
+                                enabled: false
+                            },
+                            plotOptions: {
+                                series: {
+                                    point: {
+                                        events: {
+                                            click: function () {
+                                                var tempGadm1 =
+                                                    [
+                                                        { data: [0, 0, 0, 0], name: "Orderly trajectory" },
+                                                        { data: [0, 0, 0, 0], name: "Disorderly trajectory" }
+                                                    ];
+                                                exposureState[position].forEach((element) => {
+                                                    if (this.NAME_1 === element[0]) {
+                                                        lineChartOrder.forEach((index) => {
+                                                            if (element[2] === index.period) {
+                                                                scenarioModel.forEach((item) => {
+                                                                    if (element[3] === item.scenario) {
+                                                                        tempGadm1.forEach((i) => {
+                                                                            if (item.name === i.name) {
+                                                                                i.data[index.position] += element[1]
+                                                                            }
+                                                                        })
+                                                                    }
+                                                                })
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                                // console.log(exposureState[position]);
+                                                console.log(tempGadm1);
+                                                const loadSubnationalArea = (position: number) => {
+                                                    setAreaSeries(prev => {
+                                                        const next = [...prev];
+                                                        next[position] = tempGadm1;
+                                                        return next;
+                                                    });
+                                                    console.log(areaSeries);
+                                                }
+                                                loadSubnationalArea(position);
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }}
+                    >
+                        <MapSeries
+                            data={series[position]}
+                            joinBy={['NAME_1', 0]}
+                            keys={['NAME_1', 'value']}
+                        />
+                    </MapsChart>
+                    <Chart
+                        options={{
+                            legend: {
+                                itemStyle: {
+                                    color: '#ffffff',
+                                    fontWeight: "700",
+                                },
+                                itemHoverStyle: {
+                                    fontWeight: "900",
+                                    color: '#ffffff'
+                                },
+                                align: 'left',
+                                verticalAlign: 'top',
+                                x: 100,
+                                y: -15,
+                                floating: true,
+                                layout: 'vertical',
+                                symbolWidth: 1,
+                                symbolPadding: 15,
+                                itemMarginBottom: 3,
+                            },
+                            tooltip: {
+                                backgroundColor: "#212121",
+                                style: {
+                                    color: "white"
+                                },
+                                valueDecimals: 0,
+                            },
+                            colors: [
+                                {
+                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+                                    stops: [[0, '#FF9500'], [1, '#FF950000']]
+                                },
+                                {
+                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+                                    stops: [[0, '#0098FF'], [1, '#0098FF00']]
+                                }
+                            ],
+                            series: [
+
+                            ],
+                            plotOptions: {
+                                series: {
+                                    lineWidth: 3.5,
+                                },
+                                area: {
+                                    marker: {
+                                        lineWidth: 2,
+                                        lineColor: 'white',
+                                    },
+
+                                }
+                            }
+                        }}
+                    >
+                        <Credits enabled={false} />
+                        <XAxis
+                            categories={["1980", "2030", "2050", "2080"]}
+                            tickmarkPlacement={'on'}
+                            lineWidth={1}
+                            lineColor={'#555555'}
+                            startOnTick={false}
+                            labels={{
+                                style: {
+                                    color: '#ffffff',
+                                    fontSize: '14px'
+                                }
+                            }}
+                        />
+                        <YAxis
+                            title={{ text: "" }}
+                            lineWidth={1}
+                            gridLineWidth={0}
+                            tickWidth={1}
+                            tickPosition={'inside'}
+                            tickLength={5}
+                            lineColor={'#555555'}
+                            tickColor={'#555555'}
+                            labels={{
+                                reserveSpace: true,
+                                style: {
+                                    color: '#ffffff',
+                                    fontSize: '14px'
                                 },
                                 formatter: function () {
                                     if (this.value >= 1000000) {
@@ -431,193 +655,34 @@ export const Region = ({
                                         return this.value;
                                     }
                                 }
-                            },
-                            width: '90%',
-                            
-                        },
-                        tooltip: {
-                            formatter: function () {
-                                var value = Math.ceil(this.point.value).toString();
-                                var counter = 0;
-
-                                for (var i = value.length - 1; i > 0; i--) {
-                                    counter++;
-                                    if (counter % 3 === 0) {
-                                        value = value.slice(0, i) + "," + value.substring(i, value.length);
-                                    }
-                                }
-
-                                return `<b>${this.point.NAME_1}</b><br/>${value}`;
-                            },
-                            backgroundColor: "#212121",
-                            style: {
-                                color: "white"
-                            },
-                        },
-                        credits: {
-                            enabled: false
-                        },
-                        plotOptions: {
-                            series: {
-                                point: {
-                                    events: {
-                                        click: function () {
-                                            var tempGadm1 = 
-                                                [
-                                                    { data: [0, 0, 0, 0], name: "Orderly trajectory" },
-                                                    { data: [0, 0, 0, 0], name: "Disorderly trajectory" }
-                                                ];
-                                            exposureState[position].forEach((element) => {
-                                                if (this.NAME_1 === element[0]) {
-                                                   lineChartOrder.forEach((index) => {
-                                                       if (element[2] === index.period) {
-                                                            scenarioModel.forEach((item) => {
-                                                                if (element[3] === item.scenario) {
-                                                                    tempGadm1.forEach((i) => {
-                                                                        if (item.name === i.name) {
-                                                                            i.data[index.position] += element[1]
-                                                                        }
-                                                                    })
-                                                                }
-                                                            })
-                                                       }
-                                                   })
-                                                }
-                                            })
-                                            // console.log(exposureState[position]);
-                                            console.log(tempGadm1);
-                                            const loadSubnationalArea = (position: number) => {
-                                                setAreaSeries(prev => {
-                                                    const next = [...prev];
-                                                    next[position] = tempGadm1;
-                                                    return next;
-                                                });
-                                                console.log(areaSeries);
-                                            }
-                                            loadSubnationalArea(position);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }}
-                >
-                    <MapSeries
-                        data={series[position]}
-                        joinBy={['NAME_1', 0]}
-                        keys={['NAME_1', 'value']}
-                    />
-                </MapsChart>
-                <Chart
-                    options={{
-                        legend: {
-                            itemStyle: {
-                                color: '#ffffff',
-                                fontWeight: "700",
-                            },
-                            itemHoverStyle: {
-                                fontWeight: "900",
-                                color: '#ffffff'
-                            },
-                            align: 'left',
-                            verticalAlign: 'top',
-                            x: 100,
-                            y: -15,
-                            floating: true,
-                            layout: 'vertical',
-                            symbolWidth: 1,
-                            symbolPadding: 15,
-                            itemMarginBottom: 3,
-                        },
-                        tooltip: {
-                            backgroundColor: "#212121",
-                            style: {
-                                color: "white"
-                            },
-                            valueDecimals: 0,
-                        },
-                        colors: [
-                            { 
-                                linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                stops: [[0, '#FF9500'], [1, '#FF950000']]
-                            },
-                            { 
-                                linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                stops: [[0, '#0098FF'], [1, '#0098FF00']]
-                            }
-                        ],
-                        series: [
-             
-                        ],
-                        plotOptions: {
-                            series: {
-                                lineWidth: 3.5,
-                            },
-                            area: {
-                                marker: {
-                                    lineWidth: 2,
-                                    lineColor: 'white',
-                                },
-                                
-                            }
-                        }
-                    }}
-                >
-                    <Credits enabled={false}/>
-                    <XAxis 
-                        categories={["1980", "2030", "2050", "2080"]}
-                        tickmarkPlacement={'on'}
-                        lineWidth={1}
-                        lineColor={'#555555'}
-                        startOnTick={false}
-                        labels={{
-                            style: {
-                                color: '#ffffff',
-                                fontSize: '14px'
-                            }
-                        }}
-                    />
-                    <YAxis
-                        title={{ text: "" }}
-                        lineWidth={1}
-                        gridLineWidth={0}
-                        tickWidth={1}
-                        tickPosition={'inside'}
-                        tickLength={5}
-                        lineColor={'#555555'}
-                        tickColor={'#555555'}
-                        labels={{
-                            reserveSpace: true,
-                            style: {
-                                color: '#ffffff',
-                                fontSize: '14px'
-                            },
-                            formatter: function () {
-                                if (this.value >= 1000000) {
-                                    return this.value / 1000000 + 'M';
-                                } else if (this.value < 1000000 && this.value >= 1000) {
-                                    return this.value / 1000 + 'k';
-                                } else {
-                                    return this.value;
-                                }
-                            }
-                        }}
-                    />
-
-                    {country[position].name === "string" ? null : areaSeries.map((i, index) =>
-                        <Series
-                            type="area"
-                            name={areaSeries[position][index].name}
-                            data={areaSeries[position][index].data}
-                            marker={{
-                                radius: 6,
-                                lineWidth: 2,
-                                lineColor: 'white',
                             }}
                         />
-                    )}
-                </Chart>
-            </div> 
+
+                        {country[position].name === "string" ? null : areaSeries.map((i, index) =>
+                            <Series
+                                type="area"
+                                name={areaSeries[position][index].name}
+                                data={areaSeries[position][index].data}
+                                marker={{
+                                    radius: 6,
+                                    lineWidth: 2,
+                                    lineColor: 'white',
+                                }}
+                            />
+                        )}
+                    </Chart>
+                </div>
+                :
+                country[position].name !== "string"
+                ?
+                    <Button disabled size="sm">
+                        <Spinner data-icon="inline-start" />
+                        Loading...
+                    </Button>
+                    
+                :
+                <div></div>
+            }
         </Card>
     )
 }

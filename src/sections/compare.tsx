@@ -14,7 +14,18 @@ export type Filters = {
         url: string
     },
     currentScenario: string,
-    country: [object, object],
+    country: [{
+        type: "string",
+        features: [{}],
+        name: "string",
+        iso3: "string"
+    },
+        {
+            type: "string",
+            features: [{}],
+            name: "string",
+            iso3: "string"
+        }],
     setCountry: React.Dispatch<React.SetStateAction<[object, object]>>,
     mapPolygon: JsonShape,
     position: any,
@@ -31,7 +42,11 @@ export type Filters = {
     currentExposure: string
     setExposure: React.Dispatch<React.SetStateAction<string>>,
     currentHazard: string,
-    setHazard: React.Dispatch<React.SetStateAction<string>>
+    setHazard: React.Dispatch<React.SetStateAction<string>>,
+    progressBar: [number, number],
+    setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
+    progressTarget: [number, number],
+    setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>
 }
 
 const regionCount = [0, 1];
@@ -55,7 +70,11 @@ export const Compare = ({
     currentExposure,
     setExposure,
     currentHazard,
-    setHazard
+    setHazard,
+    progressBar,
+    setProgressBar,
+    progressTarget,
+    setProgressTarget
 }: Filters) => {
     return (
         <div className="bg-[#1E1E1E] w-full h-full flex justify-center pt-[152px]">
@@ -83,6 +102,10 @@ export const Compare = ({
                         setExposure={setExposure}
                         currentHazard={currentHazard}
                         setHazard={setHazard}
+                        progressBar={progressBar}
+                        setProgressBar={setProgressBar}
+                        progressTarget={progressTarget}
+                        setProgressTarget={setProgressTarget}
                     />
                 )}
             </div>

@@ -37,13 +37,16 @@ function App() {
 
   useEffect(() => {
     const getGeoJson = async () => {
-      var getData = await fetch('/geopulse/GADM_ADMIN1.json');
+      var getData = await fetch('/geopulse-dev/GADM_ADMIN1.json');
       geoJson = await getData.json();
       console.log(geoJson);
       setGeoJson(geoJson);
     }
     getGeoJson();
   }, []);
+
+  const [progressBar, setProgressBar] = useState<[number, number]>([0, 0]);
+  const [progressTarget, setProgressTarget] = useState<[number, number]>([0, 0]);
 
   const [country, setCountry] = React.useState<[object, object]>([
     {
@@ -123,6 +126,10 @@ function App() {
           setExposure={setExposure}
           currentHazard={currentHazard}
           setHazard={setHazard}
+          progressBar={progressBar}
+          setProgressBar={setProgressBar}
+          progressTarget={progressTarget}
+          setProgressTarget={setProgressTarget}
         />
       }
 
