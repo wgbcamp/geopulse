@@ -2,7 +2,7 @@ import './App.css'
 import { Header } from './sections/header';
 import React, { useState, useEffect } from 'react'
 import { ViewContainer } from './sections/ViewContainer';
-import { Compare } from './sections/compare';
+import { Region } from './sections/templates/region';
 
 export type JsonShape = {
   features: Array<{
@@ -15,7 +15,7 @@ export type JsonShape = {
 export type PolygonPosition = number;
 
 type SeriesTuple = [string, number, number, string];
-export type Series = SeriesTuple[][];
+export type SeriesT = SeriesTuple[][];
 
 export type Maximum = number[];
 
@@ -48,7 +48,7 @@ function App() {
   const [progressBar, setProgressBar] = useState<[number, number]>([0, 0]);
   const [progressTarget, setProgressTarget] = useState<[number, number]>([0, 0]);
 
-  const [country, setCountry] = React.useState<[object, object]>([
+  const [country, setCountry] = React.useState([
     {
       type: "string",
       features: [{}],
@@ -64,8 +64,8 @@ function App() {
   ]);
 
  
-  const [exposureState, setExposureState] = React.useState<Series>([[],[]]);  //8
-  const [series, setSeries] = React.useState<Series>([[],[]]);
+  const [exposureState, setExposureState] = React.useState<SeriesT>([[],[]]);  //8
+  const [series, setSeries] = React.useState<SeriesT>([[],[]]);
   const [maxValue, setMaxValue] = React.useState<Maximum>([0, 0]);
 
   const [regionExposure, setRegionExposure] = React.useState<RegionSeries>([{}]);
@@ -82,6 +82,8 @@ function App() {
       ],
     ]
   );
+
+  const regionCount = [0, 1];
 
   return (
     <div className='h-full'>
@@ -105,32 +107,39 @@ function App() {
         ?
         <ViewContainer currentTime={currentTime} currentDimension={currentDimension} />
         :
-        <Compare
-          currentTime={currentTime}
-          currentScenario={currentScenario}
-          country={country}
-          setCountry={setCountry}
-          mapPolygon={geoJson}
-          position={null}
-          series={series}
-          setSeries={setSeries} 
-          exposureState={exposureState}
-          setExposureState={setExposureState}
-          maxValue={maxValue}
-          setMaxValue={setMaxValue}
-          regionExposure={regionExposure}
-          setRegionExposure={setRegionExposure}
-          areaSeries={areaSeries}
-          setAreaSeries={setAreaSeries}
-          currentExposure={currentExposure}
-          setExposure={setExposure}
-          currentHazard={currentHazard}
-          setHazard={setHazard}
-          progressBar={progressBar}
-          setProgressBar={setProgressBar}
-          progressTarget={progressTarget}
-          setProgressTarget={setProgressTarget}
-        />
+        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pt-[152px]">
+          <div className=" w-9/10 h-full dark flex flex-row gap-x-5 pt-18">
+          {regionCount.map((i) =>
+            <Region
+              key={i}
+              currentTime={currentTime}
+              currentScenario={currentScenario}
+              country={country}
+              setCountry={setCountry}
+              mapPolygon={geoJson}
+              position={i}
+              series={series}
+              setSeries={setSeries}
+              exposureState={exposureState}
+              setExposureState={setExposureState}
+              maxValue={maxValue}
+              setMaxValue={setMaxValue}
+              regionExposure={regionExposure}
+              setRegionExposure={setRegionExposure}
+              areaSeries={areaSeries}
+              setAreaSeries={setAreaSeries}
+              currentExposure={currentExposure}
+              setExposure={setExposure}
+              currentHazard={currentHazard}
+              setHazard={setHazard}
+              progressBar={progressBar}
+              setProgressBar={setProgressBar}
+              progressTarget={progressTarget}
+              setProgressTarget={setProgressTarget}
+            />
+          )}
+          </div>
+        </div>
       }
 
     </div>

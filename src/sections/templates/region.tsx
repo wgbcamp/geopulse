@@ -1,21 +1,12 @@
 import React, { useEffect } from 'react';
 import { ComboBox } from './sub/comboBox';
-import { type RegionSeries } from '../../App';
 
 import {
     Card,
-    CardAction,
-    CardContent,
-    CardDescription,
-    CardFooter,
-    CardHeader,
-    CardTitle,
 } from "@/components/ui/card"
 
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-
-import { Progress } from "@/components/ui/progress";
 
 import { MapsChart } from '@highcharts/react/Maps';
 
@@ -31,8 +22,54 @@ import {
     Credits,
     Highcharts
 } from '@highcharts/react';
-import { type Filters } from '../compare'
-import { type Maximum } from '../../App'
+
+import { 
+    type JsonShape, 
+    type SeriesT, 
+    type Maximum, 
+    type RegionSeries,
+    type AreaSeries
+} from '../../App';
+
+export type Filters = {
+    currentTime: {
+        time: number,
+        url: string
+    },
+    currentScenario: string,
+    country: {
+      type: string,
+      features: {}[],
+      name: string,
+      iso3: string
+    }[],
+    setCountry: React.Dispatch<React.SetStateAction<{
+        type: string,
+        features: {}[],
+        name: string,
+        iso3: string
+    }[]>>,
+    mapPolygon: JsonShape,
+    position: any,
+    series: SeriesT,
+    setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
+    exposureState: Array<Array<[string, number, number, string]>>,
+    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string]>>>>,
+    maxValue: Maximum,
+    setMaxValue: React.Dispatch<React.SetStateAction<Maximum>>,
+    regionExposure: RegionSeries,
+    setRegionExposure: React.Dispatch<React.SetStateAction<RegionSeries>>,
+    areaSeries: AreaSeries,
+    setAreaSeries: React.Dispatch<React.SetStateAction<AreaSeries>>,
+    currentExposure: string
+    setExposure: React.Dispatch<React.SetStateAction<string>>,
+    currentHazard: string,
+    setHazard: React.Dispatch<React.SetStateAction<string>>,
+    progressBar: [number, number],
+    setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
+    progressTarget: [number, number],
+    setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>
+}
 
 type DataString = {
     alpha2: string,
