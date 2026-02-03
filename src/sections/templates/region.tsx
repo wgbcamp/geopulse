@@ -53,8 +53,8 @@ export type Filters = {
     position: any,
     series: SeriesT,
     setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
-    exposureState: Array<Array<[string, number, number, string]>>,
-    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string]>>>>,
+    exposureState: Array<Array<[string, number, number, string, string]>>,
+    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string]>>>>,
     maxValue: Maximum,
     setMaxValue: React.Dispatch<React.SetStateAction<Maximum>>,
     regionExposure: RegionSeries,
@@ -72,13 +72,11 @@ export type Filters = {
 }
 
 type DataString = {
-    alpha2: string,
     alpha3: string,
     name: string,
-    iso3: string,
 };
 
-type ExposureShape = [string, number, number, string][];
+type ExposureShape = [string, number, number, string, string][];
 
 export const Region = ({
     currentTime, 
@@ -124,6 +122,17 @@ export const Region = ({
     useEffect(() => {
             applyFilter();
     }, [exposureState, currentTime, currentScenario]);
+
+    useEffect(() => {
+        var data = {name: "", alpha3: ""};
+        if (country[position].name !== "string" && country[position].iso3 !== "string") {
+            data.name = country[position].name;
+            data.alpha3 = country[position].iso3;
+            loadGeoJson(data);
+        }
+    }, [currentHazard, currentExposure])
+
+
 
     var loadGeoJson = async (data: DataString) => {
 
@@ -183,12 +192,13 @@ export const Region = ({
         features: Array<{
             attributes: {
                 NAME_1: string,
-                Reference_area: string,
+                Reference_area_name: string,
                 MEDIAN: number,
                 period: number,
                 scenario: string,
                 Admin_Filter: string,
-                [key: string]: string | number;
+                [key: string]: string | number,
+                Reference_area: string
             }
         }>
     }>;
@@ -227,7 +237,7 @@ export const Region = ({
         urlObject.forEach((item) => {
             if (item.hazard === currentHazard && item.exposure === currentExposure) {
                 url = item.url;
-                outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE';
+                outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE,REF_AREA';
             }
         });
 
@@ -360,7 +370,7 @@ export const Region = ({
                             // loop through exposure array
                             exposure.forEach((exposureElement) => {
                                 // if exposure measure value equals entry measure value, add value
-                                if (exposureElement[0] === entry.attributes[a[2]]
+                                if (exposureElement[0] === entry.attributes[a[7]]
                                     && exposureElement[2] === entry.attributes[a[4]]
                                     && exposureElement[3] === entry.attributes[a[5]]
                                 ) {
@@ -375,7 +385,8 @@ export const Region = ({
                                 entry.attributes[a[2]] as string,
                                 entry.attributes[a[1]] as number,
                                 entry.attributes[a[4]] as number,
-                                entry.attributes[a[5]] as string
+                                entry.attributes[a[5]] as string,
+                                entry.attributes[a[7]] as string
                             ])
                         }
                     // filter down to gadm1 values
@@ -595,8 +606,8 @@ export const Region = ({
                     >
                         <MapSeries
                             data={series[position]}
-                            joinBy={['NAME_1', 0]}
-                            keys={['NAME_1', 'value']}
+                            joinBy={['GID_1', 'GID_1']}
+                            keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
                         />
                     </MapsChart>
                     <Chart

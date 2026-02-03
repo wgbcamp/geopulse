@@ -14,7 +14,7 @@ export type JsonShape = {
 
 export type PolygonPosition = number;
 
-type SeriesTuple = [string, number, number, string];
+type SeriesTuple = [string, number, number, string, string];
 export type SeriesT = SeriesTuple[][];
 
 export type Maximum = number[];
