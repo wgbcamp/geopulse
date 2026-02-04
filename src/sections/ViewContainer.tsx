@@ -98,6 +98,8 @@ export const ViewContainer = ({ currentTime, currentDimension }: MapProps) => {
     }, [currentTime, currentDimension])
 
     return (
-        <div className='w-full h-full bg-[#1D2224] pt-[152px]' ref={ref}></div>
+        <div className="h-full">
+        <div className='w-full h-350 bg-[#1D2224] pt-[152px]' ref={ref}></div>
+        </div>
     )
 }

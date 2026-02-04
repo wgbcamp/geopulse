@@ -32,7 +32,7 @@ var scenarioFlip = [
   {frontend: 'Orderly', data: 'rcp4p5'},
   {frontend: 'Disorderly', data: 'rcp8p5'},
   {frontend: 'Baseline', data: 'historical'},
-  {frontend: 'Hot House', data: 'Hot House'} 
+  {frontend: 'Hot House', data: 'SSP370'} 
 ];
 
 export const Options = ({

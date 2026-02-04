@@ -26,7 +26,6 @@ import {
 import { 
     type JsonShape, 
     type SeriesT, 
-    type Maximum, 
     type RegionSeries,
     type AreaSeries
 } from '../../App';
@@ -55,8 +54,8 @@ export type Filters = {
     setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
     exposureState: Array<Array<[string, number, number, string, string]>>,
     setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string]>>>>,
-    maxValue: Maximum,
-    setMaxValue: React.Dispatch<React.SetStateAction<Maximum>>,
+    maxValue: {scenario: string, value: number}[][],
+    setMaxValue: React.Dispatch<React.SetStateAction<{scenario: string, value: number}[][]>>,
     regionExposure: RegionSeries,
     setRegionExposure: React.Dispatch<React.SetStateAction<RegionSeries>>,
     areaSeries: AreaSeries,
@@ -130,7 +129,16 @@ export const Region = ({
             data.alpha3 = country[position].iso3;
             loadGeoJson(data);
         }
-    }, [currentHazard, currentExposure])
+    }, [currentHazard, currentExposure]);
+
+    useEffect(() => { 
+        var defaultCountries = [
+            {name: "Costa Rica", alpha3: "CRI"},
+            {name: "Bangladesh", alpha3: "BGD"}
+        ];
+        var data = { name: defaultCountries[position].name, alpha3: defaultCountries[position].alpha3 };
+        loadGeoJson(data);
+    }, []);
 
 
 
@@ -160,6 +168,7 @@ export const Region = ({
             name: data.name,
             iso3: data.alpha3
         };
+        console.log(mapPolygon);
         for (var i = 0; i < mapPolygon.features.length; i++) {
             if (data.alpha3 == mapPolygon.features[i].properties.GID_0) {
                 temp.features.push(mapPolygon.features[i]);
@@ -331,7 +340,7 @@ export const Region = ({
         counter({ start: 0, end: 10000 });
     }
 
-    var tempMaxValue: number;
+    var tempMaxValue: {scenario: string, value: number}[];
     var tempPeriods: number[];
     var tempGadm0 = [{data: [0,0,0,0], name: "Orderly trajectory"}, {data: [0,0,0,0], name: "Disorderly trajectory"}];
     var lineChartOrder = [
@@ -349,7 +358,7 @@ export const Region = ({
     ];
 
     const sumWeightedExposure = async (tableData: TableArray) => {
-        tempMaxValue = 0;
+        tempMaxValue = [];
         tempPeriods = [];
         console.log(tableData);
 
@@ -362,8 +371,16 @@ export const Region = ({
                     // execute code if gadm1 is found
                     if (entry.attributes[a[0]] === "adm1") {
                         // update tempMaxValue for colorAxis range
-                        if (entry.attributes[a[1]] as number > tempMaxValue) {
-                            tempMaxValue = entry.attributes[a[1]] as number;
+                        if (!tempMaxValue.some(maxObject => maxObject.scenario === entry.attributes[a[5]] as string)) {
+                            tempMaxValue.push({scenario: entry.attributes[a[5]] as string, value: entry.attributes[a[1]] as number});
+                        } else {
+                            tempMaxValue.forEach((maxObject) => {
+                                if (maxObject.scenario === entry.attributes[a[5]]) {
+                                    if (maxObject.value < Number(entry.attributes[a[1]])) {
+                                        maxObject.value = Number(entry.attributes[a[1]]);
+                                    }
+                                }
+                            })
                         }
                         var b = false;
                         if (exposure.length > 0) {
@@ -435,10 +452,6 @@ export const Region = ({
                     break;
                 case "SSP245":
                     element.splice(3, 1, 'rcp8p5');
-                    break;
-                case "SSP370":
-                    element.splice(3, 1, 'Hot House');
-                    break;
             }
         });
          
@@ -460,6 +473,7 @@ export const Region = ({
             setMaxValue(prev => {
                 const next = [...prev];
                 next[position] = tempMaxValue;
+                console.log(next);
                 return next;
             })
         }
@@ -494,7 +508,7 @@ export const Region = ({
     }
 
     return (
-        <Card className="bg-[#1E1E1E] w-full h-9/10 overflow-y-auto overflow-x-hidden dark flex items-center shadow-md">
+        <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
             <ComboBox loadGeoJson={loadGeoJson} country={country} position={position} />
             {progressTarget[position] !== 0
                 ?
@@ -503,7 +517,7 @@ export const Region = ({
                         options={{
                             chart: {
                                 map: country[position],
-                                backgroundColor: '#1E1E1E',
+                                backgroundColor: 'RGBA(0,0,0,0)',
                                 animation: false,
                             },
                             mapView: {
@@ -515,8 +529,8 @@ export const Region = ({
                             },
                             colorAxis: {
                                 min: 0,
-                                max: maxValue[position],
-                                minColor: '#F1A882',
+                                max: maxValue[position].filter((i) => i.scenario === currentScenario)[0]?.value,
+                                minColor: '#FFFFFF',
                                 maxColor: '#E35205',
                                 labels: {
                                     style: {

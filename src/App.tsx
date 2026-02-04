@@ -17,8 +17,6 @@ export type PolygonPosition = number;
 type SeriesTuple = [string, number, number, string, string];
 export type SeriesT = SeriesTuple[][];
 
-export type Maximum = number[];
-
 export type RegionSeries = object[];
 
 export type AreaSeries = object[][];
@@ -66,7 +64,7 @@ function App() {
  
   const [exposureState, setExposureState] = React.useState<SeriesT>([[],[]]);  //8
   const [series, setSeries] = React.useState<SeriesT>([[],[]]);
-  const [maxValue, setMaxValue] = React.useState<Maximum>([0, 0]);
+  const [maxValue, setMaxValue] = React.useState<{scenario: string, value: number}[][]>([[]]);
 
   const [regionExposure, setRegionExposure] = React.useState<RegionSeries>([{}]);
 
@@ -107,8 +105,9 @@ function App() {
         ?
         <ViewContainer currentTime={currentTime} currentDimension={currentDimension} />
         :
-        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pt-[152px]">
-          <div className=" w-9/10 h-full dark flex flex-row gap-x-5 pt-18">
+        geoJson ?
+        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pt-[152px] pb-15">
+          <div className=" w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
           {regionCount.map((i) =>
             <Region
               key={i}
@@ -140,6 +139,8 @@ function App() {
           )}
           </div>
         </div>
+        :
+        <div></div>
       }
 
     </div>
