@@ -14,7 +14,7 @@ export type JsonShape = {
 
 export type PolygonPosition = number;
 
-type SeriesTuple = [string, number, number, string, string];
+type SeriesTuple = [string, number, number, string, string, string];
 export type SeriesT = SeriesTuple[][];
 
 export type RegionSeries = object[];
@@ -135,6 +135,8 @@ function App() {
               setProgressBar={setProgressBar}
               progressTarget={progressTarget}
               setProgressTarget={setProgressTarget}
+              currentExposureFilter={currentExposureFilter}
+              setExposureFilter={setExposureFilter}
             />
           )}
           </div>

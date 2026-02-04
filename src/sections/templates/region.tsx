@@ -52,8 +52,8 @@ export type Filters = {
     position: any,
     series: SeriesT,
     setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
-    exposureState: Array<Array<[string, number, number, string, string]>>,
-    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string]>>>>,
+    exposureState: Array<Array<[string, number, number, string, string, string]>>,
+    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string, string]>>>>,
     maxValue: {scenario: string, value: number}[][],
     setMaxValue: React.Dispatch<React.SetStateAction<{scenario: string, value: number}[][]>>,
     regionExposure: RegionSeries,
@@ -68,6 +68,8 @@ export type Filters = {
     setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
     progressTarget: [number, number],
     setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>
+    currentExposureFilter: string,
+    setExposureFilter: React.Dispatch<React.SetStateAction<string>>
 }
 
 type DataString = {
@@ -75,7 +77,7 @@ type DataString = {
     name: string,
 };
 
-type ExposureShape = [string, number, number, string, string][];
+type ExposureShape = [string, number, number, string, string, string][];
 
 export const Region = ({
     currentTime, 
@@ -101,7 +103,9 @@ export const Region = ({
     progressBar,
     setProgressBar,
     progressTarget,
-    setProgressTarget
+    setProgressTarget,
+    currentExposureFilter,
+    setExposureFilter
 }: Filters) => {
 
     var exposure: ExposureShape = [];
@@ -120,7 +124,7 @@ export const Region = ({
 
     useEffect(() => {
             applyFilter();
-    }, [exposureState, currentTime, currentScenario]);
+    }, [exposureState, currentTime, currentScenario, currentExposureFilter]);
 
     useEffect(() => {
         var data = {name: "", alpha3: ""};
@@ -207,7 +211,8 @@ export const Region = ({
                 scenario: string,
                 Admin_Filter: string,
                 [key: string]: string | number,
-                Reference_area: string
+                Reference_area: string,
+                MEASURE: string
             }
         }>
     }>;
@@ -357,6 +362,11 @@ export const Region = ({
         {scenario: 'SSP370', name: 'Hot House'},  
     ];
 
+    var measureModel = [
+        {measure: 'SPEI_CROP_EXP', name: "SPEI Index"},
+        {measure: 'CCD_CROP_EXP', name: "Dry Days"}
+    ];
+
     const sumWeightedExposure = async (tableData: TableArray) => {
         tempMaxValue = [];
         tempPeriods = [];
@@ -368,7 +378,7 @@ export const Region = ({
             parent.features.forEach((entry) => {
                 // find attributes keys
                 var a = Object.keys(entry.attributes);
-                    // execute code if gadm1 is found
+                    // execute code if gadm1 is found (subnational)
                     if (entry.attributes[a[0]] === "adm1") {
                         // update tempMaxValue for colorAxis range
                         if (!tempMaxValue.some(maxObject => maxObject.scenario === entry.attributes[a[5]] as string)) {
@@ -403,10 +413,11 @@ export const Region = ({
                                 entry.attributes[a[1]] as number,
                                 entry.attributes[a[4]] as number,
                                 entry.attributes[a[5]] as string,
-                                entry.attributes[a[7]] as string
+                                entry.attributes[a[7]] as string,
+                                entry.attributes[a[6]] as string
                             ])
                         }
-                    // filter down to gadm1 values
+                    // filter down to gadm0 values (national)
                     } else if (entry.attributes[a[0]] === "adm0") {
                         // loop through scenario model
                         scenarioModel.forEach((item) => {
@@ -435,12 +446,7 @@ export const Region = ({
                     console.log(tempPeriods);
                 }
             })
-
-            
         })
-
- 
-     
 
         console.log(exposure);
 
@@ -499,8 +505,15 @@ export const Region = ({
         const updateSeriesValues = (position: number) => {
             setSeries(prev => {
                 const next = [...prev];
-                next[position] = exposureState[position].filter((value) => (value[2] === currentTime.time)).filter((value) => (value[3] === currentScenario));
+                next[position] = exposureState[position]
+                    .filter((value) => (value[2] === currentTime.time))
+                    .filter((value) => (value[3] === currentScenario));
+                    // .filter((value) => (value[5] === measureModel.filter((b) => (b.measure === "SPEI_CROP_EXP" && b.name === "Dry Days"))[0].measure));
                 console.log(next);
+                // console.log(exposureState[position]
+                //     .filter((value) => (value[2] === currentTime.time))
+                //     .filter((value) => (value[3] === currentScenario))
+                //     .filter((value) => (value[5] === "SPEI_CROP_EXP")));
                 return next;
             })
        }
@@ -510,7 +523,7 @@ export const Region = ({
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
             <ComboBox loadGeoJson={loadGeoJson} country={country} position={position} />
-            {progressTarget[position] !== 0
+            {progressTarget[position] !== 0 && maxValue[position]
                 ?
                 <div className='flex flex-col'>
                     <MapsChart
