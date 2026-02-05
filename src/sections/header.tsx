@@ -27,8 +27,9 @@ type HeaderProps = {
     setHazard: React.Dispatch<React.SetStateAction<string>>,
     currentExposure: string,
     setExposure: React.Dispatch<React.SetStateAction<string>>,
-    currentExposureFilter: string,
-    setExposureFilter: React.Dispatch<React.SetStateAction<string>>
+    currentExposureFilter: {name: string, measure: string},
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measure: string}>>
+    setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: string}>>
 };
 
 
@@ -49,10 +50,11 @@ let hazards: Factor = ["Temperature Extremes", "Urban Heatwave", "Riverine Flood
 let exposures: Factor = ["Buildings", "Cropland", "GDP", "Urban GDP", "Population", "Livestock"];
 let scenarios: Factor = ["historical", "rcp4p5", "rcp8p5", "SSP370"];
 let spatialDimensions: Factor = ["2D", "3D"];
-let subExposures: Factor = ["Hot Days", "Dry Days", "SPEI Index", "Tropical Nights", "Icing Days" ];
-let inequalitySymbols = [
-    {category: "Hot Days", symbols: ["30*", "35*", "40*"]},
-    {category: "Tropical Nights", symbols: ["20*", "26", "32"]}
+let subExposures: Factor = ["Hot Days", "Dry Days", "SPEI Index", "Tropical Nights", "Icing Days", ];
+let thresholds = [
+    {category: "Hot Days", symbols: ["H_30", "H_35", "H_40"]},
+    {category: "Tropical Nights", symbols: ["H_20", "H_26", "H_32"]},
+    {category: "Icing Days", symbols: ["_Z"]}
 ];
 
 type HeaderTypes = Array<{
@@ -61,7 +63,7 @@ type HeaderTypes = Array<{
 }>
 
 export const Header = ({ currentDimension, currentTime, currentView, currentScenario, currentHazard, currentExposure, currentExposureFilter,
-    setExposure, setHazard, setDimension, setTime, setView, setScenario, setExposureFilter 
+    setExposure, setHazard, setDimension, setTime, setView, setScenario, setExposureFilter, setCurrentThreshold
 }: HeaderProps) => {
 
   const headerOptions: HeaderTypes = [
@@ -148,8 +150,9 @@ export const Header = ({ currentDimension, currentTime, currentView, currentScen
                     <InequalityGroup
                         currentExposureFilter={currentExposureFilter}
                         setExposureFilter={setExposureFilter}
-                        inequalitySymbols={inequalitySymbols}
+                        thresholds={thresholds}
                         headerState={headerState}
+                        setCurrentThreshold={setCurrentThreshold}
                     />
                 }
                 headerState={headerState}

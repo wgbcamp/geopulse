@@ -11,7 +11,7 @@ type TimelineProps = {
   setTime: React.Dispatch<React.SetStateAction<{ time: number, url: string }>>,
   currentHazard: string,
   currentExposure: string,
-  currentTime: number
+  currentTime: { time: number, url: string }
 }
 
 //riverine flooding vs population 2080 is renamed to 2100

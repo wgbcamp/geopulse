@@ -54,8 +54,8 @@ export type Filters = {
     setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
     exposureState: Array<Array<[string, number, number, string, string, string]>>,
     setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string, string]>>>>,
-    maxValue: {scenario: string, value: number}[][],
-    setMaxValue: React.Dispatch<React.SetStateAction<{scenario: string, value: number}[][]>>,
+    maxValue: {measure: string, value: number}[][],
+    setMaxValue: React.Dispatch<React.SetStateAction<{measure: string, value: number}[][]>>,
     regionExposure: RegionSeries,
     setRegionExposure: React.Dispatch<React.SetStateAction<RegionSeries>>,
     areaSeries: AreaSeries,
@@ -68,8 +68,8 @@ export type Filters = {
     setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
     progressTarget: [number, number],
     setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>
-    currentExposureFilter: string,
-    setExposureFilter: React.Dispatch<React.SetStateAction<string>>
+    currentExposureFilter: {name: string, measure: string},
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measure: string}>>
 }
 
 type DataString = {
@@ -345,7 +345,7 @@ export const Region = ({
         counter({ start: 0, end: 10000 });
     }
 
-    var tempMaxValue: {scenario: string, value: number}[];
+    var tempMaxValue: {measure: string, value: number}[];
     var tempPeriods: number[];
     var tempGadm0 = [{data: [0,0,0,0], name: "Orderly trajectory"}, {data: [0,0,0,0], name: "Disorderly trajectory"}];
     var lineChartOrder = [
@@ -362,11 +362,6 @@ export const Region = ({
         {scenario: 'SSP370', name: 'Hot House'},  
     ];
 
-    var measureModel = [
-        {measure: 'SPEI_CROP_EXP', name: "SPEI Index"},
-        {measure: 'CCD_CROP_EXP', name: "Dry Days"}
-    ];
-
     const sumWeightedExposure = async (tableData: TableArray) => {
         tempMaxValue = [];
         tempPeriods = [];
@@ -381,11 +376,11 @@ export const Region = ({
                     // execute code if gadm1 is found (subnational)
                     if (entry.attributes[a[0]] === "adm1") {
                         // update tempMaxValue for colorAxis range
-                        if (!tempMaxValue.some(maxObject => maxObject.scenario === entry.attributes[a[5]] as string)) {
-                            tempMaxValue.push({scenario: entry.attributes[a[5]] as string, value: entry.attributes[a[1]] as number});
+                        if (!tempMaxValue.some(maxObject => maxObject.measure === entry.attributes[a[6]] as string)) {
+                            tempMaxValue.push({measure: entry.attributes[a[6]] as string, value: entry.attributes[a[1]] as number});
                         } else {
                             tempMaxValue.forEach((maxObject) => {
-                                if (maxObject.scenario === entry.attributes[a[5]]) {
+                                if (maxObject.measure === entry.attributes[a[6]]) {
                                     if (maxObject.value < Number(entry.attributes[a[1]])) {
                                         maxObject.value = Number(entry.attributes[a[1]]);
                                     }
@@ -507,13 +502,15 @@ export const Region = ({
                 const next = [...prev];
                 next[position] = exposureState[position]
                     .filter((value) => (value[2] === currentTime.time))
-                    .filter((value) => (value[3] === currentScenario));
+                    .filter((value) => (value[3] === currentScenario))
+                    .filter((value) => ((value[5] === currentExposureFilter.measure) || value[5]))
+                    ;
                     // .filter((value) => (value[5] === measureModel.filter((b) => (b.measure === "SPEI_CROP_EXP" && b.name === "Dry Days"))[0].measure));
-                console.log(next);
-                // console.log(exposureState[position]
-                //     .filter((value) => (value[2] === currentTime.time))
-                //     .filter((value) => (value[3] === currentScenario))
-                //     .filter((value) => (value[5] === "SPEI_CROP_EXP")));
+                console.log(exposureState[position]);
+                console.log(exposureState[position]
+                    .filter((value) => (value[2] === currentTime.time))
+                    .filter((value) => (value[3] === currentScenario))
+                    .filter((value) => (value[5] === "SPEI_CROP_EXP" )));
                 return next;
             })
        }
@@ -542,8 +539,18 @@ export const Region = ({
                             },
                             colorAxis: {
                                 min: 0,
-                                max: maxValue[position].filter((i) => i.scenario === currentScenario)[0]?.value,
-                                minColor: '#FFFFFF',
+                                max: maxValue[position].find(i => {
+                                    const isMatch = i.measure === currentExposureFilter.measure;
+
+                                    console.log({
+                                        itemMeasure: i.measure,
+                                        filterMeasure: currentExposureFilter.measure,
+                                        isMatch
+                                    });
+
+                                    return isMatch;
+                                })?.value ? maxValue[position].find((i) => i.measure === currentExposureFilter.measure)?.value : Math.max(...maxValue[position].map((a) => a.value)),
+                                minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {
                                     style: {
@@ -635,6 +642,7 @@ export const Region = ({
                             data={series[position]}
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
+                            nullColor="#c9c9c9"
                         />
                     </MapsChart>
                     <Chart

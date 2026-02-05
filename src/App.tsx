@@ -29,7 +29,8 @@ function App() {
   const [currentScenario, setScenario] = useState("rcp4p5");
   const [currentHazard, setHazard] = useState("Riverine Flooding");
   const [currentExposure, setExposure] = useState("Population");
-  const [currentExposureFilter, setExposureFilter] = useState("Dry Days");
+  const [currentExposureFilter, setExposureFilter] = useState({name: "Dry Days", measure: "CCD_CROP_EXP"});
+  const [currentThreshold, setCurrentThreshold] = useState({name: "Hot Days > 30*", threshold: "H_30"});
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
@@ -60,11 +61,10 @@ function App() {
       iso3: "string"
     }
   ]);
-
  
   const [exposureState, setExposureState] = React.useState<SeriesT>([[],[]]);  //8
   const [series, setSeries] = React.useState<SeriesT>([[],[]]);
-  const [maxValue, setMaxValue] = React.useState<{scenario: string, value: number}[][]>([[]]);
+  const [maxValue, setMaxValue] = React.useState<{measure: string, value: number}[][]>([[]]);
 
   const [regionExposure, setRegionExposure] = React.useState<RegionSeries>([{}]);
 
@@ -100,6 +100,7 @@ function App() {
         setExposure={setExposure}
         currentExposureFilter={currentExposureFilter}
         setExposureFilter={setExposureFilter}
+        setCurrentThreshold={setCurrentThreshold}
       />
       {currentView == "Grid"
         ?
