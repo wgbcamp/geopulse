@@ -32,8 +32,6 @@ type HeaderProps = {
     setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: string}>>
 };
 
-
-
 export type Menu = Array<{ 
     a: string, 
     b: React.ReactElement 

@@ -19,6 +19,8 @@ type InequalityGroup = {
 
 export const InequalityGroup = ({headerState, thresholds, currentExposureFilter, setExposureFilter, setCurrentThreshold} : InequalityGroup) => {
 
+  var inequalitySymbols = thresholds.filter(i => i.category === currentExposureFilter.name);
+
   const handleValueChange = (value: string) => {
     setCurrentThreshold({name: value, threshold: ""})
   }
@@ -40,7 +42,16 @@ export const InequalityGroup = ({headerState, thresholds, currentExposureFilter,
             </RadioGroup>
             : currentExposureFilter.name === "Tropical Nights" ? 
             <RadioGroup defaultValue="option-0">
-              {inequalitySymbols[1].symbols.map((i, index) => 
+              {inequalitySymbols[0].symbols.map((i, index) => 
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value={`option-${index}`} id={`option-${index}`} />
+                  <Label htmlFor={`option-${index}`}>{currentExposureFilter.name} {'>'} {i}</Label>
+                </div>
+              )}
+            </RadioGroup>
+            : currentExposureFilter.name === "Icing Days" ?
+              <RadioGroup defaultValue="option-0">
+              {inequalitySymbols[0].symbols.map((i, index) => 
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value={`option-${index}`} id={`option-${index}`} />
                   <Label htmlFor={`option-${index}`}>{currentExposureFilter.name} {'>'} {i}</Label>

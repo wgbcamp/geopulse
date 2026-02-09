@@ -347,7 +347,8 @@ export const Region = ({
 
     var tempMaxValue: {measure: string, value: number}[];
     var tempPeriods: number[];
-    var tempGadm0 = [{data: [0,0,0,0], name: "Orderly trajectory"}, {data: [0,0,0,0], name: "Disorderly trajectory"}];
+    // var tempGadm0: AreaSeries = [[]];
+    let tempGadm0: { data: number[]; name: string; measure: string[] }[] = [];
     var lineChartOrder = [
         {period: 1980, position: 0},
         {period: 2030, position: 1},
@@ -359,7 +360,14 @@ export const Region = ({
         {scenario: 'rcp8p5', name: 'Disorderly trajectory'},
         {scenario: 'SSP126', name: 'Orderly trajectory'},
         {scenario: 'SSP245', name: 'Disorderly trajectory'},
-        {scenario: 'SSP370', name: 'Hot House'},  
+        {scenario: 'SSP370', name: 'Hot House'}  
+    ];
+
+    var measureModel = [ 
+        { hazard: "Draught", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"]},
+        { hazard: "Temperature Extremes", exposure: "Population", measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"]},
+        { hazard: "Temperature Extremes", exposure: "Livestock", measure: ["HD_LW_EXP"]},
+        // { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"]}
     ];
 
     const sumWeightedExposure = async (tableData: TableArray) => {
@@ -373,72 +381,80 @@ export const Region = ({
             parent.features.forEach((entry) => {
                 // find attributes keys
                 var a = Object.keys(entry.attributes);
-                    // execute code if gadm1 is found (subnational)
-                    if (entry.attributes[a[0]] === "adm1") {
-                        // update tempMaxValue for colorAxis range
-                        if (!tempMaxValue.some(maxObject => maxObject.measure === entry.attributes[a[6]] as string)) {
-                            tempMaxValue.push({measure: entry.attributes[a[6]] as string, value: entry.attributes[a[1]] as number});
-                        } else {
-                            tempMaxValue.forEach((maxObject) => {
-                                if (maxObject.measure === entry.attributes[a[6]]) {
-                                    if (maxObject.value < Number(entry.attributes[a[1]])) {
-                                        maxObject.value = Number(entry.attributes[a[1]]);
-                                    }
+                // execute code if gadm1 is found (subnational)
+                if (entry.attributes[a[0]] === "adm1") {
+                    // update tempMaxValue for colorAxis range
+                    if (!tempMaxValue.some(maxObject => maxObject.measure === entry.attributes[a[6]] as string)) {
+                        tempMaxValue.push({ measure: entry.attributes[a[6]] as string, value: entry.attributes[a[1]] as number });
+                    } else {
+                        tempMaxValue.forEach((maxObject) => {
+                            if (maxObject.measure === entry.attributes[a[6]]) {
+                                if (maxObject.value < Number(entry.attributes[a[1]])) {
+                                    maxObject.value = Number(entry.attributes[a[1]]);
                                 }
-                            })
-                        }
-                        var b = false;
-                        if (exposure.length > 0) {
-                            // loop through exposure array
-                            exposure.forEach((exposureElement) => {
-                                // if exposure measure value equals entry measure value, add value
-                                if (exposureElement[0] === entry.attributes[a[7]]
-                                    && exposureElement[2] === entry.attributes[a[4]]
-                                    && exposureElement[3] === entry.attributes[a[5]]
-                                ) {
-                                    exposureElement[1] += entry.attributes[a[1]] as number;
-                                    b = true;
-                                }
-                            })
-                        }
-                        // push entry array values into exposure array, if entry doesn't already exist
-                        if (b === false) {
-                            exposure.push([
-                                entry.attributes[a[2]] as string,
-                                entry.attributes[a[1]] as number,
-                                entry.attributes[a[4]] as number,
-                                entry.attributes[a[5]] as string,
-                                entry.attributes[a[7]] as string,
-                                entry.attributes[a[6]] as string
-                            ])
-                        }
+                            }
+                        })
+                    }
+                    var b = false;
+                    if (exposure.length > 0) {
+                        // loop through exposure array
+                        exposure.forEach((exposureElement) => {
+                            // if exposure measure value equals entry measure value, add value
+                            if (exposureElement[0] === entry.attributes[a[7]]
+                                && exposureElement[2] === entry.attributes[a[4]]
+                                && exposureElement[3] === entry.attributes[a[5]]
+                            ) {
+                                exposureElement[1] += entry.attributes[a[1]] as number;
+                                b = true;
+                            }
+                        })
+                    }
+                    // push entry array values into exposure array, if entry doesn't already exist
+                    if (b === false) {
+                        exposure.push([
+                            entry.attributes[a[2]] as string, //reference area name
+                            entry.attributes[a[1]] as number, //median value
+                            entry.attributes[a[4]] as number, // time period
+                            entry.attributes[a[5]] as string,  //scenario
+                            entry.attributes[a[7]] as string, //reference area
+                            entry.attributes[a[6]] as string //measure
+                        ])
+                    }
                     // filter down to gadm0 values (national)
-                    } else if (entry.attributes[a[0]] === "adm0") {
-                        // loop through scenario model
-                        scenarioModel.forEach((item) => {
-                            // reference matching scenario from scenarioModel object
-                            if (item.scenario === entry.attributes[a[5]]) {
-                                // loop through temporary gadm0 array
-                                tempGadm0.forEach((element) => {
-                                    // reference matching name from temporary gadm0 array
-                                    if (element.name === item.name) {
-                                        // loop through lineChartOrder object
+                } else if (entry.attributes[a[0]] === "adm0") {
+                    // loop through scenario model
+                    scenarioModel.forEach((item) => {
+                        // reference matching scenario from scenarioModel object
+                        if (item.scenario === entry.attributes[a[5]]) {
+                            if (!tempGadm0.some((gadm0Object) => gadm0Object.name === item.name && gadm0Object.measure.includes(entry.attributes[a[6]].toString()))) {
+                                lineChartOrder.forEach((index) => {
+                                    if (index.period === entry.attributes[a[4]]) {
+                                        const data = [0, 0, 0, 0];
+                                        data[index.position] = entry.attributes[a[1]] as number;
+                                        tempGadm0.push({ data, name: item.name, measure: [entry.attributes[a[6]] as string] });
+                                    }
+                                })
+                            } else {
+                                tempGadm0.forEach((gadm0Object) => {
+                                    if (gadm0Object.name === item.name && gadm0Object.measure.includes(entry.attributes[a[6]].toString())) {
                                         lineChartOrder.forEach((index) => {
-                                            // reference matching period from lineChartOrder object
                                             if (index.period === entry.attributes[a[4]]) {
-                                                // add values to temporary gadm0 array
-                                                element.data[index.position] += entry.attributes[a[1]] as number;
+                                                gadm0Object.data.splice(index.position, 1, entry.attributes[a[1]] as number);
+                                                if (!gadm0Object.measure.includes(entry.attributes[a[6]] as string)) {
+                                                    gadm0Object.measure.push(entry.attributes[a[6]] as string);
+                                                }
                                             }
                                         })
                                     }
                                 })
                             }
-                        });
-                }
-                // gather the period values to be added to the timeline
-                if (tempPeriods.includes(entry.attributes[a[5]] as number)) {
-                    tempPeriods.push(entry.attributes[a[5]] as number);
-                    console.log(tempPeriods);
+                        }
+                        // gather the period values to be added to the timeline
+                        if (tempPeriods.includes(entry.attributes[a[5]] as number)) {
+                            tempPeriods.push(entry.attributes[a[5]] as number);
+                            console.log(tempPeriods);
+                        }
+                    })
                 }
             })
         })
@@ -520,7 +536,7 @@ export const Region = ({
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
             <ComboBox loadGeoJson={loadGeoJson} country={country} position={position} />
-            {progressTarget[position] !== 0 && maxValue[position]
+            {progressTarget[position] !== 0 && maxValue[position] && areaSeries[position]
                 ?
                 <div className='flex flex-col'>
                     <MapsChart
@@ -639,7 +655,7 @@ export const Region = ({
                         }}
                     >
                         <MapSeries
-                            data={series[position]}
+                            data={series[position].filter(i => i[5] === currentExposureFilter.measure || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
                             nullColor="#c9c9c9"
@@ -672,16 +688,34 @@ export const Region = ({
                                     color: "white"
                                 },
                                 valueDecimals: 0,
+                                formatter: function (this: any) {
+
+                                    var value = Math.ceil(this.y).toString();
+                                    var counter = 0;
+
+                                    for (var i = value.length - 1; i > 0; i--) {
+                                        counter++;
+                                        if (counter % 3 === 0) {
+                                            value = value.slice(0, i) + "," + value.substring(i, value.length);
+                                        }
+                                    }
+                                    return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value; 
+                                }
                             },
                             colors: [
+                                {
+                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+                                    stops: [[0, '#0098FF'], [1, '#0098FF00']]
+                                },
                                 {
                                     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
                                     stops: [[0, '#FF9500'], [1, '#FF950000']]
                                 },
                                 {
                                     linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#0098FF'], [1, '#0098FF00']]
-                                }
+                                    stops: [[0, '#ff0040'], [1, '#FF950000']]
+                                },
+
                             ],
                             series: [
 
@@ -741,11 +775,23 @@ export const Region = ({
                             }}
                         />
 
-                        {country[position].name === "string" ? null : areaSeries.map((i, index) =>
+                        {/* {areaSeries[position].filter(item => item.measure === currentExposureFilter.measure || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
                             <Series
                                 type="area"
-                                name={areaSeries[position][index].name}
-                                data={areaSeries[position][index].data}
+                                name={i.name}
+                                data={i.data}
+                                marker={{
+                                    radius: 6,
+                                    lineWidth: 2,
+                                    lineColor: 'white',
+                                }}
+                            /> */}
+                        {areaSeries[position].filter(a => a.measure.includes(currentExposureFilter.measure) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
+                            <Series
+                                key={i.name}
+                                type="area"
+                                name={i.name}
+                                data={[...i.data]}
                                 marker={{
                                     radius: 6,
                                     lineWidth: 2,

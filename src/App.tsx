@@ -19,7 +19,7 @@ export type SeriesT = SeriesTuple[][];
 
 export type RegionSeries = object[];
 
-export type AreaSeries = object[][];
+export type AreaSeries = {data: number[], name: string, measure: string[]}[][];
 
 function App() {
 
@@ -29,7 +29,7 @@ function App() {
   const [currentScenario, setScenario] = useState("rcp4p5");
   const [currentHazard, setHazard] = useState("Riverine Flooding");
   const [currentExposure, setExposure] = useState("Population");
-  const [currentExposureFilter, setExposureFilter] = useState({name: "Dry Days", measure: "CCD_CROP_EXP"});
+  const [currentExposureFilter, setExposureFilter] = useState({name: "Dry Days", measure: "CDD_CROP_EXP"});
   const [currentThreshold, setCurrentThreshold] = useState({name: "Hot Days > 30*", threshold: "H_30"});
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
@@ -71,12 +71,7 @@ function App() {
   const [areaSeries, setAreaSeries] = React.useState<AreaSeries>(
     [
       [
-        { data: [0, 0, 0, 0], name: "Orderly trajectory" },
-        { data: [0, 0, 0, 0], name: "Disorderly trajectory" }
-      ],
-      [
-        { data: [0, 0, 0, 0], name: "Orderly trajectory" },
-        { data: [0, 0, 0, 0], name: "Disorderly trajectory" }
+        { data: [0, 0, 0, 0], name: "Orderly trajectory", measure: [] },
       ],
     ]
   );
