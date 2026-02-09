@@ -27,8 +27,8 @@ type HeaderProps = {
     setHazard: React.Dispatch<React.SetStateAction<string>>,
     currentExposure: string,
     setExposure: React.Dispatch<React.SetStateAction<string>>,
-    currentExposureFilter: {name: string, measure: string},
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measure: string}>>
+    currentExposureFilter: {name: string, measures: string[]},
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
     setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: string}>>
 };
 
@@ -69,7 +69,7 @@ export const Header = ({ currentDimension, currentTime, currentView, currentScen
     { title: "Exposures", factor: exposures },
     { title: "Scenarios", factor: scenarios },
     { title: "Spatial Dimensions", factor: spatialDimensions },
-    { title: "Exposure Filter", factor: subExposures},
+    { title: "Measures", factor: subExposures},
   ];
 
   const approaches: View = [
@@ -143,7 +143,7 @@ export const Header = ({ currentDimension, currentTime, currentView, currentScen
                 headerState={headerState}
             />
             <Container
-                title={"Day Comparisons"}
+                title={"Temperature Thresholds"}
                 element={
                     <InequalityGroup
                         currentExposureFilter={currentExposureFilter}

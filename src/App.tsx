@@ -29,7 +29,7 @@ function App() {
   const [currentScenario, setScenario] = useState("rcp4p5");
   const [currentHazard, setHazard] = useState("Riverine Flooding");
   const [currentExposure, setExposure] = useState("Population");
-  const [currentExposureFilter, setExposureFilter] = useState({name: "Dry Days", measure: "CDD_CROP_EXP"});
+  const [currentExposureFilter, setExposureFilter] = useState({name: "Dry Days", measures: ["CDD_CROP_EXP"]});
   const [currentThreshold, setCurrentThreshold] = useState({name: "Hot Days > 30*", threshold: "H_30"});
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)

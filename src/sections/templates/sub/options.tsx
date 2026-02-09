@@ -17,7 +17,7 @@ type Risk = {
     currentHazard: string,
     currentExposure: string,
     currentDimension: string,
-    currentExposureFilter: {name: string, measure: string},
+    currentExposureFilter: {name: string, measures: string[]},
     hovering: string,
     currentView: string,
     setHazard: React.Dispatch<React.SetStateAction<string>>,
@@ -25,7 +25,7 @@ type Risk = {
     setScenario: React.Dispatch<React.SetStateAction<string>>,
     setHovering: React.Dispatch<React.SetStateAction<string>>,
     setDimension: React.Dispatch<React.SetStateAction<string>>,
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measure: string}>>
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
 }
 
 var scenarioFlip = [
@@ -36,11 +36,11 @@ var scenarioFlip = [
 ];
 
 var measureModel = [
-  { measure: 'SPEI_CROP_EXP', name: "SPEI Index" },
-  { measure: 'CDD_CROP_EXP', name: "Dry Days" },
-  { measure: 'HD_PW_EXP', name: "Hot Days" },
-  { measure: 'TN_PW_EXP', name: "Tropical Nights" },
-  { measure: 'ID_PW_EXP', name: "Icing Days" }
+  { measures: ['SPEI_CROP_EXP'], name: "SPEI Index" },
+  { measures: ['CDD_CROP_EXP'], name: "Dry Days" },
+  { measures: ["HD_PW_EXP", "HD_LW_EXP"], name: "Hot Days" },
+  { measures: ['TN_PW_EXP'], name: "Tropical Nights" },
+  { measures: ['ID_PW_EXP'], name: "Icing Days" }
 ];
 
 export const Options = ({
@@ -74,7 +74,7 @@ export const Options = ({
                 title == "Exposures" ? () => setExposure(i) : 
                 title == "Scenarios" ? () => setScenario(scenarioFlip.filter((item) => item.data === i)[0].data) : 
                 title == "Spatial Dimensions" ? () => setDimension(i) : 
-                () => setExposureFilter({name: i, measure: measureModel.filter((element) => element.name === i)[0].measure})  
+                () => setExposureFilter({name: i, measures: measureModel.filter((element) => element.name === i)[0].measures})  
               } 
               onMouseEnter={() => setHovering(i)} 
               onMouseLeave={() => setHovering("")}

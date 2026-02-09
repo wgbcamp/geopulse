@@ -10,8 +10,8 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 type InequalityGroup = {
-    currentExposureFilter: {name: string, measure: string},
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measure: string}>>
+    currentExposureFilter: {name: string, measures: string[]},
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
     thresholds: {category: string, symbols: string[]}[],
     headerState: boolean,
     setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: string}>>

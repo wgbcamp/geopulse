@@ -68,8 +68,8 @@ export type Filters = {
     setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
     progressTarget: [number, number],
     setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>
-    currentExposureFilter: {name: string, measure: string},
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measure: string}>>
+    currentExposureFilter: {name: string, measures: string[]},
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
 }
 
 type DataString = {
@@ -519,7 +519,7 @@ export const Region = ({
                 next[position] = exposureState[position]
                     .filter((value) => (value[2] === currentTime.time))
                     .filter((value) => (value[3] === currentScenario))
-                    .filter((value) => ((value[5] === currentExposureFilter.measure) || value[5]))
+                    .filter((value) => ((currentExposureFilter.measures.includes(value[5])) || value[5]))
                     ;
                     // .filter((value) => (value[5] === measureModel.filter((b) => (b.measure === "SPEI_CROP_EXP" && b.name === "Dry Days"))[0].measure));
                 console.log(exposureState[position]);
@@ -556,16 +556,16 @@ export const Region = ({
                             colorAxis: {
                                 min: 0,
                                 max: maxValue[position].find(i => {
-                                    const isMatch = i.measure === currentExposureFilter.measure;
+                                    const isMatch = currentExposureFilter.measures.includes(i.measure);
 
                                     console.log({
                                         itemMeasure: i.measure,
-                                        filterMeasure: currentExposureFilter.measure,
+                                        filterMeasures: currentExposureFilter.measures,
                                         isMatch
                                     });
 
                                     return isMatch;
-                                })?.value ? maxValue[position].find((i) => i.measure === currentExposureFilter.measure)?.value : Math.max(...maxValue[position].map((a) => a.value)),
+                                })?.value ?  Math.max(...maxValue[position].filter((a) =>  currentExposureFilter.measures.includes(a.measure)).map((a) => a.value)) : Math.max(...maxValue[position].map((a) => a.value)),
                                 minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {
@@ -655,7 +655,7 @@ export const Region = ({
                         }}
                     >
                         <MapSeries
-                            data={series[position].filter(i => i[5] === currentExposureFilter.measure || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
+                            data={series[position].filter(i => currentExposureFilter.measures.includes(i[5]) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
                             nullColor="#c9c9c9"
@@ -774,19 +774,7 @@ export const Region = ({
                                 }
                             }}
                         />
-
-                        {/* {areaSeries[position].filter(item => item.measure === currentExposureFilter.measure || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
-                            <Series
-                                type="area"
-                                name={i.name}
-                                data={i.data}
-                                marker={{
-                                    radius: 6,
-                                    lineWidth: 2,
-                                    lineColor: 'white',
-                                }}
-                            /> */}
-                        {areaSeries[position].filter(a => a.measure.includes(currentExposureFilter.measure) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
+                        {areaSeries[position].filter(a => a.measure.some(m => currentExposureFilter.measures.includes(m)) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
                             <Series
                                 key={i.name}
                                 type="area"
