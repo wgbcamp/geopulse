@@ -232,9 +232,9 @@ export const Region = ({
                 url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_population_table/FeatureServer/0/query?${queryString}`,
             },
             { 
-                hazard: "Draught", 
+                hazard: "Drought", 
                 exposure: "Cropland", 
-                url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/draught_cropland_table/FeatureServer/0/query?${queryString}`,
+                url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/drought_cropland_table/FeatureServer/0/query?${queryString}`,
             },
             { 
                 hazard: "Temperature Extremes", 
@@ -369,7 +369,7 @@ export const Region = ({
     ];
 
     var measureModel = [ 
-        { hazard: "Draught", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"]},
+        { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"]},
         { hazard: "Temperature Extremes", exposure: "Population", measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"]},
         { hazard: "Temperature Extremes", exposure: "Livestock", measure: ["HD_LW_EXP"]},
         // { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"]}
@@ -633,43 +633,49 @@ export const Region = ({
                             plotOptions: {
                                 series: {
                                     point: {
-                                        events: {
-                                            click: function () {
-                                                var tempGadm1 =
-                                                    [
-                                                        { data: [0, 0, 0, 0], name: "Orderly trajectory" },
-                                                        { data: [0, 0, 0, 0], name: "Disorderly trajectory" }
-                                                    ];
-                                                exposureState[position].forEach((element) => {
-                                                    if (this.NAME_1 === element[0]) {
-                                                        lineChartOrder.forEach((index) => {
-                                                            if (element[2] === index.period) {
-                                                                scenarioModel.forEach((item) => {
-                                                                    if (element[3] === item.scenario) {
-                                                                        tempGadm1.forEach((i) => {
-                                                                            if (item.name === i.name) {
-                                                                                i.data[index.position] += element[1]
-                                                                            }
-                                                                        })
-                                                                    }
-                                                                })
-                                                            }
-                                                        })
-                                                    }
-                                                })
-                                                // console.log(exposureState[position]);
-                                                console.log(tempGadm1);
-                                                const loadSubnationalArea = (position: number) => {
-                                                    setAreaSeries(prev => {
-                                                        const next = [...prev];
-                                                        next[position] = tempGadm1;
-                                                        return next;
-                                                    });
-                                                    console.log(areaSeries);
-                                                }
-                                                loadSubnationalArea(position);
-                                            }
-                                        }
+                                        // events: {
+                                        //     click: function () {
+                                        //         var tempGadm1 =
+                                        //             [
+                                        //                 { data: [0, 0, 0, 0], name: "Orderly trajectory" },
+                                        //                 { data: [0, 0, 0, 0], name: "Disorderly trajectory" },
+                                        //                 { data: [0, 0, 0, 0], name: "Hot House" }
+                                        //             ];
+                                        //         exposureState[position].forEach((element) => {
+                                        //             if (this.NAME_1 === element[0]) {
+                                        //                 lineChartOrder.forEach((index) => {
+                                        //                     if (element[2] === index.period) {
+                                        //                         scenarioModel.forEach((item) => {
+                                        //                             if (element[3] === item.scenario) {
+                                        //                                 // tempGadm1.forEach((i) => {
+                                        //                                 //     if (item.name === i.name) {
+                                        //                                 //         i.data[index.position] += element[1]
+                                        //                                 //     }
+                                        //                                 // })
+                                        //                                 measureModel.forEach((m) => {
+                                        //                                     if (m.measure.includes(element[5])) {
+                                        //                                         tempGadm1.some(i => temp)
+                                        //                                     }
+                                        //                                 })
+                                        //                             }
+                                        //                         })
+                                        //                     }
+                                        //                 })
+                                        //             }
+                                        //         })
+                                        //         // console.log(exposureState[position]);
+                                        //         console.log(tempGadm1);
+                                        //         const loadSubnationalArea = (position: number) => {
+                                        //             setAreaSeries(prev => {
+                                        //                 const next = [...prev];
+                                        //                 next[position] = tempGadm1;
+                                        //                 return next;
+                                        //             });
+                                        //             console.log(areaSeries);
+                                        //         }
+                                        //         loadSubnationalArea(position);
+                                        //     }
+                                        // }
                                     }
                                 }
                             }

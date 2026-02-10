@@ -44,7 +44,7 @@ export type View = Array<{
 
 type Factor = Array<string>;
 
-let hazards: Factor = ["Temperature Extremes", "Urban Heatwave", "Riverine Flooding", "Coastal Flooding", "Drought", "Draught", "Sea Level"];
+let hazards: Factor = ["Temperature Extremes", "Urban Heatwave", "Riverine Flooding", "Coastal Flooding", "Drought", "Sea Level"];
 let exposures: Factor = ["Buildings", "Cropland", "GDP", "Urban GDP", "Population", "Livestock"];
 let scenarios: Factor = ["historical", "rcp4p5", "rcp8p5", "SSP370"];
 let spatialDimensions: Factor = ["2D", "3D"];
