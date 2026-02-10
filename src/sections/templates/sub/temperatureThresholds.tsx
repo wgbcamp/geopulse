@@ -19,10 +19,8 @@ type InequalityGroup = {
 
 export const InequalityGroup = ({headerState, thresholds, currentExposureFilter, setExposureFilter, setCurrentThreshold} : InequalityGroup) => {
 
-  var inequalitySymbols = thresholds.filter(i => i.category === currentExposureFilter.name);
-
   const handleValueChange = (value: string) => {
-    setCurrentThreshold({name: value, threshold: ""})
+    setCurrentThreshold({name: currentExposureFilter.name, threshold: value})
   }
 
     return (
@@ -32,29 +30,29 @@ export const InequalityGroup = ({headerState, thresholds, currentExposureFilter,
         {headerState == false
           ?
           <div>{currentExposureFilter.name === "Hot Days" ?
-            <RadioGroup defaultValue="option-0" onValueChange={handleValueChange}>
-              {inequalitySymbols[0].symbols.map((i, index) => 
+            <RadioGroup onValueChange={handleValueChange}>
+              {thresholds.filter(i => i.category === currentExposureFilter.name)[0].symbols.map((i, index) => 
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value={`option-${index}`} id={`option-${index}`} />
-                  <Label htmlFor={`option-${index}`}>{currentExposureFilter.name} {'>'} {i}</Label>
+                  <RadioGroupItem value={i} id={i} />
+                  <Label htmlFor={i}>{currentExposureFilter.name} {'>'} {i}</Label>
                 </div>
               )}
             </RadioGroup>
             : currentExposureFilter.name === "Tropical Nights" ? 
-            <RadioGroup defaultValue="option-0">
-              {inequalitySymbols[0].symbols.map((i, index) => 
+            <RadioGroup onValueChange={handleValueChange}>
+              {thresholds.filter(i => i.category === currentExposureFilter.name)[0].symbols.map((i, index) => 
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value={`option-${index}`} id={`option-${index}`} />
-                  <Label htmlFor={`option-${index}`}>{currentExposureFilter.name} {'>'} {i}</Label>
+                  <RadioGroupItem value={i} id={i} />
+                  <Label htmlFor={i}>{currentExposureFilter.name} {'>'} {i}</Label>
                 </div>
               )}
             </RadioGroup>
             : currentExposureFilter.name === "Icing Days" ?
-              <RadioGroup defaultValue="option-0">
-              {inequalitySymbols[0].symbols.map((i, index) => 
+              <RadioGroup onValueChange={handleValueChange}>
+              {thresholds.filter(i => i.category === currentExposureFilter.name)[0].symbols.map((i, index) => 
                 <div className="flex items-center space-x-2">
-                  <RadioGroupItem value={`option-${index}`} id={`option-${index}`} />
-                  <Label htmlFor={`option-${index}`}>{currentExposureFilter.name} {'>'} {i}</Label>
+                  <RadioGroupItem value={i} id={i} />
+                  <Label htmlFor={i}>{currentExposureFilter.name} {'>'} {i}</Label>
                 </div>
               )}
             </RadioGroup>

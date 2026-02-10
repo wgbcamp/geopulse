@@ -14,12 +14,12 @@ export type JsonShape = {
 
 export type PolygonPosition = number;
 
-type SeriesTuple = [string, number, number, string, string, string];
+type SeriesTuple = [string, number, number, string, string, string, string];
 export type SeriesT = SeriesTuple[][];
 
 export type RegionSeries = object[];
 
-export type AreaSeries = {data: number[], name: string, measure: string[]}[][];
+export type AreaSeries = {data: number[], name: string, measure: string[], threshold: any}[][];
 
 function App() {
 
@@ -30,7 +30,7 @@ function App() {
   const [currentHazard, setHazard] = useState("Riverine Flooding");
   const [currentExposure, setExposure] = useState("Population");
   const [currentExposureFilter, setExposureFilter] = useState({name: "Dry Days", measures: ["CDD_CROP_EXP"]});
-  const [currentThreshold, setCurrentThreshold] = useState({name: "Hot Days > 30*", threshold: "H_30"});
+  const [currentThreshold, setCurrentThreshold] = useState({name: "Hot Days", threshold: undefined});
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
@@ -71,7 +71,7 @@ function App() {
   const [areaSeries, setAreaSeries] = React.useState<AreaSeries>(
     [
       [
-        { data: [0, 0, 0, 0], name: "Orderly trajectory", measure: [] },
+        { data: [0, 0, 0, 0], name: "Orderly trajectory", measure: [], threshold: ""},
       ],
     ]
   );
@@ -102,7 +102,7 @@ function App() {
         <ViewContainer currentTime={currentTime} currentDimension={currentDimension} />
         :
         geoJson ?
-        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pt-[152px] pb-15">
+        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
           <div className=" w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
           {regionCount.map((i) =>
             <Region
@@ -133,6 +133,7 @@ function App() {
               setProgressTarget={setProgressTarget}
               currentExposureFilter={currentExposureFilter}
               setExposureFilter={setExposureFilter}
+              currentThreshold={currentThreshold}
             />
           )}
           </div>

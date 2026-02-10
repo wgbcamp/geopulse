@@ -52,8 +52,8 @@ export type Filters = {
     position: any,
     series: SeriesT,
     setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
-    exposureState: Array<Array<[string, number, number, string, string, string]>>,
-    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string, string]>>>>,
+    exposureState: Array<Array<[string, number, number, string, string, string, string]>>,
+    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string, string, string]>>>>,
     maxValue: {measure: string, value: number}[][],
     setMaxValue: React.Dispatch<React.SetStateAction<{measure: string, value: number}[][]>>,
     regionExposure: RegionSeries,
@@ -67,9 +67,10 @@ export type Filters = {
     progressBar: [number, number],
     setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
     progressTarget: [number, number],
-    setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>
+    setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>,
     currentExposureFilter: {name: string, measures: string[]},
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
+    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>,
+    currentThreshold: {name: string, threshold: string}
 }
 
 type DataString = {
@@ -77,7 +78,7 @@ type DataString = {
     name: string,
 };
 
-type ExposureShape = [string, number, number, string, string, string][];
+type ExposureShape = [string, number, number, string, string, string, string][];
 
 export const Region = ({
     currentTime, 
@@ -105,7 +106,8 @@ export const Region = ({
     progressTarget,
     setProgressTarget,
     currentExposureFilter,
-    setExposureFilter
+    setExposureFilter,
+    currentThreshold
 }: Filters) => {
 
     var exposure: ExposureShape = [];
@@ -212,7 +214,8 @@ export const Region = ({
                 Admin_Filter: string,
                 [key: string]: string | number,
                 Reference_area: string,
-                MEASURE: string
+                MEASURE: string,
+                TEMP_THRESHOLD: string
             }
         }>
     }>;
@@ -251,7 +254,11 @@ export const Region = ({
         urlObject.forEach((item) => {
             if (item.hazard === currentHazard && item.exposure === currentExposure) {
                 url = item.url;
-                outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE,REF_AREA';
+                if (currentHazard === "Temperature Extremes") {
+                    outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE,REF_AREA,TEMP_THRESHOLD';
+                } else {
+                    outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE,REF_AREA';
+                }
             }
         });
 
@@ -346,9 +353,7 @@ export const Region = ({
     }
 
     var tempMaxValue: {measure: string, value: number}[];
-    var tempPeriods: number[];
-    // var tempGadm0: AreaSeries = [[]];
-    let tempGadm0: { data: number[]; name: string; measure: string[] }[] = [];
+    let tempGadm0: { data: number[]; name: string; measure: string[], threshold: string }[] = [];
     var lineChartOrder = [
         {period: 1980, position: 0},
         {period: 2030, position: 1},
@@ -372,7 +377,6 @@ export const Region = ({
 
     const sumWeightedExposure = async (tableData: TableArray) => {
         tempMaxValue = [];
-        tempPeriods = [];
         console.log(tableData);
 
         // loop through tableData
@@ -417,7 +421,8 @@ export const Region = ({
                             entry.attributes[a[4]] as number, // time period
                             entry.attributes[a[5]] as string,  //scenario
                             entry.attributes[a[7]] as string, //reference area
-                            entry.attributes[a[6]] as string //measure
+                            entry.attributes[a[6]] as string, //measure
+                            entry.attributes[a[8]] as string, //threshold
                         ])
                     }
                     // filter down to gadm0 values (national)
@@ -426,33 +431,49 @@ export const Region = ({
                     scenarioModel.forEach((item) => {
                         // reference matching scenario from scenarioModel object
                         if (item.scenario === entry.attributes[a[5]]) {
+                            // push object if country name and measure don't already exist
                             if (!tempGadm0.some((gadm0Object) => gadm0Object.name === item.name && gadm0Object.measure.includes(entry.attributes[a[6]].toString()))) {
                                 lineChartOrder.forEach((index) => {
                                     if (index.period === entry.attributes[a[4]]) {
                                         const data = [0, 0, 0, 0];
                                         data[index.position] = entry.attributes[a[1]] as number;
-                                        tempGadm0.push({ data, name: item.name, measure: [entry.attributes[a[6]] as string] });
+                                        tempGadm0.push({ data, name: item.name, measure: [entry.attributes[a[6]] as string], threshold: entry.attributes[a[8]] as string });
                                     }
                                 })
-                            } else {
+                            } else if (tempGadm0.some((gadm0Object) => gadm0Object.name === item.name
+                                && gadm0Object.measure.includes(entry.attributes[a[6]].toString())
+                                && gadm0Object.threshold === entry.attributes[a[8]])) {
+                                // if country name and measure exist...
                                 tempGadm0.forEach((gadm0Object) => {
                                     if (gadm0Object.name === item.name && gadm0Object.measure.includes(entry.attributes[a[6]].toString())) {
-                                        lineChartOrder.forEach((index) => {
-                                            if (index.period === entry.attributes[a[4]]) {
-                                                gadm0Object.data.splice(index.position, 1, entry.attributes[a[1]] as number);
-                                                if (!gadm0Object.measure.includes(entry.attributes[a[6]] as string)) {
-                                                    gadm0Object.measure.push(entry.attributes[a[6]] as string);
+                                        // ...check if threshold value matches
+                                        if (gadm0Object.threshold === entry.attributes[a[8]]) {
+                                            lineChartOrder.forEach((index) => {
+                                                // ...then update data value for matching period
+                                                if (index.period === entry.attributes[a[4]]) {
+                                                    gadm0Object.data.splice(index.position, 1, entry.attributes[a[1]] as number);
+                                                    if (!gadm0Object.measure.includes(entry.attributes[a[6]] as string)) {
+                                                        gadm0Object.measure.push(entry.attributes[a[6]] as string);
+                                                    }
                                                 }
-                                            }
-                                        })
+                                            })
+                                        }
+
+                                    }
+                                })
+                            } else if (!tempGadm0.some((gadm0Object) =>
+                                gadm0Object.name === item.name
+                                && gadm0Object.measure.includes(entry.attributes[a[6]].toString())
+                                && gadm0Object.threshold === entry.attributes[a[8]])) {
+                                // ...then push new object
+                                lineChartOrder.forEach((index) => {
+                                    if (index.period === entry.attributes[a[4]]) {
+                                        const data = [0, 0, 0, 0];
+                                        data[index.position] = entry.attributes[a[1]] as number;
+                                        tempGadm0.push({ data, name: item.name, measure: [entry.attributes[a[6]] as string], threshold: entry.attributes[a[8]] as string });
                                     }
                                 })
                             }
-                        }
-                        // gather the period values to be added to the timeline
-                        if (tempPeriods.includes(entry.attributes[a[5]] as number)) {
-                            tempPeriods.push(entry.attributes[a[5]] as number);
-                            console.log(tempPeriods);
                         }
                     })
                 }
@@ -655,7 +676,8 @@ export const Region = ({
                         }}
                     >
                         <MapSeries
-                            data={series[position].filter(i => currentExposureFilter.measures.includes(i[5]) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
+                            data={series[position].filter(i => ( currentExposureFilter.measures.includes(i[5]) && (i[6] == undefined  || currentThreshold.threshold === i[6])) || 
+                                !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
                             nullColor="#c9c9c9"
@@ -774,7 +796,7 @@ export const Region = ({
                                 }
                             }}
                         />
-                        {areaSeries[position].filter(a => a.measure.some(m => currentExposureFilter.measures.includes(m)) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
+                        {areaSeries[position].filter(a => a.measure.some(m => currentExposureFilter.measures.includes(m) && a.threshold === currentThreshold.threshold) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
                             <Series
                                 key={i.name}
                                 type="area"

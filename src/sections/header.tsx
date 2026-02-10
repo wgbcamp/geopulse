@@ -6,7 +6,7 @@ import { Views } from './templates/views';
 import { Container } from './templates/container';
 import { Options } from './templates/sub/options';
 import { Timeline } from './templates/sub/timeline';
-import { InequalityGroup } from "./templates/sub/inequalityGroup";
+import { InequalityGroup } from "./templates/sub/temperatureThresholds";
 
 import { LineSquiggleIcon } from '../components/icons/lucide-line-squiggle';
 import { DatabaseIcon } from '../components/icons/lucide-database';
@@ -29,7 +29,7 @@ type HeaderProps = {
     setExposure: React.Dispatch<React.SetStateAction<string>>,
     currentExposureFilter: {name: string, measures: string[]},
     setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
-    setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: string}>>
+    setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: any}>>
 };
 
 export type Menu = Array<{ 
@@ -65,10 +65,10 @@ export const Header = ({ currentDimension, currentTime, currentView, currentScen
 }: HeaderProps) => {
 
   const headerOptions: HeaderTypes = [
+    { title: "Spatial Dimensions", factor: spatialDimensions },
     { title: "Hazards", factor: hazards },
     { title: "Exposures", factor: exposures },
     { title: "Scenarios", factor: scenarios },
-    { title: "Spatial Dimensions", factor: spatialDimensions },
     { title: "Measures", factor: subExposures},
   ];
 
@@ -85,10 +85,10 @@ export const Header = ({ currentDimension, currentTime, currentView, currentScen
   ];
 
   const [hovering, setHovering] = useState("");
-  const [headerState, setHeader] = useState(true);
+  const [headerState, setHeader] = useState(false);
 
     return (
-        <div className={`${headerState == true ? 'h-38' : 'h-95'} z-2 w-98/100 select-none overflow-y-hidden flex flex-row absolute items-start gap-x-5 bg-white border-b pt-8`} onMouseEnter={() => setHeader(false)} onMouseLeave={() => setHeader(true)}>
+        <div className={`${headerState == true ? 'h-38' : 'h-95'} z-2 w-98/100 select-none overflow-y-hidden flex flex-row  items-start gap-x-5 bg-white border-b pt-8`} >
             <Navigation menu={additionalInfo} />
             <Container
                 title={"Views"}
