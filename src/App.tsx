@@ -3,6 +3,8 @@ import { Header } from './sections/header';
 import React, { useState, useEffect } from 'react'
 import { ViewContainer } from './sections/ViewContainer';
 import { Region } from './sections/templates/region';
+import { NewHeader } from './sections/newHeader';
+import { NewTemperatureThresholds } from './sections/templates/sub/newTemperatureThresholds';
 
 export type JsonShape = {
   features: Array<{
@@ -20,6 +22,23 @@ export type SeriesT = SeriesTuple[][];
 export type RegionSeries = object[];
 
 export type AreaSeries = {data: number[], name: string, measure: string[], threshold: any}[][];
+
+type PositionTableData = Array<{
+  features: Array<{
+    attributes?: {
+      NAME_1: string,
+      Reference_area_name: string,
+      MEDIAN: number,
+      period: number,
+      scenario: string,
+      Admin_Filter: string,
+      [key: string]: string | number,
+      Reference_area: string,
+      MEASURE: string,
+      TEMP_THRESHOLD: string
+    }
+  }>
+}>;
 
 function App() {
 
@@ -78,9 +97,46 @@ function App() {
 
   const regionCount = [0, 1];
 
+  const [currentTableData, setCurrentTableData] = React.useState<PositionTableData>(
+    [
+      {
+        features: [{
+          attributes: {
+            key: "",
+            NAME_1: "",
+            Reference_area_name: "",
+            MEDIAN: 0,
+            period: 0,
+            scenario: "",
+            Admin_Filter: "",
+            Reference_area: "",
+            MEASURE: "",
+            TEMP_THRESHOLD: ""
+          }
+        }]
+      },
+      {
+        features: [{
+          attributes: {
+            key: "",
+            NAME_1: "",
+            Reference_area_name: "",
+            MEDIAN: 0,
+            period: 0,
+            scenario: "",
+            Admin_Filter: "",
+            Reference_area: "",
+            MEASURE: "",
+            TEMP_THRESHOLD: ""
+          }
+        }]
+      }
+    ]
+  );
+
   return (
     <div className='h-full'>
-      <Header
+      <NewHeader 
         currentDimension={currentDimension}
         setDimension={setDimension}
         currentTime={currentTime}
@@ -96,46 +152,53 @@ function App() {
         currentExposureFilter={currentExposureFilter}
         setExposureFilter={setExposureFilter}
         setCurrentThreshold={setCurrentThreshold}
-      />
+        />
       {currentView == "Grid"
         ?
         <ViewContainer currentTime={currentTime} currentDimension={currentDimension} />
         :
         geoJson ?
         <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
-          <div className=" w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
-          {regionCount.map((i) =>
-            <Region
-              key={i}
-              currentTime={currentTime}
-              currentScenario={currentScenario}
-              country={country}
-              setCountry={setCountry}
-              mapPolygon={geoJson}
-              position={i}
-              series={series}
-              setSeries={setSeries}
-              exposureState={exposureState}
-              setExposureState={setExposureState}
-              maxValue={maxValue}
-              setMaxValue={setMaxValue}
-              regionExposure={regionExposure}
-              setRegionExposure={setRegionExposure}
-              areaSeries={areaSeries}
-              setAreaSeries={setAreaSeries}
-              currentExposure={currentExposure}
-              setExposure={setExposure}
-              currentHazard={currentHazard}
-              setHazard={setHazard}
-              progressBar={progressBar}
-              setProgressBar={setProgressBar}
-              progressTarget={progressTarget}
-              setProgressTarget={setProgressTarget}
-              currentExposureFilter={currentExposureFilter}
-              setExposureFilter={setExposureFilter}
-              currentThreshold={currentThreshold}
-            />
-          )}
+          <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
+            {regionCount.map((i) =>
+              <Region
+                key={i}
+                currentTime={currentTime}
+                currentScenario={currentScenario}
+                country={country}
+                setCountry={setCountry}
+                mapPolygon={geoJson}
+                position={i}
+                series={series}
+                setSeries={setSeries}
+                exposureState={exposureState}
+                setExposureState={setExposureState}
+                maxValue={maxValue}
+                setMaxValue={setMaxValue}
+                regionExposure={regionExposure}
+                setRegionExposure={setRegionExposure}
+                areaSeries={areaSeries}
+                setAreaSeries={setAreaSeries}
+                currentExposure={currentExposure}
+                setExposure={setExposure}
+                currentHazard={currentHazard}
+                setHazard={setHazard}
+                progressBar={progressBar}
+                setProgressBar={setProgressBar}
+                progressTarget={progressTarget}
+                setProgressTarget={setProgressTarget}
+                currentExposureFilter={currentExposureFilter}
+                setExposureFilter={setExposureFilter}
+                currentThreshold={currentThreshold}
+              />
+            )}         
+                  <NewTemperatureThresholds 
+                    currentHazard={currentHazard}
+                    currentThreshold={currentThreshold}
+                    currentExposureFilter={currentExposureFilter}
+                    setCurrentThreshold={setCurrentThreshold}
+                    setExposureFilter={setExposureFilter}
+                  />
           </div>
         </div>
         :

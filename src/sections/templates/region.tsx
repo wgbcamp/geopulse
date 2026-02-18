@@ -70,7 +70,7 @@ export type Filters = {
     setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>,
     currentExposureFilter: {name: string, measures: string[]},
     setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>,
-    currentThreshold: {name: string, threshold: string}
+    currentThreshold: {name: string, threshold: any}
 }
 
 type DataString = {
@@ -425,6 +425,9 @@ export const Region = ({
                             entry.attributes[a[8]] as string, //threshold
                         ])
                     }
+
+                    // store gadm
+
                     // filter down to gadm0 values (national)
                 } else if (entry.attributes[a[0]] === "adm0") {
                     // loop through scenario model
@@ -633,49 +636,51 @@ export const Region = ({
                             plotOptions: {
                                 series: {
                                     point: {
-                                        // events: {
-                                        //     click: function () {
-                                        //         var tempGadm1 =
-                                        //             [
-                                        //                 { data: [0, 0, 0, 0], name: "Orderly trajectory" },
-                                        //                 { data: [0, 0, 0, 0], name: "Disorderly trajectory" },
-                                        //                 { data: [0, 0, 0, 0], name: "Hot House" }
-                                        //             ];
-                                        //         exposureState[position].forEach((element) => {
-                                        //             if (this.NAME_1 === element[0]) {
-                                        //                 lineChartOrder.forEach((index) => {
-                                        //                     if (element[2] === index.period) {
-                                        //                         scenarioModel.forEach((item) => {
-                                        //                             if (element[3] === item.scenario) {
-                                        //                                 // tempGadm1.forEach((i) => {
-                                        //                                 //     if (item.name === i.name) {
-                                        //                                 //         i.data[index.position] += element[1]
-                                        //                                 //     }
-                                        //                                 // })
-                                        //                                 measureModel.forEach((m) => {
-                                        //                                     if (m.measure.includes(element[5])) {
-                                        //                                         tempGadm1.some(i => temp)
-                                        //                                     }
-                                        //                                 })
-                                        //                             }
-                                        //                         })
-                                        //                     }
-                                        //                 })
-                                        //             }
-                                        //         })
-                                        //         // console.log(exposureState[position]);
-                                        //         console.log(tempGadm1);
-                                        //         const loadSubnationalArea = (position: number) => {
-                                        //             setAreaSeries(prev => {
-                                        //                 const next = [...prev];
-                                        //                 next[position] = tempGadm1;
-                                        //                 return next;
-                                        //             });
-                                        //             console.log(areaSeries);
-                                        //         }
-                                        //         loadSubnationalArea(position);
-                                        //     }
-                                        // }
+                                        events: {
+                                            click: function () {
+                                                var tempGadm1 =
+                                                    [
+                                                        { data: [0, 0, 0, 0], name: "Orderly trajectory" },
+                                                        { data: [0, 0, 0, 0], name: "Disorderly trajectory" },
+                                                        { data: [0, 0, 0, 0], name: "Hot House" }
+                                                    ];
+                                                exposureState[position].forEach((element) => {
+                                                    if (this.NAME_1 === element[0]) {
+                                                        lineChartOrder.forEach((index) => {
+                                                            if (element[2] === index.period) {
+                                                                scenarioModel.forEach((item) => {
+                                                                    if (element[3] === item.scenario) {
+                                                                        // tempGadm1.forEach((i) => {
+                                                                        //     if (item.name === i.name) {
+                                                                        //         i.data[index.position] += element[1]
+                                                                        //     }
+                                                                        // })
+                                                                        measureModel.forEach((m) => {
+                                                                            if (m.measure.includes(element[5])) {
+                                                                                if (tempGadm1.some(i => i.name === element[0] && i.measure.includes(element[5]))) {
+
+                                                                                }
+                                                                            }
+                                                                        })
+                                                                    }
+                                                                })
+                                                            }
+                                                        })
+                                                    }
+                                                })
+                                                // // console.log(exposureState[position]);
+                                                // console.log(tempGadm1);
+                                                // const loadSubnationalArea = (position: number) => {
+                                                //     setAreaSeries(prev => {
+                                                //         const next = [...prev];
+                                                //         next[position] = tempGadm1;
+                                                //         return next;
+                                                //     });
+                                                //     console.log(areaSeries);
+                                                // }
+                                                // loadSubnationalArea(position);
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -805,7 +810,7 @@ export const Region = ({
                         {areaSeries[position].filter(a => a.measure.some(m => currentExposureFilter.measures.includes(m) && a.threshold === currentThreshold.threshold) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
                             <Series
                                 key={i.name}
-                                type="area"
+                                type="line"
                                 name={i.name}
                                 data={[...i.data]}
                                 marker={{

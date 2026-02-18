@@ -1,17 +1,19 @@
 html {
   height: 100%;
+  background-color: #1E1E1E;
 }
 
 #root {
   margin: 0 auto;
-  padding-bottom: 2rem;
-  padding-left: 2rem;
-  padding-right: 2rem;
   text-align: center;
   height: 100%;
   color-scheme: dark;
+  --orange: #FF8200;
+  --darkblue: #1F3764;
+  --lightblue: #2C4F92;
 }
 
 .esri-view .esri-view-surface--touch-none:focus::after {
   outline: none !important;
 }
+
