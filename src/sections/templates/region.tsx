@@ -80,17 +80,6 @@ type DataString = {
 
 type ExposureShape = [string, number, number, string, string, string, string][];
 
-let colorAxisTitle: {title: string, hazard: string[], exposure: string[], exposureFilter: string[]}[] = [
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], exposureFilter: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"] },
-    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], exposureFilter: [""] },
-    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], exposureFilter: [""] },
-    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], exposureFilter: [""] },
-    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], exposureFilter: [""] },
-    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], exposureFilter: [""] },
-    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["CDD_CROP_EXP"] },
-    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["SPEI_CROP_EXP"] }
-];
-
 export const Region = ({
     currentTime, 
     currentScenario, 
@@ -123,6 +112,28 @@ export const Region = ({
 
     var exposure: ExposureShape = [];
     var gadm0exposure: RegionSeries = [];
+
+    const temperatureModel = [
+        {name: "_Z", number: 0}, 
+        {name: "H_20", number: 20}, 
+        {name: "H_26", number: 26}, 
+        {name: "H_32", number: 32}, 
+        {name: "H_30", number: 30}, 
+        {name: "H_35", number: 35}, 
+        {name: "H_40", number: 40}
+    ];
+
+    let colorAxisTitle: {title: string, hazard: string[], exposure: string[], exposureFilter: string[], lineChartInfo: string, lineChartInfo2: string}[] = [
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], exposureFilter: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentExposureFilter.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === currentThreshold.threshold)?.number}° Celsius` },
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], exposureFilter: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentExposureFilter.name}`, lineChartInfo2: `` },
+    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], exposureFilter: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], exposureFilter: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], exposureFilter: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], exposureFilter: [""], lineChartInfo: "Percentage of GDP" , lineChartInfo2: `Exposed to ${currentHazard}`},
+    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], exposureFilter: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
+    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
+];
 
     Highcharts.setOptions({
     chart: {
@@ -716,6 +727,10 @@ export const Region = ({
                     </MapsChart>
                     <Chart
                         options={{
+                            chart: {
+                                type: 'line',
+                                height: 450
+                            },
                             legend: {
                                 itemStyle: {
                                     color: '#ffffff',
@@ -728,12 +743,25 @@ export const Region = ({
                                 align: 'left',
                                 verticalAlign: 'top',
                                 x: 100,
-                                y: -15,
+                                y: 42,
                                 floating: true,
                                 layout: 'vertical',
                                 symbolWidth: 1,
                                 symbolPadding: 15,
                                 itemMarginBottom: 3,
+                            },
+                            title: {
+                                text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.lineChartInfo
+                                 + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.lineChartInfo2
+                                 + ": " + country[position].name,
+                                align: 'left',
+                                style: {
+                                    color: "white",
+                                    fontWeight: "bold",
+                                    fontSize: '16px'
+                                },
+                                x: 18,
+                                y: 20
                             },
                             tooltip: {
                                 backgroundColor: "#212121",
