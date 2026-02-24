@@ -80,6 +80,17 @@ type DataString = {
 
 type ExposureShape = [string, number, number, string, string, string, string][];
 
+let colorAxisTitle: {title: string, hazard: string[], exposure: string[], exposureFilter: string[]}[] = [
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], exposureFilter: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"] },
+    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], exposureFilter: [""] },
+    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], exposureFilter: [""] },
+    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], exposureFilter: [""] },
+    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], exposureFilter: [""] },
+    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], exposureFilter: [""] },
+    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["CDD_CROP_EXP"] },
+    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["SPEI_CROP_EXP"] }
+];
+
 export const Region = ({
     currentTime, 
     currentScenario, 
@@ -611,6 +622,15 @@ export const Region = ({
                                 width: '90%',
 
                             },
+                            legend: {
+                                title: {
+                                    text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.title,
+                                    style: {
+                                        color: "white",
+                                        fontWeight: "bold"
+                                    }
+                                }
+                            },
                             tooltip: {
                                 formatter: function () {
                                     var value = Math.ceil(this.point.value).toString();
@@ -687,7 +707,7 @@ export const Region = ({
                         }}
                     >
                         <MapSeries
-                            data={series[position].filter(i => ( currentExposureFilter.measures.includes(i[5]) && (i[6] == undefined  || currentThreshold.threshold === i[6])) || 
+                            data={series[position].filter(i => ( currentExposureFilter.measures.includes(i[5]) && (i[6] == undefined || currentThreshold.threshold === i[6])) || 
                                 !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}

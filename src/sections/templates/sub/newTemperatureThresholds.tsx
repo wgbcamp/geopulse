@@ -21,12 +21,16 @@ import {
 
 import { Slider } from "@/components/ui/slider"
 
+import {Beach20FilledIcon} from "@/components/icons/fluent-beach-20-filled"
+import {WeatherSnowflake20FilledIcon} from "@/components/icons/fluent-weather-snowflake-20-filled"
+import {WeatherSunny20FilledIcon} from "@/components/icons/fluent-weather-sunny-20-filled"
+
 type TimelineProps = {
   setTime: React.Dispatch<React.SetStateAction<{ time: number, url: string }>>,
   currentHazard: string,
   currentExposure: string,
   currentTime: { time: number, url: string },
-  currentThreshold: { name: string, threshold: number | undefined },
+  currentThreshold: { name: string, threshold: any },
   currentExposureFilter: { name: string, measures: string[] },
   setCurrentThreshold: React.Dispatch<React.SetStateAction<{ name: string, threshold: any }>>,
   setExposureFilter: React.Dispatch<React.SetStateAction<{ name: string, measures: string[] }>>
@@ -34,6 +38,36 @@ type TimelineProps = {
 
 const ticks = [0, 20, 26, 32, 30, 35, 40];
 
+const labels = [
+  {
+    name: "ICING DAYS", position: 0, icon: WeatherSnowflake20FilledIcon, color: "#4FADD0", svg: "",
+  },
+  { name: "", position: 100, icon: "", color: "#FFC800", svg:
+    `<svg xmlns=http://www.w3.org/2000/svg width="60" height="40" viewBox="0 0 60 40">
+      <rect x="20" y="20" width="15" height="3" rx="2" fill="#FFC107"/>
+      <rect x="20" y="14" width="3" height="15" rx="2" fill="#FFC107"/>
+    </svg>`
+},
+  { name: "TROPICAL NIGHTS", position: 85, icon: Beach20FilledIcon, color: "#FFC800", svg: "" },
+  { name: "", position: 92, icon: "", color: "#FFC800", svg:
+    `<svg xmlns=http://www.w3.org/2000/svg width="60" height="40" viewBox="0 0 60 40">
+      <rect x="20" y="20" width="15" height="3" rx="2" fill="#FFC107"/>
+      <rect x="34" y="14" width="3" height="15" rx="2" fill="#FFC107"/>
+    </svg>`},
+  { name: "", position: 100, icon: "", color: "#FF0000", svg:
+      `<svg xmlns=http://www.w3.org/2000/svg width="60" height="40" viewBox="0 0 60 40">
+      <rect x="20" y="20" width="15" height="3" rx="2" fill="#FF0000"/>
+      <rect x="20" y="14" width="3" height="15" rx="2" fill="#FF0000"/>
+    </svg>` 
+},
+  { name: "HOT DAYS", position: 97, icon: WeatherSunny20FilledIcon, color: "#FF0000", svg: "" },
+  { name: "", position: 96, icon: "", color: "#FF0000", svg:
+    `<svg xmlns=http://www.w3.org/2000/svg width="60" height="40" viewBox="0 0 60 40">
+      <rect x="20" y="20" width="15" height="3" rx="2" fill="#FF0000"/>
+      <rect x="34" y="14" width="3" height="15" rx="2" fill="#FF0000"/>
+    </svg>`
+   }
+];
 // let temperatureExposures = ["Hot Days", "Tropical Nights", "Icing Days"];
 // let thresholds = [
 //   { category: "Hot Days", symbols: ["H_30", "H_35", "H_40"] },
@@ -91,6 +125,8 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
     }
   }
 
+  const thresholdValues = ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"];
+
   const handleTabChange = (value: string) => {
     switch (value) {
       case "Dry Days":
@@ -121,6 +157,7 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
                   step={1}
                   defaultValue={[0]}
                   onValueChange={handleValueChange}
+                  value={[thresholdValues.indexOf(currentThreshold.threshold)]}
                 />
                 <div className="relative h-6"
                   style={{ width: "calc(100% )" }}
@@ -142,6 +179,23 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
                     )
                   })
                   }
+                  {labels.map((label: any, index: any) => {
+                    const percent = (index / (labels.length - 1)) * label.position;
+                    return (
+                      <div
+                        key={label}
+                        className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-13"
+                        style={{ left: `${percent}%` }}
+                      >
+                        <span className={`text-xs w-[42px] mt-0.5 flex items-end ${label.name === currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                          <div dangerouslySetInnerHTML={{ __html: label.svg }} className="w-6 h-9" />
+                          <div className=''>{label.icon && React.createElement(label.icon, { size: 24, color: label.color })}</div>
+                          <div className="font-extrabold">{label.name}</div>
+                        </span>
+                      </div>
+                    )
+                  })
+                  }
                 </div>
               </div>
             </Item>
@@ -152,7 +206,7 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
       hazard: "Drought",
       component:
         <div className="absolute w-[500px] h-[125px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
-          <Tabs onValueChange={handleTabChange}>
+          <Tabs onValueChange={handleTabChange} value={currentExposureFilter.name} defaultValue="Dry Days">
             <TabsList className='w-[300px]'>
               <TabsTrigger value="Dry Days">Dry Days</TabsTrigger>
               <TabsTrigger value="SPEI Index">SPEI Index</TabsTrigger>
