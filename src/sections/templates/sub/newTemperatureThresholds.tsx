@@ -142,7 +142,7 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
     {
       hazard: "Temperature Extremes",
       component:
-        <div className="absolute w-[500px] h-[125px] left-1/2 top-[15%] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
+        <div className="absolute w-[500px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
           style={{
             background:
               "linear-gradient(174.18deg, #0084FF 7.23%, rgba(92, 92, 92, 0) 95.52%)",
