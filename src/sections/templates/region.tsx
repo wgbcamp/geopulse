@@ -358,19 +358,19 @@ export const Region = ({
             })
                 .then(res => res.json())
                 .then(data => {
-                    console.log(data);
-                    console.log(end);
+                    //console.log(data);
+                    //console.log(end);
                     tableData.push(data);
                     resultAmount += data.features.length;
-                    console.log(tableData);
-                    console.log(tableData.length);
-                    console.log(resultAmount);
+                    //console.log(tableData);
+                    //console.log(tableData.length);
+                    //console.log(resultAmount);
                     if (resultAmount < y.length) {
                         counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
                     } else {
                         sumWeightedExposure(tableData);
                         // console.log(country);
-                        console.log(tableData[0].features[0].attributes);
+                        console.log(tableData);
                     }
 
                     const updateProgressBar = (position: number) => {
