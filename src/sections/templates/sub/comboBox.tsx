@@ -243,10 +243,11 @@ type CountryString = {
 type ComboBoxProps = {
   loadGeoJson(value: CountryString): Promise<void>,
   country: [object, object],
-  position: number
+  position: number,
+  setSubnationalName(value: string): void
 }
 
-export const ComboBox = ({ loadGeoJson, country, position }: ComboBoxProps) => {
+export const ComboBox = ({ loadGeoJson, country, position, setSubnationalName }: ComboBoxProps) => {
 
     const [open, setOpen] = React.useState(false);
     const [value, setValue] = useState("");
@@ -279,6 +280,7 @@ export const ComboBox = ({ loadGeoJson, country, position }: ComboBoxProps) => {
                         loadGeoJson(country)
                         setOpen(false)
                         setValue(currentValue)
+                        setSubnationalName("")
                       }}
                     >
                       {country.name}

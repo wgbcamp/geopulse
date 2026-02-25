@@ -97,42 +97,44 @@ function App() {
 
   const regionCount = [0, 1];
 
-  const [currentTableData, setCurrentTableData] = React.useState<PositionTableData>(
-    [
-      {
-        features: [{
-          attributes: {
-            key: "",
-            NAME_1: "",
-            Reference_area_name: "",
-            MEDIAN: 0,
-            period: 0,
-            scenario: "",
-            Admin_Filter: "",
-            Reference_area: "",
-            MEASURE: "",
-            TEMP_THRESHOLD: ""
-          }
-        }]
-      },
-      {
-        features: [{
-          attributes: {
-            key: "",
-            NAME_1: "",
-            Reference_area_name: "",
-            MEDIAN: 0,
-            period: 0,
-            scenario: "",
-            Admin_Filter: "",
-            Reference_area: "",
-            MEASURE: "",
-            TEMP_THRESHOLD: ""
-          }
-        }]
-      }
-    ]
-  );
+  const [currentSubnational, setCurrentSubnational] = React.useState(["", ""]);
+
+  // const [currentTableData, setCurrentTableData] = React.useState<PositionTableData>(
+  //   [
+  //     {
+  //       features: [{
+  //         attributes: {
+  //           key: "",
+  //           NAME_1: "",
+  //           Reference_area_name: "",
+  //           MEDIAN: 0,
+  //           period: 0,
+  //           scenario: "",
+  //           Admin_Filter: "",
+  //           Reference_area: "",
+  //           MEASURE: "",
+  //           TEMP_THRESHOLD: ""
+  //         }
+  //       }]
+  //     },
+  //     {
+  //       features: [{
+  //         attributes: {
+  //           key: "",
+  //           NAME_1: "",
+  //           Reference_area_name: "",
+  //           MEDIAN: 0,
+  //           period: 0,
+  //           scenario: "",
+  //           Admin_Filter: "",
+  //           Reference_area: "",
+  //           MEASURE: "",
+  //           TEMP_THRESHOLD: ""
+  //         }
+  //       }]
+  //     }
+  //   ]
+  // );
 
   return (
     <div className='h-full'>
@@ -190,6 +192,8 @@ function App() {
                 currentExposureFilter={currentExposureFilter}
                 setExposureFilter={setExposureFilter}
                 currentThreshold={currentThreshold}
+                currentSubnational={currentSubnational}
+                setCurrentSubnational={setCurrentSubnational}
               />
             )}         
                   <NewTemperatureThresholds 

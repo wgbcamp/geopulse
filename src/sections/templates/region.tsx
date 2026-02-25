@@ -70,7 +70,9 @@ export type Filters = {
     setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>,
     currentExposureFilter: {name: string, measures: string[]},
     setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>,
-    currentThreshold: {name: string, threshold: any}
+    currentThreshold: {name: string, threshold: any},
+    currentSubnational: string[],
+    setCurrentSubnational: React.Dispatch<React.SetStateAction<string[]>>,
 }
 
 type DataString = {
@@ -107,7 +109,9 @@ export const Region = ({
     setProgressTarget,
     currentExposureFilter,
     setExposureFilter,
-    currentThreshold
+    currentThreshold,
+    currentSubnational,
+    setCurrentSubnational
 }: Filters) => {
 
     var exposure: ExposureShape = [];
@@ -157,18 +161,27 @@ export const Region = ({
             data.alpha3 = country[position].iso3;
             loadGeoJson(data);
         }
+
+        // reset subnational name on line chart when hazard/exposure switches
+        setCurrentSubnational(prev => {
+            const next = [...prev];
+            next[position] = "";
+            console.log(next);
+            return next;
+        })
+
     }, [currentHazard, currentExposure]);
 
     useEffect(() => { 
-        var defaultCountries = [
-            {name: "Costa Rica", alpha3: "CRI"},
-            {name: "Bangladesh", alpha3: "BGD"}
-        ];
-        var data = { name: defaultCountries[position].name, alpha3: defaultCountries[position].alpha3 };
-        loadGeoJson(data);
+        if (country[position].name === "string") {
+            var defaultCountries = [
+                { name: "Costa Rica", alpha3: "CRI" },
+                { name: "Bangladesh", alpha3: "BGD" }
+            ];
+            var data = { name: defaultCountries[position].name, alpha3: defaultCountries[position].alpha3 };
+            loadGeoJson(data);
+        } 
     }, []);
-
-
 
     var loadGeoJson = async (data: DataString) => {
 
@@ -579,9 +592,18 @@ export const Region = ({
         updateSeriesValues(position);
     }
 
+    function setSubnationalName(value: string) {
+            setCurrentSubnational(prev => {
+                const next = [...prev];
+                next[position] = value;
+                console.log(next);
+                return next;
+            })
+    }
+
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox loadGeoJson={loadGeoJson} country={country} position={position} />
+            <ComboBox loadGeoJson={loadGeoJson} setSubnationalName={setSubnationalName} country={country} position={position} />
             {progressTarget[position] !== 0 && maxValue[position] && areaSeries[position]
                 ?
                 <div className='flex flex-col'>
@@ -669,47 +691,38 @@ export const Region = ({
                                     point: {
                                         events: {
                                             click: function () {
-                                                var tempGadm1 =
-                                                    [
-                                                        { data: [0, 0, 0, 0], name: "Orderly trajectory" },
-                                                        { data: [0, 0, 0, 0], name: "Disorderly trajectory" },
-                                                        { data: [0, 0, 0, 0], name: "Hot House" }
-                                                    ];
+                                                var tempGadm1: {data: number[], name: string, measure: string[], threshold: any}[] = [];
                                                 exposureState[position].forEach((element) => {
                                                     if (this.NAME_1 === element[0]) {
                                                         lineChartOrder.forEach((index) => {
                                                             if (element[2] === index.period) {
                                                                 scenarioModel.forEach((item) => {
                                                                     if (element[3] === item.scenario) {
-                                                                        // tempGadm1.forEach((i) => {
-                                                                        //     if (item.name === i.name) {
-                                                                        //         i.data[index.position] += element[1]
-                                                                        //     }
-                                                                        // })
-                                                                        measureModel.forEach((m) => {
-                                                                            if (m.measure.includes(element[5])) {
-                                                                                if (tempGadm1.some(i => i.name === element[0] && i.measure.includes(element[5]))) {
-
-                                                                                }
+                                                                        if (!tempGadm1.some(i => i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6])) {
+                                                                            tempGadm1.push({ data: [0, 0, 0, 0], name: item.name, measure: [element[5]], threshold: element[6] });
+                                                                        } 
+                                                                        tempGadm1.forEach((i) => { 
+                                                                            if (i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6]) {
+                                                                                i.data[index.position] += element[1];
                                                                             }
-                                                                        })
+                                                                        });
                                                                     }
                                                                 })
                                                             }
                                                         })
                                                     }
-                                                })
-                                                // // console.log(exposureState[position]);
-                                                // console.log(tempGadm1);
-                                                // const loadSubnationalArea = (position: number) => {
-                                                //     setAreaSeries(prev => {
-                                                //         const next = [...prev];
-                                                //         next[position] = tempGadm1;
-                                                //         return next;
-                                                //     });
-                                                //     console.log(areaSeries);
-                                                // }
-                                                // loadSubnationalArea(position);
+                                                });
+                                                console.log(tempGadm1);
+                                                const loadSubnationalArea = (position: number) => {
+                                                    setAreaSeries(prev => {
+                                                        const next = [...prev];
+                                                        next[position] = tempGadm1;
+                                                        return next;
+                                                    });
+                                                    console.log(areaSeries);
+                                                }
+                                                loadSubnationalArea(position);
+                                                setSubnationalName("(" + this.NAME_1 + ")");
                                             }
                                         }
                                     }
@@ -729,7 +742,17 @@ export const Region = ({
                         options={{
                             chart: {
                                 type: 'line',
-                                height: 450
+                                height: 500,
+                                marginTop: 130,
+                                events: {
+                                    render() {
+                                        const chart = this as unknown as Highcharts.Chart;
+                                        const titleBBox = chart.title.getBBox();
+                                        chart.subtitle.attr({
+                                            y: titleBBox.y + titleBBox.height + 15
+                                        })
+                                    }
+                                }
                             },
                             legend: {
                                 itemStyle: {
@@ -742,8 +765,8 @@ export const Region = ({
                                 },
                                 align: 'left',
                                 verticalAlign: 'top',
-                                x: 100,
-                                y: 42,
+                                x: 90,
+                                y: 75,
                                 floating: true,
                                 layout: 'vertical',
                                 symbolWidth: 1,
@@ -753,15 +776,25 @@ export const Region = ({
                             title: {
                                 text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.lineChartInfo
                                  + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.lineChartInfo2
-                                 + ": " + country[position].name,
+                                 + ": " + country[position].name + " " + currentSubnational[position],
                                 align: 'left',
                                 style: {
                                     color: "white",
                                     fontWeight: "bold",
-                                    fontSize: '16px'
+                                    fontSize: '16px',
+                                    width: '60%'
                                 },
+                                useHTML: true,
                                 x: 18,
-                                y: 20
+                                y: 20,
+                            },
+                            subtitle: {
+                                text: "(Exposure quantity)",
+                                x: 16,
+                                style: {
+                                    color: "#999999",
+                                    fontSize: '13px'
+                                }
                             },
                             tooltip: {
                                 backgroundColor: "#212121",

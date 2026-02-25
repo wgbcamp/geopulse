@@ -47,7 +47,7 @@ type HeaderProps = {
 };
 
 let risks: {hazard: string, exposure: string[], measureStat: string, measureName: string, thresholdStat: any, thresholdName: string}[] = [
-  { hazard: "Temperature Extremes", exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measureStat: "ID_PW_EXP", measureName: "Icing Days", thresholdStat: "_Z", thresholdName: "Icing Days" },
+  { hazard: "Temperature Extremes", exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measureStat: "HD_PW_EXP", measureName: "Hot Days", thresholdStat: "H_30", thresholdName: "Hot Days" },
   { hazard: "Riverine Flooding", exposure: ["Population", "Buildings", "Builtup Area", "GDP", "Urban GDP"], measureStat: "", measureName: "", thresholdStat: undefined, thresholdName: "" },
   { hazard: "Coastal Flooding", exposure: ["Population", "Buildings", "Builtup Area", "GDP", "Urban GDP"], measureStat: "", measureName: "", thresholdStat: undefined, thresholdName: "" },
   { hazard: "Drought", exposure: ["Cropland"], measureStat: "CDD_CROP_EXP", measureName: "Dry Days", thresholdStat: undefined, thresholdName: "" }
@@ -64,7 +64,6 @@ export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime
     setExposure, setHazard, setDimension, setTime, setView, setScenario, setExposureFilter, setCurrentThreshold
 }) => {
 
-    const [headerState, setHeaderState] = useState<boolean>(true);
     const [riskState, setRiskState] = useState<{hazard: string, exposure: string}>({hazard: currentHazard, exposure: currentExposure});
 
     return (
@@ -166,7 +165,7 @@ export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime
                         </PopoverContent>
                     </Popover>
                 </Card>
-                <Card className='rounded-none w-[330px]'>
+                <Card className='rounded-none w-[400px]'>
                     <div className="h-full flex items-center justify-center">
                         <Timeline
                             currentTime={currentTime}
