@@ -142,7 +142,7 @@ export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime
                 <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0">
                     <Popover>
                         <PopoverTrigger>
-                            <div className="flex flex-row items-center w-[295px] h-[50px] px-5 justify-between cursor-pointer">
+                            <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
                                 <div className='flex items-center'>
                                     <Layer20RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                                     <div className="text-[16px] font-bold text-end flex items-center">{scenarioFlip.find(x => x.data === currentScenario)?.frontend}</div>
@@ -150,7 +150,7 @@ export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime
                                 <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
                             </div>
                         </PopoverTrigger>
-                        <PopoverContent className="w-[300px] p-0">
+                        <PopoverContent className="w-[225px] p-0">
                             <div className="flex flex-row justify-center py-[10px] h-[300px]">
                                 <ItemGroup>
                                     {scenarioFlip.map((x) =>
