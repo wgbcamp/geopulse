@@ -205,7 +205,7 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
     {
       hazard: "Drought",
       component:
-        <div className="absolute w-[500px] h-[125px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
+        <div className="absolute w-[500px] h-[30px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
           <Tabs onValueChange={handleTabChange} value={currentExposureFilter.name} defaultValue="Dry Days">
             <TabsList className='w-[300px]'>
               <TabsTrigger value="Dry Days">Dry Days</TabsTrigger>
