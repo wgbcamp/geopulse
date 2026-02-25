@@ -257,7 +257,7 @@ export const Region = ({
 
     async function test(countryData: CountryData) {
 
-        const whereClause = `ADMIN_FILTER IN ('adm0', 'adm1') AND ISO3 IN ('${countryData.iso3}')`;
+        const whereClause = `ISO3 IN ('${countryData.iso3}')`;
         var queryString = `where=${encodeURIComponent(whereClause)}`;
         
         const urlObject = [
@@ -326,10 +326,12 @@ export const Region = ({
         updateProgressTarget(position);
 
         var y = x.objectIds.filter((value: ObjectID) => value);
-        console.log(y);
+        console.log(y.length);
         console.log(y.join(","));
 
         var resultAmount = 0;
+        const maxRecordCountFactor:string = '5'; 
+        const maxRecordsPerQuery: number = Number(maxRecordCountFactor) * 1000;
 
         type SliceNumber = {
             start: number,
@@ -344,7 +346,7 @@ export const Region = ({
                 objectIds: y.slice(start, end).join(","),
                 outFields: outFields,
                 f: 'json',
-                maxRecordCountFactor: '5'
+                maxRecordCountFactor: maxRecordCountFactor
             });
 
             fetch(url, {
@@ -364,7 +366,7 @@ export const Region = ({
                     console.log(tableData.length);
                     console.log(resultAmount);
                     if (resultAmount < y.length) {
-                        counter({ start: resultAmount, end: resultAmount + 10000 });
+                        counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
                     } else {
                         sumWeightedExposure(tableData);
                         // console.log(country);
@@ -384,7 +386,7 @@ export const Region = ({
                 console.log(tableData);
         }
 
-        counter({ start: 0, end: 10000 });
+        counter({ start: 0, end: maxRecordsPerQuery });
     }
 
     var tempMaxValue: {measure: string, value: number}[];
