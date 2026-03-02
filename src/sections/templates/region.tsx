@@ -68,8 +68,8 @@ export type Filters = {
     setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
     progressTarget: [number, number],
     setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>,
-    currentExposureFilter: {name: string, measures: string[]},
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>,
+    currentMeasure: {name: string, id: string},
+    setMeasure: React.Dispatch<React.SetStateAction<{name: string, id: string}>>,
     currentThreshold: {name: string, threshold: any},
     currentSubnational: string[],
     setCurrentSubnational: React.Dispatch<React.SetStateAction<string[]>>,
@@ -107,15 +107,12 @@ export const Region = ({
     setProgressBar,
     progressTarget,
     setProgressTarget,
-    currentExposureFilter,
-    setExposureFilter,
+    currentMeasure,
+    setMeasure,
     currentThreshold,
     currentSubnational,
     setCurrentSubnational
 }: Filters) => {
-
-    var exposure: ExposureShape = [];
-    var gadm0exposure: RegionSeries = [];
 
     const temperatureModel = [
         {name: "_Z", number: 0}, 
@@ -127,16 +124,16 @@ export const Region = ({
         {name: "H_40", number: 40}
     ];
 
-    let colorAxisTitle: {title: string, hazard: string[], exposure: string[], exposureFilter: string[], lineChartInfo: string, lineChartInfo2: string}[] = [
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], exposureFilter: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentExposureFilter.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === currentThreshold.threshold)?.number}° Celsius` },
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], exposureFilter: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentExposureFilter.name}`, lineChartInfo2: `` },
-    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], exposureFilter: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], exposureFilter: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], exposureFilter: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], exposureFilter: [""], lineChartInfo: "Percentage of GDP" , lineChartInfo2: `Exposed to ${currentHazard}`},
-    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], exposureFilter: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
-    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], exposureFilter: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
+    let colorAxisTitle: {title: string, hazard: string[], exposure: string[], Measure: string[], lineChartInfo: string, lineChartInfo2: string}[] = [
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], Measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === currentThreshold.threshold)?.number}° Celsius` },
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], Measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: `` },
+    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], Measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], Measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], Measure: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], Measure: [""], lineChartInfo: "Percentage of GDP" , lineChartInfo2: `Exposed to ${currentHazard}`},
+    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], Measure: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], Measure: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
+    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], Measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
 ];
 
     Highcharts.setOptions({
@@ -152,7 +149,7 @@ export const Region = ({
 
     useEffect(() => {
             applyFilter();
-    }, [exposureState, currentTime, currentScenario, currentExposureFilter]);
+    }, [exposureState, currentTime, currentScenario, currentMeasure]);
 
     useEffect(() => {
         var data = {name: "", alpha3: ""};
@@ -255,47 +252,47 @@ export const Region = ({
         }>
     }>;
 
+    const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
+ 
+    const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: string }>> = {
+        "Riverine Flooding":
+        {
+            "Population": {
+                url: `${URL_BASE}/riverine_population_table/FeatureServer/0/query`,
+                measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
+                // threshold: "RETURN_PERIOD"
+            }
+        },
+        "Drought":
+        {
+            "Cropland": {
+                url: `${URL_BASE}/drought_cropland_table/FeatureServer/0/query`,
+                measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"],
+            }
+        },
+        "Temperature Extremes":
+        {
+            "Population": {
+                url: `${URL_BASE}/temperature_population_table/FeatureServer/0/query`,
+                measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
+                threshold: "TEMP_THRESHOLD"
+            },
+            "Livestock": {
+                url: `${URL_BASE}/temperature_livestock_table/FeatureServer/0/query`,
+                measure: ["HD_LW_EXP"],
+                threshold: "TEMP_THRESHOLD"
+            }
+            
+        }
+    }
+
     async function test(countryData: CountryData) {
 
         const whereClause = `ISO3 IN ('${countryData.iso3}')`;
         var queryString = `where=${encodeURIComponent(whereClause)}`;
         
-        const urlObject = [
-            {
-                hazard: "Riverine Flooding",
-                exposure: "Population",
-                url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_population_table/FeatureServer/0/query?${queryString}`,
-            },
-            { 
-                hazard: "Drought", 
-                exposure: "Cropland", 
-                url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/drought_cropland_table/FeatureServer/0/query?${queryString}`,
-            },
-            { 
-                hazard: "Temperature Extremes", 
-                exposure: "Population",
-                url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/temperature_population_table/FeatureServer/0/query?${queryString}`,
-            },
-            { 
-                hazard: "Temperature Extremes", 
-                exposure: "Livestock", 
-                url: `https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/temperature_livestock_table/FeatureServer/0/query?${queryString}`, 
-            }
-        ];
-
-        let url = "";
-        let outFields = "";
-
-        urlObject.forEach((item) => {
-            if (item.hazard === currentHazard && item.exposure === currentExposure) {
-                url = item.url;
-                if (currentHazard === "Temperature Extremes") {
-                    outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE,REF_AREA,TEMP_THRESHOLD';
-                } else {
-                    outFields = 'ADMIN_FILTER,MEDIAN,REF_AREA_NAME,ISO3,TIME_PERIOD,CLIMATE_SCENARIO,MEASURE,REF_AREA';
-                }
-            }
-        });
+        const url = urlObject[currentHazard][currentExposure].url + `?${queryString}`;
+        
 
         console.log(queryString);
         console.log(url);
@@ -313,24 +310,13 @@ export const Region = ({
             },
             body: parameters
         });
-        var x = await result.json();
-        console.log(x);
+        const x = await result.json();
 
-        const updateProgressTarget = (position: number) => {
-            setProgressTarget(prev => {
-                const next = prev;
-                next[position] = x.objectIds.length;
-                return next;
-            })
-        }
-        updateProgressTarget(position);
-
-        var y = x.objectIds.filter((value: ObjectID) => value);
-        console.log(y.length);
-        console.log(y.join(","));
+        var objectIdsArray = x.objectIds.filter((value: ObjectID) => value);
+        console.log("objectIdsArray: ", objectIdsArray.length);
 
         var resultAmount = 0;
-        const maxRecordCountFactor:string = '5'; 
+        const maxRecordCountFactor: string = '5'; 
         const maxRecordsPerQuery: number = Number(maxRecordCountFactor) * 1000;
 
         type SliceNumber = {
@@ -338,13 +324,17 @@ export const Region = ({
             end: number
         };
 
-        var tableData: TableArray = [];
+        type Feature = {
+            attributes: Record<string, any>;
+        };
+
+        var tableData: {}[] = [];
 
         function counter({ start, end }: SliceNumber) {
 
             const params = new URLSearchParams({
-                objectIds: y.slice(start, end).join(","),
-                outFields: outFields,
+                objectIds: objectIdsArray.slice(start, end).join(","),
+                outFields: "*",
                 f: 'json',
                 maxRecordCountFactor: maxRecordCountFactor
             });
@@ -358,29 +348,15 @@ export const Region = ({
             })
                 .then(res => res.json())
                 .then(data => {
-                    //console.log(data);
-                    //console.log(end);
-                    tableData.push(data);
+                 
+                    tableData.push(...data.features.map((feature: Feature) => feature.attributes));
                     resultAmount += data.features.length;
-                    //console.log(tableData);
-                    //console.log(tableData.length);
-                    //console.log(resultAmount);
-                    if (resultAmount < y.length) {
+           
+                    if (resultAmount < objectIdsArray.length) {
                         counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
                     } else {
                         sumWeightedExposure(tableData);
-                        // console.log(country);
-                        console.log(tableData);
                     }
-
-                    const updateProgressBar = (position: number) => {
-                        setProgressBar(prev => {
-                            const next = prev;
-                            next[position] = resultAmount;
-                            return next;
-                        })
-                    }
-                    updateProgressBar(position);
                 });
 
                 console.log(tableData);
@@ -389,13 +365,11 @@ export const Region = ({
         counter({ start: 0, end: maxRecordsPerQuery });
     }
 
-    var tempMaxValue: {measure: string, value: number}[];
-    let tempGadm0: { data: number[]; name: string; measure: string[], threshold: string }[] = [];
-    var lineChartOrder = [
-        {period: 1980, position: 0},
-        {period: 2030, position: 1},
-        {period: 2050, position: 2},
-        {period: 2080, position: 3}
+    var lineChartModel = [
+        {label: "1980-2014", position: 0, year: 1980},
+        {label: "Early Century", position: 1, year: 2030},
+        {label: "Mid-Century", position: 2, year: 2050},
+        {label: "End-Century", position: 3, year: 2080}
     ];
     var scenarioModel = [
         {scenario: 'rcp4p5', name: 'Orderly trajectory'},
@@ -409,148 +383,100 @@ export const Region = ({
         { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"]},
         { hazard: "Temperature Extremes", exposure: "Population", measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"]},
         { hazard: "Temperature Extremes", exposure: "Livestock", measure: ["HD_LW_EXP"]},
-        // { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"]}
+        { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"]}
     ];
 
-    const sumWeightedExposure = async (tableData: TableArray) => {
-        tempMaxValue = [];
+    type MeasureRange = {
+        measure: string;
+        maxValue: number;
+        minValue: number;
+    };
+
+    const sumWeightedExposure = async (tableData: any[]) => {
         console.log(tableData);
 
-        // loop through tableData
-        tableData.forEach((parent) => {
-            // loop through each feature property
-            parent.features.forEach((entry) => {
-                // find attributes keys
-                var a = Object.keys(entry.attributes);
-                // execute code if gadm1 is found (subnational)
-                if (entry.attributes[a[0]] === "adm1") {
-                    // update tempMaxValue for colorAxis range
-                    if (!tempMaxValue.some(maxObject => maxObject.measure === entry.attributes[a[6]] as string)) {
-                        tempMaxValue.push({ measure: entry.attributes[a[6]] as string, value: entry.attributes[a[1]] as number });
-                    } else {
-                        tempMaxValue.forEach((maxObject) => {
-                            if (maxObject.measure === entry.attributes[a[6]]) {
-                                if (maxObject.value < Number(entry.attributes[a[1]])) {
-                                    maxObject.value = Number(entry.attributes[a[1]]);
-                                }
-                            }
-                        })
-                    }
-                    var b = false;
-                    if (exposure.length > 0) {
-                        // loop through exposure array
-                        exposure.forEach((exposureElement) => {
-                            // if exposure measure value equals entry measure value, add value
-                            if (exposureElement[0] === entry.attributes[a[7]]
-                                && exposureElement[2] === entry.attributes[a[4]]
-                                && exposureElement[3] === entry.attributes[a[5]]
-                            ) {
-                                exposureElement[1] += entry.attributes[a[1]] as number;
-                                b = true;
-                            }
-                        })
-                    }
-                    // push entry array values into exposure array, if entry doesn't already exist
-                    if (b === false) {
-                        exposure.push([
-                            entry.attributes[a[2]] as string, //reference area name
-                            entry.attributes[a[1]] as number, //median value
-                            entry.attributes[a[4]] as number, // time period
-                            entry.attributes[a[5]] as string,  //scenario
-                            entry.attributes[a[7]] as string, //reference area
-                            entry.attributes[a[6]] as string, //measure
-                            entry.attributes[a[8]] as string, //threshold
-                        ])
-                    }
-
-                    // store gadm
-
-                    // filter down to gadm0 values (national)
-                } else if (entry.attributes[a[0]] === "adm0") {
-                    // loop through scenario model
-                    scenarioModel.forEach((item) => {
-                        // reference matching scenario from scenarioModel object
-                        if (item.scenario === entry.attributes[a[5]]) {
-                            // push object if country name and measure don't already exist
-                            if (!tempGadm0.some((gadm0Object) => gadm0Object.name === item.name && gadm0Object.measure.includes(entry.attributes[a[6]].toString()))) {
-                                lineChartOrder.forEach((index) => {
-                                    if (index.period === entry.attributes[a[4]]) {
-                                        const data = [0, 0, 0, 0];
-                                        data[index.position] = entry.attributes[a[1]] as number;
-                                        tempGadm0.push({ data, name: item.name, measure: [entry.attributes[a[6]] as string], threshold: entry.attributes[a[8]] as string });
-                                    }
-                                })
-                            } else if (tempGadm0.some((gadm0Object) => gadm0Object.name === item.name
-                                && gadm0Object.measure.includes(entry.attributes[a[6]].toString())
-                                && gadm0Object.threshold === entry.attributes[a[8]])) {
-                                // if country name and measure exist...
-                                tempGadm0.forEach((gadm0Object) => {
-                                    if (gadm0Object.name === item.name && gadm0Object.measure.includes(entry.attributes[a[6]].toString())) {
-                                        // ...check if threshold value matches
-                                        if (gadm0Object.threshold === entry.attributes[a[8]]) {
-                                            lineChartOrder.forEach((index) => {
-                                                // ...then update data value for matching period
-                                                if (index.period === entry.attributes[a[4]]) {
-                                                    gadm0Object.data.splice(index.position, 1, entry.attributes[a[1]] as number);
-                                                    if (!gadm0Object.measure.includes(entry.attributes[a[6]] as string)) {
-                                                        gadm0Object.measure.push(entry.attributes[a[6]] as string);
-                                                    }
-                                                }
-                                            })
-                                        }
-
-                                    }
-                                })
-                            } else if (!tempGadm0.some((gadm0Object) =>
-                                gadm0Object.name === item.name
-                                && gadm0Object.measure.includes(entry.attributes[a[6]].toString())
-                                && gadm0Object.threshold === entry.attributes[a[8]])) {
-                                // ...then push new object
-                                lineChartOrder.forEach((index) => {
-                                    if (index.period === entry.attributes[a[4]]) {
-                                        const data = [0, 0, 0, 0];
-                                        data[index.position] = entry.attributes[a[1]] as number;
-                                        tempGadm0.push({ data, name: item.name, measure: [entry.attributes[a[6]] as string], threshold: entry.attributes[a[8]] as string });
-                                    }
-                                })
-                            }
-                        }
-                    })
+        // legend values for map
+        var mapLegendValueRange: MeasureRange[] = tableData
+            .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
+            .reduce((acc: {measure: string, maxValue: number, minValue: number}[], entry: Record<string, any>) => {
+                const measure = entry["MEASURE"] as string;
+                const median = Number(entry["MEDIAN"]);
+ 
+                const existing = acc.find(obj => obj.measure === measure);
+ 
+                if (!existing) {
+                    acc.push({
+                        measure,
+                        maxValue: median,
+                        minValue: measure === "SPEI_CROP_EXP" ? median : 0
+                    });
+                } else {
+                    existing.maxValue = Math.max(existing.maxValue, median);
+                    existing.minValue = measure === "SPEI_CROP_EXP" ? Math.min(existing.minValue, median) : 0
                 }
-            })
-        })
+ 
+                return acc;
+            }, []);
+        console.log("ADM1 Min and Max by Measure across all Thresholds: ", mapLegendValueRange);
 
-        console.log(exposure);
+        // country data for line chart
+        var adm0ChartData: Record<string, any>[] = tableData
+            .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm0")
+            .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
+        console.log("adm0ChartData ", adm0ChartData);
 
-        //replace exposure scenario values with the names that would be visualized
-        exposure.forEach((element) => {
-            switch (element[3]) {
-                case "SSP126":
-                    element.splice(3, 1, 'rcp4p5');
-                    break;
-                case "SSP245":
-                    element.splice(3, 1, 'rcp8p5');
-            }
-        });
-         
-        console.log(tempGadm0);
-        console.log(exposure);
-        console.log(tempMaxValue);
+        // region selected data && adm1 data for polygons
+        var adm1Data: Record<string, any>[] = tableData
+            .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
+            .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
+            .reduce((acc: Record<string, Record<string, any>>, entry: Record<string, any>) => {
+                const key = entry["REF_AREA"] as string;
+                
+                if (!acc[key]) {
+                    acc[key] = [];
+                }
 
-        const updateAreaValues = (position: number) => {
-            setAreaSeries(prev => {
-                const next = [...prev];
-                next[position] = tempGadm0;
-                return next;
-            });
-                console.log(areaSeries);
-        }
-        updateAreaValues(position);
+                acc[key].push(entry);
+                return acc;
+            }, {});
+        console.log("adm1Data ", adm1Data);
+        console.log("printallofthat", Object.keys(adm1Data));
+        console.log(
+             Object.keys(adm1Data).map((refArea: any) => {
+            return adm1Data[refArea]
+            .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
+            .filter((entry: Record<string, any>) => entry["TIME_PERIOD"] === currentTime.time)
+            .filter((entry: Record<string, any>) => currentTime.time !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
+        })  
+        )
+        // Object.keys(adm1Data).map((refArea: any) => {
+        //     return adm1Data[refArea]
+        //     .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
+        //     .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
+        //     .filter((entry: Record<string, any>) => entry["TIME_PERIOD"] === currentTime.time)
+        //     .filter((entry: Record<string, any>) => currentTime.time !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
+        // })      
+        
+        
+                            // })
+                 // const updateAreaValues = (position: number) => {
+        //     setAreaSeries(prev => {
+        //         const next = [...prev];
+        //         next[position] = tempGadm0;
+        //         return next;
+        //     });
+        //         console.log(areaSeries);
+        // }
+        // updateAreaValues(position);
 
+        //fix the type >>>>>
         const updateMaxValue = (position: number) => {
             setMaxValue(prev => {
                 const next = [...prev];
-                next[position] = tempMaxValue;
+                next[position] = mapLegendValueRange.filter((item) => {item.measure == currentMeasure.id});
                 console.log(next);
                 return next;
             })
@@ -580,7 +506,7 @@ export const Region = ({
                 next[position] = exposureState[position]
                     .filter((value) => (value[2] === currentTime.time))
                     .filter((value) => (value[3] === currentScenario))
-                    .filter((value) => ((currentExposureFilter.measures.includes(value[5])) || value[5]))
+                    .filter((value) => ((currentMeasure.measures.includes(value[5])) || value[5]))
                     ;
                     // .filter((value) => (value[5] === measureModel.filter((b) => (b.measure === "SPEI_CROP_EXP" && b.name === "Dry Days"))[0].measure));
                 console.log(exposureState[position]);
@@ -626,16 +552,16 @@ export const Region = ({
                             colorAxis: {
                                 min: 0,
                                 max: maxValue[position].find(i => {
-                                    const isMatch = currentExposureFilter.measures.includes(i.measure);
+                                    const isMatch = currentMeasure.measures.includes(i.measure);
 
                                     console.log({
                                         itemMeasure: i.measure,
-                                        filterMeasures: currentExposureFilter.measures,
+                                        filterMeasures: currentMeasure.measures,
                                         isMatch
                                     });
 
                                     return isMatch;
-                                })?.value ?  Math.max(...maxValue[position].filter((a) =>  currentExposureFilter.measures.includes(a.measure)).map((a) => a.value)) : Math.max(...maxValue[position].map((a) => a.value)),
+                                })?.value ?  Math.max(...maxValue[position].filter((a) =>  currentMeasure.measures.includes(a.measure)).map((a) => a.value)) : Math.max(...maxValue[position].map((a) => a.value)),
                                 minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {
@@ -659,7 +585,7 @@ export const Region = ({
                             },
                             legend: {
                                 title: {
-                                    text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.title,
+                                    text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.title,
                                     style: {
                                         color: "white",
                                         fontWeight: "bold"
@@ -733,8 +659,12 @@ export const Region = ({
                         }}
                     >
                         <MapSeries
-                            data={series[position].filter(i => ( currentExposureFilter.measures.includes(i[5]) && (i[6] == undefined || currentThreshold.threshold === i[6])) || 
-                                !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard))}
+                            data={Object.keys(series[position]["adm1Data"]).forEach((refArea)  =>  {
+                                entries = adm1Data[refArea];
+                                entries.filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
+                                        .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
+                            }) }
+                            
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
                             nullColor="#c9c9c9"
@@ -776,8 +706,8 @@ export const Region = ({
                                 itemMarginBottom: 3,
                             },
                             title: {
-                                text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.lineChartInfo
-                                 + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.exposureFilter.includes(currentExposureFilter.measures[0]))?.lineChartInfo2
+                                text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
+                                 + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
                                  + ": " + country[position].name + " " + currentSubnational[position],
                                 align: 'left',
                                 style: {
@@ -890,7 +820,7 @@ export const Region = ({
                                 }
                             }}
                         />
-                        {areaSeries[position].filter(a => a.measure.some(m => currentExposureFilter.measures.includes(m) && a.threshold === currentThreshold.threshold) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
+                        {areaSeries[position].filter(a => a.measure.some(m => currentMeasure.measures.includes(m) && a.threshold === currentThreshold.threshold) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
                             <Series
                                 key={i.name}
                                 type="line"

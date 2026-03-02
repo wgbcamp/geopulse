@@ -48,8 +48,8 @@ function App() {
   const [currentScenario, setScenario] = useState("rcp4p5");
   const [currentHazard, setHazard] = useState("Riverine Flooding");
   const [currentExposure, setExposure] = useState("Population");
-  const [currentExposureFilter, setExposureFilter] = useState({name: "", measures: [""]});
-  const [currentThreshold, setCurrentThreshold] = useState({name: "Hot Days", threshold: undefined});
+  const [currentMeasure, setMeasure] = useState({ name: "Flood Level", id: "RF_PW_EXP" });
+  const [currentThreshold, setCurrentThreshold] = useState({ name: "Hot Days", threshold: undefined });
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
@@ -151,8 +151,8 @@ function App() {
         setHazard={setHazard}
         currentExposure={currentExposure}
         setExposure={setExposure}
-        currentExposureFilter={currentExposureFilter}
-        setExposureFilter={setExposureFilter}
+        currentMeasure={currentMeasure}
+        setMeasure={setMeasure}
         setCurrentThreshold={setCurrentThreshold}
         />
       {currentView == "Grid"
@@ -189,8 +189,8 @@ function App() {
                 setProgressBar={setProgressBar}
                 progressTarget={progressTarget}
                 setProgressTarget={setProgressTarget}
-                currentExposureFilter={currentExposureFilter}
-                setExposureFilter={setExposureFilter}
+                currentMeasure={currentMeasure}
+                setMeasure={setMeasure}
                 currentThreshold={currentThreshold}
                 currentSubnational={currentSubnational}
                 setCurrentSubnational={setCurrentSubnational}
@@ -199,9 +199,9 @@ function App() {
                   <NewTemperatureThresholds 
                     currentHazard={currentHazard}
                     currentThreshold={currentThreshold}
-                    currentExposureFilter={currentExposureFilter}
+                    currentMeasure={currentMeasure}
                     setCurrentThreshold={setCurrentThreshold}
-                    setExposureFilter={setExposureFilter}
+                    setMeasure={setMeasure}
                   />
           </div>
         </div>

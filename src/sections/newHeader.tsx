@@ -41,8 +41,8 @@ type HeaderProps = {
     setHazard: React.Dispatch<React.SetStateAction<string>>,
     currentExposure: string,
     setExposure: React.Dispatch<React.SetStateAction<string>>,
-    currentExposureFilter: {name: string, measures: string[]},
-    setExposureFilter: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
+    currentMeasure: {name: string, measures: string[]},
+    setMeasure: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
     setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: any}>>
 };
 
@@ -60,8 +60,8 @@ var scenarioFlip = [
     { frontend: 'Hot House', data: 'SSP370' }
 ];
 
-export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime, currentView, currentScenario, currentHazard, currentExposure, currentExposureFilter,
-    setExposure, setHazard, setDimension, setTime, setView, setScenario, setExposureFilter, setCurrentThreshold
+export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime, currentView, currentScenario, currentHazard, currentExposure, currentMeasure,
+    setExposure, setHazard, setDimension, setTime, setView, setScenario, setMeasure, setCurrentThreshold
 }) => {
 
     const [riskState, setRiskState] = useState<{hazard: string, exposure: string}>({hazard: currentHazard, exposure: currentExposure});
@@ -124,7 +124,7 @@ export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime
                                                 <ItemHeader className={`${riskState.hazard === x.hazard ? 'font-bold' : 'font-medium'} text-[16px]`}>{x.hazard}</ItemHeader>
                                                 <div className={`${riskState.hazard === x.hazard ? "h-[265px]" : "h-0 hidden" }`}>
                                                     {x.exposure.map((y) =>
-                                                        <Item key={y} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${riskState.exposure === y && riskState.hazard === currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => {() => setRiskState({hazard: x.hazard, exposure: y}); setHazard(x.hazard); setExposure(y); setExposureFilter({name: x.measureName, measures: [x.measureStat]}); setCurrentThreshold({name: x.thresholdName, threshold: x.thresholdStat} )}}>
+                                                        <Item key={y} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${riskState.exposure === y && riskState.hazard === currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => {() => setRiskState({hazard: x.hazard, exposure: y}); setHazard(x.hazard); setExposure(y); setMeasure({name: x.measureName, measures: [x.measureStat]}); setCurrentThreshold({name: x.thresholdName, threshold: x.thresholdStat} )}}>
                                                             <ItemContent>
                                                                 <ItemHeader className=''>{y}</ItemHeader>
                                                             </ItemContent>

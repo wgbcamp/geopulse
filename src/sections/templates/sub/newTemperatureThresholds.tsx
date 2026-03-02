@@ -31,9 +31,9 @@ type TimelineProps = {
   currentExposure: string,
   currentTime: { time: number, url: string },
   currentThreshold: { name: string, threshold: any },
-  currentExposureFilter: { name: string, measures: string[] },
+  currentMeasure: { name: string, measures: string[] },
   setCurrentThreshold: React.Dispatch<React.SetStateAction<{ name: string, threshold: any }>>,
-  setExposureFilter: React.Dispatch<React.SetStateAction<{ name: string, measures: string[] }>>
+  setMeasure: React.Dispatch<React.SetStateAction<{ name: string, measures: string[] }>>
 }
 
 const ticks = [0, 20, 26, 32, 30, 35, 40];
@@ -84,7 +84,7 @@ const labels = [
 // ];
 
 
-export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposure, currentTime, currentThreshold, currentExposureFilter, setCurrentThreshold, setExposureFilter }: TimelineProps) => {
+export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposure, currentTime, currentThreshold, currentMeasure, setCurrentThreshold, setMeasure }: TimelineProps) => {
 
   const handleValueChange = (value: number[]) => {
     if (currentHazard === "Riverine Flooding" && currentExposure === "Population") {
@@ -95,31 +95,31 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
 
     switch (value[0]) {
       case 0:
-        setExposureFilter({ name: "Icing Days", measures: ['ID_PW_EXP'] });
+        setMeasure({ name: "Icing Days", measures: ['ID_PW_EXP'] });
         setCurrentThreshold({ name: "Icing Days", threshold: "_Z" });
         break;
       case 1:
-        setExposureFilter({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
+        setMeasure({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
         setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_20' });
         break;
       case 2:
-        setExposureFilter({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
+        setMeasure({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
         setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_26' });
         break;
       case 3:
-        setExposureFilter({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
+        setMeasure({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
         setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_32' });
         break;
       case 4:
-        setExposureFilter({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
+        setMeasure({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
         setCurrentThreshold({ name: "Hot Days", threshold: 'H_30' });
         break;
       case 5:
-        setExposureFilter({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
+        setMeasure({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
         setCurrentThreshold({ name: "Hot Days", threshold: 'H_35' });
         break;
       case 6:
-        setExposureFilter({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
+        setMeasure({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
         setCurrentThreshold({ name: "Hot Days", threshold: 'H_40' });
         break;
     }
@@ -130,10 +130,10 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
   const handleTabChange = (value: string) => {
     switch (value) {
       case "Dry Days":
-        setExposureFilter({ name: "Dry Days", measures: ['CDD_CROP_EXP'] });
+        setMeasure({ name: "Dry Days", measures: ['CDD_CROP_EXP'] });
         break;
       case "SPEI Index":
-        setExposureFilter({ name: "SPEI Index", measures: ['SPEI_CROP_EXP'] });
+        setMeasure({ name: "SPEI Index", measures: ['SPEI_CROP_EXP'] });
         break;
     }
   }
@@ -206,7 +206,7 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
       hazard: "Drought",
       component:
         <div className="absolute w-[500px] h-[30px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
-          <Tabs onValueChange={handleTabChange} value={currentExposureFilter.name} defaultValue="Dry Days">
+          <Tabs onValueChange={handleTabChange} value={currentMeasure.name} defaultValue="Dry Days">
             <TabsList className='w-[300px]'>
               <TabsTrigger value="Dry Days">Dry Days</TabsTrigger>
               <TabsTrigger value="SPEI Index">SPEI Index</TabsTrigger>
