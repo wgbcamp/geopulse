@@ -101,41 +101,32 @@ export const Region = ({
               fontFamily: 'Arial'
             },
     }
-});
+    });
 
+    // Effect 1: fetch new data
     useEffect(() => {
-        loadCountryData(country.iso3);
-    }, [currentHazard, currentExposure]);
+        const load = async () => {
+            const countryPolygons = {
+                features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
+                iso3,
+                name: ""
+            };
+            countryPolygons.name = countryPolygons.features[0].properties.COUNTRY;
+            setPolygons(countryPolygons);
 
-    // useEffect(() => {
-    //         console.log("Series : ", series);
-    //         arrangeData(series);
-    // }, [currentTime, currentScenario, currentMeasure]);
-
-    var loadCountryData = async (iso3: string) => {
-
-        var countryPolygons = {
-            features: geoJson.features.filter((feature) => feature.properties.GID_0 == iso3),
-            iso3: iso3,
-            name: ""
+            const queryResults = await query(iso3);
+            setSeries(queryResults);
+            arrangeData(queryResults); // ✅ pass directly, avoid stale closure
         };
-        
-        countryPolygons.name = countryPolygons.features[0].properties.COUNTRY
+        load();
+    }, [iso3, currentHazard, currentExposure]);
 
-        console.log("countryPolygons: ", countryPolygons);
 
-        setPolygons(countryPolygons);
-       
-        var queryResults = await query(iso3);
-        
-        setSeries(queryResults);
-
+    // Effect 2: re-process already-fetched data
+    useEffect(() => {
+        if (series.length === 0) return; // guard: don't run before first fetch
         arrangeData(series);
-    }
-
-    type ObjectID = {
-      objectIds: number
-    };
+    }, [currentTime, currentScenario, currentMeasure, currentThreshold]);
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
  
@@ -177,73 +168,112 @@ export const Region = ({
     async function query(iso3: string) {
 
         const whereClause = `ISO3 IN ('${iso3}')`;
-        var queryString = `where=${encodeURIComponent(whereClause)}`;
-        
+        const queryString = `where=${encodeURIComponent(whereClause)}`;
         const url = urlObject[currentHazard][currentExposure].url + `?${queryString}`;
-        
 
-        console.log(queryString);
-        console.log(url);
-
-        const parameters = new URLSearchParams({
-            returnIdsOnly: 'true',
-            cacheHint: 'true',
-            f: 'json'
-        });
-
-        const result = await fetch(url, {
+        const idResult = await fetch(url, {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: parameters
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({ returnIdsOnly: 'true', cacheHint: 'true', f: 'json' })
         });
-        const x = await result.json();
 
-        var objectIdsArray = x.objectIds.filter((value: ObjectID) => value);
-        console.log("objectIdsArray: ", objectIdsArray.length);
+        const { objectIds } = await idResult.json();
+        const maxRecordsPerQuery = 5000;
+        const tableData: Feature[] = [];
 
-        var resultAmount = 0;
-        const maxRecordCountFactor: string = '5'; 
-        const maxRecordsPerQuery: number = Number(maxRecordCountFactor) * 1000;
+        // fetch all pages sequentially and await each one
 
-        type SliceNumber = {
-            start: number,
-            end: number
-        };
-
-        var tableData: {}[] = [];
-
-        function counter({ start, end }: SliceNumber) {
-
-            const params = new URLSearchParams({
-                objectIds: objectIdsArray.slice(start, end).join(","),
-                outFields: "*",
-                f: 'json',
-                maxRecordCountFactor: maxRecordCountFactor
+        for (let start = 0; start < objectIds.length; start += maxRecordsPerQuery) {
+            const end = Math.min(start + maxRecordsPerQuery, objectIds.length);
+            const res = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: new URLSearchParams({
+                    objectIds: objectIds.slice(start, end).join(","),
+                    outFields: "*",
+                    f: 'json',
+                    maxRecordCountFactor: '5'
+                })
             });
 
-            fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: params
-            })
-                .then(res => res.json())
-                .then(data => {
-                 
-                    tableData.push(...data.features.map((feature: { attributes: Feature }) => feature.attributes));
-                    resultAmount += data.features.length;
-           
-                    if (resultAmount < objectIdsArray.length) {
-                        counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
-                    }
-                });
+            const page = await res.json();
+            tableData.push(...page.features.map((f: { attributes: Feature }) => f.attributes));
         }
-        counter({ start: 0, end: maxRecordsPerQuery });
+
         return tableData;
     }
+
+
+    // async function query(iso3: string) {
+
+    //     const whereClause = `ISO3 IN ('${iso3}')`;
+    //     var queryString = `where=${encodeURIComponent(whereClause)}`;
+        
+    //     const url = urlObject[currentHazard][currentExposure].url + `?${queryString}`;
+        
+
+    //     console.log(queryString);
+    //     console.log(url);
+
+    //     const parameters = new URLSearchParams({
+    //         returnIdsOnly: 'true',
+    //         cacheHint: 'true',
+    //         f: 'json'
+    //     });
+
+    //     const result = await fetch(url, {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/x-www-form-urlencoded'
+    //         },
+    //         body: parameters
+    //     });
+    //     const x = await result.json();
+
+    //     var objectIdsArray = x.objectIds.filter((value: ObjectID) => value);
+    //     console.log("objectIdsArray: ", objectIdsArray.length);
+
+    //     var resultAmount = 0;
+    //     const maxRecordCountFactor: string = '5'; 
+    //     const maxRecordsPerQuery: number = Number(maxRecordCountFactor) * 1000;
+
+    //     type SliceNumber = {
+    //         start: number,
+    //         end: number
+    //     };
+
+    //     var tableData: {}[] = [];
+
+    //     function counter({ start, end }: SliceNumber) {
+
+    //         const params = new URLSearchParams({
+    //             objectIds: objectIdsArray.slice(start, end).join(","),
+    //             outFields: "*",
+    //             f: 'json',
+    //             maxRecordCountFactor: maxRecordCountFactor
+    //         });
+
+    //         fetch(url, {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/x-www-form-urlencoded'
+    //             },
+    //             body: params
+    //         })
+    //             .then(res => res.json())
+    //             .then(data => {
+                 
+    //                 tableData.push(...data.features.map((feature: { attributes: Feature }) => feature.attributes));
+    //                 resultAmount += data.features.length;
+           
+    //                 if (resultAmount < objectIdsArray.length) {
+    //                     counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
+    //                 }
+    //             });
+    //     }
+    //     counter({ start: 0, end: maxRecordsPerQuery });
+    //     return tableData;
+    // }
     
 
     var lineChartModel = [
@@ -274,9 +304,6 @@ export const Region = ({
         minValue: number;
     };
 
-    var adm0ChartData: Record<string, any>[] = [];
-    var adm1Data: Record<string, Feature>[] = [];
-
     function dataPrep(data: Record<string, any>[], scenario: string) {
             const dataPointZero = data.filter((entry: Record<string, any>) => entry["CLIMATE_SCENARIO"] === "historical");
             var series = data.filter((entry) => entry["CLIMATE_SCENARIO"] == scenario);            
@@ -284,12 +311,17 @@ export const Region = ({
     }
 
     const arrangeData = (data: Feature[]) => {
+        console.log( JSON.stringify(data));
         console.log("data :", data);
+        console.log("data[0]: ", data[0])
+
+        // console.log("dataFilter: ", data[0].ADMIN_FILTER);
+
 
         // legend values for map
         var mapLegendValueRange: MeasureRange[] = data
-            .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
-            .reduce((acc: {measure: string, maxValue: number, minValue: number}[], entry: Record<string, any>) => {
+            .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
+            .reduce((acc: {measure: string, maxValue: number, minValue: number}[], entry: Feature) => {
                 const measure = entry["MEASURE"] as string;
                 const median = Number(entry["MEDIAN"]);
  
@@ -311,20 +343,20 @@ export const Region = ({
         console.log("ADM1 Min and Max by Measure across all Thresholds: ", mapLegendValueRange);
 
         // country data for line chart
-         adm0ChartData = data
-            .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm0")
-            .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
+            const adm0ChartData: Record<string, any>[] = data
+            .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0")
+            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
             console.log("adm0ChartData ", adm0ChartData);
 
             console.log("dataPrep", dataPrep(adm0ChartData, "rcp4p5"));
 
         // region selected data && adm1 data for polygons
-         adm1Data = data
-            .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
-            .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
-            .reduce((acc: Record<string, Record<string, any>>, entry: Record<string, any>) => {
+            const adm1Data = data
+            .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
+            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
+            .reduce((acc: Record<string, Feature>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
                 
                 if (!acc[key]) {
@@ -339,15 +371,15 @@ export const Region = ({
         console.log(
             Object.keys(adm1Data).map((refArea: any) => {
                 return adm1Data[refArea]
-                    .filter((entry: Record<string, any>) => entry["TIME_PERIOD"] === currentTime.time)
-                    .filter((entry: Record<string, any>) => currentTime.time !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
+                    .filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
+                    .filter((entry: Feature) => currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
             }).flat()
         )
 
         console.log("bangladesh",
             Object.keys(adm1Data).map((refArea: any) => {
                 return adm1Data[refArea]
-                    .filter((entry: Record<string, any>) => entry["REF_AREA"] === "BGD.4_1")
+                    .filter((entry: Feature) => entry["REF_AREA"] === "BGD.4_1")
             }).flat()
         )
 
