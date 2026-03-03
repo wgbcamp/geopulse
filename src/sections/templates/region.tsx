@@ -28,6 +28,8 @@ import {
     type RegionSeries,
 } from '../../App';
 
+import { isoCountries, type CountryString } from '@/data/isoCountries';
+
 export type Filters = {
     iso3: string,
     currentTime: number,
@@ -65,7 +67,7 @@ export const Region = ({
     });
 
     const [series, setSeries] = React.useState<Feature[]>([]);
-    const [selectedCountry, setCountry] = React.useState("");
+    const [selectedCountry, setCountry] = React.useState<CountryString>({iso3: "", name: ""});
     const [currentSubnational, setCurrentSubnational] = React.useState("");
     const [chartData, setChartData] = React.useState<React.ReactNode>(null);
 
@@ -117,7 +119,10 @@ export const Region = ({
  
 // Effect 1: fetch new data when country, hazard or exposure changes
 useEffect(() => {
-    loadCountryData(iso3, );
+    const countryByIso3 = Object.fromEntries(
+        isoCountries.map(({ iso3, name }) => [iso3, name])
+    );
+    loadCountryData(iso3, countryByIso3[iso3])
 }, [iso3, currentHazard, currentExposure]);
 
     // Effect 1: fetch new data
@@ -400,9 +405,7 @@ useEffect(() => {
 
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox loadCountryData={loadCountryData} selectedCountry={selectedCountry}  setSubnationalName={setSubnationalName} country={country} position={position} />
-            { maxValue[position] && areaSeries[position]
-                ?
+            <ComboBox loadCountryData={loadCountryData} selectedCountry={selectedCountry} country={country}/>
                 <div className='flex flex-col'>
                     {/* <MapsChart
                         options={{
@@ -704,17 +707,6 @@ useEffect(() => {
                         )}
                     </Chart> */}
                 </div>
-                :
-                country[position].name !== "string"
-                ?
-                    <Button disabled size="sm">
-                        <Spinner data-icon="inline-start" />
-                        Loading...
-                    </Button>
-                    
-                :
-                <div></div>
-            }
         </Card>
         )
     }

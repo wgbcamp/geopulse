@@ -85,6 +85,7 @@ export const NewTemperatureThresholds = ({ currentHazard, currentThreshold, curr
 
   const handleValueChange = (value: number[]) => {
   
+    //livestock measure was removed in cases 4-6
     switch (value[0]) {
       case 0:
         setMeasure({ name: "Icing Days", id: 'ID_PW_EXP' });
