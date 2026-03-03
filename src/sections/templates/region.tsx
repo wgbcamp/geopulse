@@ -37,16 +37,16 @@ export type Filters = {
     },
     currentScenario: string,
     country: {
-      type: string,
       features: {}[],
       name: string,
-      iso3: string
-    }[],
+      iso3: string,
+      data: [{}]
+    },
     setCountry: React.Dispatch<React.SetStateAction<{
-        type: string,
         features: {}[],
         name: string,
         iso3: string
+        data: [{}]
     }[]>>,
     mapPolygon: JsonShape,
     position: any,
@@ -64,10 +64,6 @@ export type Filters = {
     setExposure: React.Dispatch<React.SetStateAction<string>>,
     currentHazard: string,
     setHazard: React.Dispatch<React.SetStateAction<string>>,
-    progressBar: [number, number],
-    setProgressBar: React.Dispatch<React.SetStateAction<[number, number]>>,
-    progressTarget: [number, number],
-    setProgressTarget: React.Dispatch<React.SetStateAction<[number, number]>>,
     currentMeasure: {name: string, id: string},
     setMeasure: React.Dispatch<React.SetStateAction<{name: string, id: string}>>,
     currentThreshold: {name: string, threshold: any},
@@ -76,11 +72,9 @@ export type Filters = {
 }
 
 type DataString = {
-    alpha3: string,
+    iso3: string,
     name: string,
 };
-
-type ExposureShape = [string, number, number, string, string, string, string][];
 
 export const Region = ({
     currentTime, 
@@ -90,25 +84,13 @@ export const Region = ({
     mapPolygon, 
     position, 
     series, 
-    setSeries, 
     exposureState, 
-    setExposureState,
     maxValue,
-    setMaxValue,
-    // regionExposure,
-    // setRegionExposure,
     areaSeries,
     setAreaSeries,
     currentExposure,
-    setExposure,
     currentHazard,
-    setHazard,
-    progressBar,
-    setProgressBar,
-    progressTarget,
-    setProgressTarget,
     currentMeasure,
-    setMeasure,
     currentThreshold,
     currentSubnational,
     setCurrentSubnational
@@ -147,120 +129,58 @@ export const Region = ({
     }
 });
 
-    useEffect(() => {
-            applyFilter();
-    }, [exposureState, currentTime, currentScenario, currentMeasure]);
 
     useEffect(() => {
-        var data = {name: "", alpha3: ""};
-        if (country[position].name !== "string" && country[position].iso3 !== "string") {
-            data.name = country[position].name;
-            data.alpha3 = country[position].iso3;
-            loadGeoJson(data);
-        }
-
-        // reset subnational name on line chart when hazard/exposure switches
-        setCurrentSubnational(prev => {
-            const next = [...prev];
-            next[position] = "";
-            console.log(next);
-            return next;
-        })
-
-    }, [currentHazard, currentExposure]);
-
-    useEffect(() => { 
-        if (country[position].name === "string") {
-            var defaultCountries = [
-                { name: "Costa Rica", alpha3: "CRI" },
-                { name: "Bangladesh", alpha3: "BGD" }
-            ];
-            var data = { name: defaultCountries[position].name, alpha3: defaultCountries[position].alpha3 };
-            loadGeoJson(data);
-        } 
+        var data = { name: country[position].name, iso3: country[position].iso3 };
+        loadCountryData(data);
     }, []);
 
-    var loadGeoJson = async (data: DataString) => {
+    useEffect(() => {
+        var data = { name: country[position].name, iso3: country[position].iso3 };
+        loadCountryData(data);
+    }, [currentHazard, currentExposure]);
 
-        const updateProgressBar = (position: number) => {
-            setProgressBar(prev => {
-                const next: [number, number] = [...prev];
-                next[position] = 0;
-                return next;
-            })
-        }
-        updateProgressBar(position);
+    useEffect(() => {
+            arrangeData(tableData);
+    }, [exposureState, currentTime, currentScenario, currentMeasure]);
 
-        const updateProgressTarget = (position: number) => {
-            setProgressTarget(prev => {
-                const next: [number, number] = [...prev];
-                next[position] = 0;
-                return next;
-            })
-        }
-        updateProgressTarget(position);
 
-        var temp = {
-            type: "FeatureCollection",
-            features: [{}],
+
+    var loadCountryData = async (data: DataString) => {
+
+        var countryPolygons = {
+            features: mapPolygon.features.filter((feature) => feature.properties.GID_0 == data.iso3),
             name: data.name,
-            iso3: data.alpha3
+            iso3: data.iso3
         };
-        console.log(mapPolygon);
-        for (var i = 0; i < mapPolygon.features.length; i++) {
-            if (data.alpha3 == mapPolygon.features[i].properties.GID_0) {
-                temp.features.push(mapPolygon.features[i]);
-            }
-        }
+        console.log("countryPolygons: ", countryPolygons);
 
-        const updateCountryGeo = (position: number) => {
+        const updateCountry = (position: number) => {
             const newItems = country;
-            newItems.splice(position, 1, temp);
+            newItems.splice(position, 1, countryPolygons);
             setCountry(newItems);
         }
 
         console.log(country)
-        updateCountryGeo(position);
-        return test(temp);
+        updateCountry(position);
+        return query(data.iso3);
     }
 
     type ObjectID = {
       objectIds: number
     };
 
-    type CountryData = {
-        type: string,
-        features: {}[],
-        name: string,
-        iso3: string
-    }
-
-    type TableArray = Array<{
-        features: Array<{
-            attributes: {
-                NAME_1: string,
-                Reference_area_name: string,
-                MEDIAN: number,
-                period: number,
-                scenario: string,
-                Admin_Filter: string,
-                [key: string]: string | number,
-                Reference_area: string,
-                MEASURE: string,
-                TEMP_THRESHOLD: string
-            }
-        }>
-    }>;
+    type Feature = Record<string, any>;
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
  
-    const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: string }>> = {
+    const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: string, scenarios: string[] }>> = {
         "Riverine Flooding":
         {
             "Population": {
                 url: `${URL_BASE}/riverine_population_table/FeatureServer/0/query`,
                 measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
-                // threshold: "RETURN_PERIOD"
+                scenarios: ["rcp4p5", "rcp8p5"]
             }
         },
         "Drought":
@@ -268,6 +188,7 @@ export const Region = ({
             "Cropland": {
                 url: `${URL_BASE}/drought_cropland_table/FeatureServer/0/query`,
                 measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"],
+                scenarios: ["rcp4p5", "rcp8p5"]
             }
         },
         "Temperature Extremes":
@@ -275,20 +196,22 @@ export const Region = ({
             "Population": {
                 url: `${URL_BASE}/temperature_population_table/FeatureServer/0/query`,
                 measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
+                scenarios: ["rcp4p5", "rcp8p5"],
                 threshold: "TEMP_THRESHOLD"
             },
             "Livestock": {
                 url: `${URL_BASE}/temperature_livestock_table/FeatureServer/0/query`,
                 measure: ["HD_LW_EXP"],
+                scenarios: ["rcp4p5", "rcp8p5"],
                 threshold: "TEMP_THRESHOLD"
             }
             
         }
     }
 
-    async function test(countryData: CountryData) {
+    async function query(iso3: string) {
 
-        const whereClause = `ISO3 IN ('${countryData.iso3}')`;
+        const whereClause = `ISO3 IN ('${iso3}')`;
         var queryString = `where=${encodeURIComponent(whereClause)}`;
         
         const url = urlObject[currentHazard][currentExposure].url + `?${queryString}`;
@@ -324,10 +247,6 @@ export const Region = ({
             end: number
         };
 
-        type Feature = {
-            attributes: Record<string, any>;
-        };
-
         var tableData: {}[] = [];
 
         function counter({ start, end }: SliceNumber) {
@@ -349,21 +268,21 @@ export const Region = ({
                 .then(res => res.json())
                 .then(data => {
                  
-                    tableData.push(...data.features.map((feature: Feature) => feature.attributes));
+                    tableData.push(...data.features.map((feature: { attributes: Feature }) => feature.attributes));
                     resultAmount += data.features.length;
            
                     if (resultAmount < objectIdsArray.length) {
                         counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
                     } else {
-                        sumWeightedExposure(tableData);
+                        return tableData;
                     }
                 });
-
-                console.log(tableData);
         }
 
         counter({ start: 0, end: maxRecordsPerQuery });
+        console.log(tableData);
     }
+    
 
     var lineChartModel = [
         {label: "1980-2014", position: 0, year: 1980},
@@ -376,7 +295,8 @@ export const Region = ({
         {scenario: 'rcp8p5', name: 'Disorderly trajectory'},
         {scenario: 'SSP126', name: 'Orderly trajectory'},
         {scenario: 'SSP245', name: 'Disorderly trajectory'},
-        {scenario: 'SSP370', name: 'Hot House'}  
+        {scenario: 'SSP370', name: 'Hot House'},
+        {scenario: 'historical', name: 'Historical'} 
     ];
 
     var measureModel = [ 
@@ -392,7 +312,16 @@ export const Region = ({
         minValue: number;
     };
 
-    const sumWeightedExposure = async (tableData: any[]) => {
+    var adm0ChartData: Record<string, any>[] = [];
+    var adm1Data: Record<string, any>[] = [];
+
+    function dataPrep(data: Record<string, any>[], scenario: string) {
+            const dataPointZero = data.filter((entry: Record<string, any>) => entry["CLIMATE_SCENARIO"] === "historical");
+            var series = data.filter((entry) => entry["CLIMATE_SCENARIO"] == scenario);            
+            return dataPointZero.concat(series.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD)).map((x) => x["MEDIAN"]);
+    }
+
+    const arrangeData = (tableData: any[]) => {
         console.log(tableData);
 
         // legend values for map
@@ -420,14 +349,16 @@ export const Region = ({
         console.log("ADM1 Min and Max by Measure across all Thresholds: ", mapLegendValueRange);
 
         // country data for line chart
-        var adm0ChartData: Record<string, any>[] = tableData
+         adm0ChartData = tableData
             .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm0")
             .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
             .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
-        console.log("adm0ChartData ", adm0ChartData);
+            console.log("adm0ChartData ", adm0ChartData);
+
+            console.log("dataPrep", dataPrep(adm0ChartData, "rcp4p5"));
 
         // region selected data && adm1 data for polygons
-        var adm1Data: Record<string, any>[] = tableData
+         adm1Data = tableData
             .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
             .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
             .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
@@ -444,22 +375,20 @@ export const Region = ({
         console.log("adm1Data ", adm1Data);
         console.log("printallofthat", Object.keys(adm1Data));
         console.log(
-             Object.keys(adm1Data).map((refArea: any) => {
-            return adm1Data[refArea]
-            .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
-            .filter((entry: Record<string, any>) => entry["TIME_PERIOD"] === currentTime.time)
-            .filter((entry: Record<string, any>) => currentTime.time !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
-        })  
+            Object.keys(adm1Data).map((refArea: any) => {
+                return adm1Data[refArea]
+                    .filter((entry: Record<string, any>) => entry["TIME_PERIOD"] === currentTime.time)
+                    .filter((entry: Record<string, any>) => currentTime.time !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
+            }).flat()
         )
-        // Object.keys(adm1Data).map((refArea: any) => {
-        //     return adm1Data[refArea]
-        //     .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
-        //     .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
-        //     .filter((entry: Record<string, any>) => entry["TIME_PERIOD"] === currentTime.time)
-        //     .filter((entry: Record<string, any>) => currentTime.time !== 1980 ? entry["CLIMATE_SCENARIO"] == currentScenario : true)
-        // })      
-        
+
+        console.log("bangladesh",
+            Object.keys(adm1Data).map((refArea: any) => {
+                return adm1Data[refArea]
+                    .filter((entry: Record<string, any>) => entry["REF_AREA"] === "BGD.4_1")
+            }).flat()
+        )
+
         
                             // })
                  // const updateAreaValues = (position: number) => {
@@ -473,52 +402,55 @@ export const Region = ({
         // updateAreaValues(position);
 
         //fix the type >>>>>
-        const updateMaxValue = (position: number) => {
-            setMaxValue(prev => {
-                const next = [...prev];
-                next[position] = mapLegendValueRange.filter((item) => {item.measure == currentMeasure.id});
-                console.log(next);
-                return next;
-            })
-        }
-        updateMaxValue(position);
+        // const updateMaxValue = (position: number) => {
+        //     setMaxValue(prev => {
+        //         const next = [...prev];
+        //         next[position] = mapLegendValueRange.filter((item) => {item.measure == currentMeasure.id});
+        //         console.log(next);
+        //         return next;
+        //     })
+        // }
+        // updateMaxValue(position);
 
-        const updateExposureValues = (position: number) => {
-            setExposureState(prev => {
-                const next = [...prev];
-                        console.log(next);
-                next[position] = exposure;
-                console.log(next);
-                console.log(exposure);
-                return next;
-            })
-        }
-        updateExposureValues(position);
+        // const updateExposureValues = (position: number) => {
+        //     setExposureState(prev => {
+        //         const next = [...prev];
+        //                 console.log(next);
+        //         next[position] = exposure;
+        //         console.log(next);
+        //         console.log(exposure);
+        //         return next;
+        //     })
+        // }
+        // updateExposureValues(position);
     }
 
-    function applyFilter() {
-        console.log(exposureState);
-        console.log(series);
+    
+    
 
-        const updateSeriesValues = (position: number) => {
-            setSeries(prev => {
-                const next = [...prev];
-                next[position] = exposureState[position]
-                    .filter((value) => (value[2] === currentTime.time))
-                    .filter((value) => (value[3] === currentScenario))
-                    .filter((value) => ((currentMeasure.measures.includes(value[5])) || value[5]))
-                    ;
-                    // .filter((value) => (value[5] === measureModel.filter((b) => (b.measure === "SPEI_CROP_EXP" && b.name === "Dry Days"))[0].measure));
-                console.log(exposureState[position]);
-                console.log(exposureState[position]
-                    .filter((value) => (value[2] === currentTime.time))
-                    .filter((value) => (value[3] === currentScenario))
-                    .filter((value) => (value[5] === "SPEI_CROP_EXP" )));
-                return next;
-            })
-       }
-        updateSeriesValues(position);
-    }
+    // function applyFilter() {
+    //     console.log(exposureState);
+    //     console.log(series);
+
+    //     const updateSeriesValues = (position: number) => {
+    //         setSeries(prev => {
+    //             const next = [...prev];
+    //             next[position] = exposureState[position]
+    //                 .filter((value) => (value[2] === currentTime.time))
+    //                 .filter((value) => (value[3] === currentScenario))
+    //                 .filter((value) => ((currentMeasure.measures.includes(value[5])) || value[5]))
+    //                 ;
+    //                 // .filter((value) => (value[5] === measureModel.filter((b) => (b.measure === "SPEI_CROP_EXP" && b.name === "Dry Days"))[0].measure));
+    //             console.log(exposureState[position]);
+    //             console.log(exposureState[position]
+    //                 .filter((value) => (value[2] === currentTime.time))
+    //                 .filter((value) => (value[3] === currentScenario))
+    //                 .filter((value) => (value[5] === "SPEI_CROP_EXP" )));
+    //             return next;
+    //         })
+    //    }
+    //     updateSeriesValues(position);
+    // }
 
     function setSubnationalName(value: string) {
             setCurrentSubnational(prev => {
@@ -531,11 +463,11 @@ export const Region = ({
 
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox loadGeoJson={loadGeoJson} setSubnationalName={setSubnationalName} country={country} position={position} />
-            {progressTarget[position] !== 0 && maxValue[position] && areaSeries[position]
+            <ComboBox loadCountryData={loadCountryData} setSubnationalName={setSubnationalName} country={country} position={position} />
+            { maxValue[position] && areaSeries[position]
                 ?
                 <div className='flex flex-col'>
-                    <MapsChart
+                    {/* <MapsChart
                         options={{
                             chart: {
                                 map: country[position],
@@ -585,7 +517,7 @@ export const Region = ({
                             },
                             legend: {
                                 title: {
-                                    text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.title,
+                                    // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.title,
                                     style: {
                                         color: "white",
                                         fontWeight: "bold"
@@ -669,8 +601,8 @@ export const Region = ({
                             keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
                             nullColor="#c9c9c9"
                         />
-                    </MapsChart>
-                    <Chart
+                    </MapsChart> */}
+                    {/* <Chart
                         options={{
                             chart: {
                                 type: 'line',
@@ -820,12 +752,12 @@ export const Region = ({
                                 }
                             }}
                         />
-                        {areaSeries[position].filter(a => a.measure.some(m => currentMeasure.measures.includes(m) && a.threshold === currentThreshold.threshold) || !measureModel.find(c => c.exposure === currentExposure && c.hazard === currentHazard)).map((i, index) =>
+                        {urlObject[currentHazard][currentExposure].scenarios.map((scenario) =>
                             <Series
-                                key={i.name}
+                                key={scenario}
                                 type="line"
-                                name={i.name}
-                                data={[...i.data]}
+                                name={scenario}
+                                data={dataPrep(adm0ChartData, scenario)}
                                 marker={{
                                     radius: 6,
                                     lineWidth: 2,
@@ -833,7 +765,7 @@ export const Region = ({
                                 }}
                             />
                         )}
-                    </Chart>
+                    </Chart> */}
                 </div>
                 :
                 country[position].name !== "string"

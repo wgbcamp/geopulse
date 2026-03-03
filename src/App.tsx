@@ -63,21 +63,18 @@ function App() {
     getGeoJson();
   }, []);
 
-  const [progressBar, setProgressBar] = useState<[number, number]>([0, 0]);
-  const [progressTarget, setProgressTarget] = useState<[number, number]>([0, 0]);
-
-  const [country, setCountry] = React.useState([
+  const [countries, setCountries] = React.useState([
     {
-      type: "string",
       features: [{}],
-      name: "string",
-      iso3: "string"
+      name: "Costa Rica",
+      iso3: "CRI",
+      data: [{}]
     },
     {
-      type: "string",
       features: [{}],
-      name: "string",
-      iso3: "string"
+      name: "Bangladesh",
+      iso3: "BGD",
+      data: [{}]
     }
   ]);
  
@@ -167,8 +164,15 @@ function App() {
                 key={i}
                 currentTime={currentTime}
                 currentScenario={currentScenario}
-                country={country}
-                setCountry={setCountry}
+                currentExposure={currentExposure}
+                setExposure={setExposure}
+                currentHazard={currentHazard}
+                setHazard={setHazard}
+                currentMeasure={currentMeasure}
+                setMeasure={setMeasure}
+                currentThreshold={currentThreshold}
+                countries={countries}
+                setCountries={setCountries}
                 mapPolygon={geoJson}
                 position={i}
                 series={series}
@@ -181,17 +185,6 @@ function App() {
                 setRegionExposure={setRegionExposure}
                 areaSeries={areaSeries}
                 setAreaSeries={setAreaSeries}
-                currentExposure={currentExposure}
-                setExposure={setExposure}
-                currentHazard={currentHazard}
-                setHazard={setHazard}
-                progressBar={progressBar}
-                setProgressBar={setProgressBar}
-                progressTarget={progressTarget}
-                setProgressTarget={setProgressTarget}
-                currentMeasure={currentMeasure}
-                setMeasure={setMeasure}
-                currentThreshold={currentThreshold}
                 currentSubnational={currentSubnational}
                 setCurrentSubnational={setCurrentSubnational}
               />
