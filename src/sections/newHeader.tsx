@@ -29,10 +29,8 @@ import {
 } from "@/components/ui/popover"
 
 type HeaderProps = {
-    currentDimension: string,
-    setDimension: React.Dispatch<React.SetStateAction<string>>,
-    currentTime: {time: number, url: string},
-    setTime: React.Dispatch<React.SetStateAction<{time: number, url: string}>>,
+    currentTime: number,
+    setTime: React.Dispatch<React.SetStateAction<number>>,
     currentView: string,
     setView: React.Dispatch<React.SetStateAction<string>>
     currentScenario: string,
@@ -41,8 +39,8 @@ type HeaderProps = {
     setHazard: React.Dispatch<React.SetStateAction<string>>,
     currentExposure: string,
     setExposure: React.Dispatch<React.SetStateAction<string>>,
-    currentMeasure: {name: string, measures: string[]},
-    setMeasure: React.Dispatch<React.SetStateAction<{name: string, measures: string[]}>>
+    currentMeasure: {name: string, id: string},
+    setMeasure: React.Dispatch<React.SetStateAction<{name: string, id: string}>>
     setCurrentThreshold: React.Dispatch<React.SetStateAction<{name: string, threshold: any}>>
 };
 
@@ -60,8 +58,8 @@ var scenarioFlip = [
     { frontend: 'Hot House', data: 'SSP370' }
 ];
 
-export const NewHeader: React.FC<HeaderProps> = ({ currentDimension, currentTime, currentView, currentScenario, currentHazard, currentExposure, currentMeasure,
-    setExposure, setHazard, setDimension, setTime, setView, setScenario, setMeasure, setCurrentThreshold
+export const NewHeader: React.FC<HeaderProps> = ({ currentTime, currentView, currentScenario, currentHazard, currentExposure, currentMeasure,
+    setExposure, setHazard, setTime, setView, setScenario, setMeasure, setCurrentThreshold
 }) => {
 
     const [riskState, setRiskState] = useState<{hazard: string, exposure: string}>({hazard: currentHazard, exposure: currentExposure});

@@ -8,13 +8,13 @@ import SceneView from "@arcgis/core/views/SceneView.js";
 import Polygon from "@arcgis/core/geometry/Polygon.js";
 
 type MapProps = {
-    currentTime: { time: number, url: string },
-    currentDimension: string
+    currentTime: number
 }
 
-export const ViewContainer = ({ currentTime, currentDimension }: MapProps) => {
+export const GridView = ({ currentTime }: MapProps) => {
 
     const [position, setPosition] = useState({});
+    const [currentDimension, setDimension] = useState("2D");
 
     const ref = useRef(null);
     let map = useRef<Map | null>(null);
@@ -91,7 +91,7 @@ export const ViewContainer = ({ currentTime, currentDimension }: MapProps) => {
         }
 
         vtlayer.current = new VectorTileLayer({
-            url: currentTime.url
+            url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer"
         });
 
         map.current.add(vtlayer.current);

@@ -26,14 +26,11 @@ import {WeatherSnowflake20FilledIcon} from "@/components/icons/fluent-weather-sn
 import {WeatherSunny20FilledIcon} from "@/components/icons/fluent-weather-sunny-20-filled"
 
 type TimelineProps = {
-  setTime: React.Dispatch<React.SetStateAction<{ time: number, url: string }>>,
   currentHazard: string,
-  currentExposure: string,
-  currentTime: { time: number, url: string },
   currentThreshold: { name: string, threshold: any },
-  currentMeasure: { name: string, measures: string[] },
+  currentMeasure: { name: string, id: string },
   setCurrentThreshold: React.Dispatch<React.SetStateAction<{ name: string, threshold: any }>>,
-  setMeasure: React.Dispatch<React.SetStateAction<{ name: string, measures: string[] }>>
+  setMeasure: React.Dispatch<React.SetStateAction<{ name: string, id: string }>>
 }
 
 const ticks = [0, 20, 26, 32, 30, 35, 40];
@@ -84,42 +81,40 @@ const labels = [
 // ];
 
 
-export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposure, currentTime, currentThreshold, currentMeasure, setCurrentThreshold, setMeasure }: TimelineProps) => {
+export const NewTemperatureThresholds = ({ currentHazard, currentThreshold, currentMeasure, setCurrentThreshold, setMeasure }: TimelineProps) => {
 
   const handleValueChange = (value: number[]) => {
-    if (currentHazard === "Riverine Flooding" && currentExposure === "Population") {
-      // setTime({time: tileLayerURLs[value[0]].time, url: tileLayerURLs[value[0]].url})
-    } else {
-      // setTime({time: value[0], url: ""});
-    }
-
+  
     switch (value[0]) {
       case 0:
-        setMeasure({ name: "Icing Days", measures: ['ID_PW_EXP'] });
+        setMeasure({ name: "Icing Days", id: 'ID_PW_EXP' });
         setCurrentThreshold({ name: "Icing Days", threshold: "_Z" });
         break;
       case 1:
-        setMeasure({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
+        setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
         setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_20' });
         break;
       case 2:
-        setMeasure({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
+        setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
         setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_26' });
         break;
       case 3:
-        setMeasure({ name: "Tropical Nights", measures: ['TN_PW_EXP'] });
+        setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
         setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_32' });
         break;
       case 4:
-        setMeasure({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
+        //removed HD_LW_EXP
+        setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
         setCurrentThreshold({ name: "Hot Days", threshold: 'H_30' });
         break;
       case 5:
-        setMeasure({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
+        //removed HD_LW_EXP
+        setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
         setCurrentThreshold({ name: "Hot Days", threshold: 'H_35' });
         break;
       case 6:
-        setMeasure({ name: "Hot Days", measures: ["HD_PW_EXP", "HD_LW_EXP"] });
+        //removed HD_LW_EXP
+        setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
         setCurrentThreshold({ name: "Hot Days", threshold: 'H_40' });
         break;
     }
@@ -130,10 +125,10 @@ export const NewTemperatureThresholds = ({ setTime, currentHazard, currentExposu
   const handleTabChange = (value: string) => {
     switch (value) {
       case "Dry Days":
-        setMeasure({ name: "Dry Days", measures: ['CDD_CROP_EXP'] });
+        setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
         break;
       case "SPEI Index":
-        setMeasure({ name: "SPEI Index", measures: ['SPEI_CROP_EXP'] });
+        setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
         break;
     }
   }

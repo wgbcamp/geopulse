@@ -25,76 +25,50 @@ import {
 
 import { 
     type JsonShape, 
-    type SeriesT, 
     type RegionSeries,
-    type AreaSeries
 } from '../../App';
 
 export type Filters = {
-    currentTime: {
-        time: number,
-        url: string
-    },
+    iso3: string,
+    currentTime: number,
     currentScenario: string,
-    country: {
-      features: {}[],
-      name: string,
-      iso3: string,
-      data: [{}]
-    },
-    setCountry: React.Dispatch<React.SetStateAction<{
-        features: {}[],
-        name: string,
-        iso3: string
-        data: [{}]
-    }[]>>,
-    mapPolygon: JsonShape,
-    position: any,
-    series: SeriesT,
-    setSeries: React.Dispatch<React.SetStateAction<SeriesT>>,
-    exposureState: Array<Array<[string, number, number, string, string, string, string]>>,
-    setExposureState: React.Dispatch<React.SetStateAction<Array<Array<[string, number, number, string, string, string, string]>>>>,
+    geoJson: JsonShape,
     maxValue: {measure: string, value: number}[][],
     setMaxValue: React.Dispatch<React.SetStateAction<{measure: string, value: number}[][]>>,
-    regionExposure: RegionSeries,
-    setRegionExposure: React.Dispatch<React.SetStateAction<RegionSeries>>,
-    areaSeries: AreaSeries,
-    setAreaSeries: React.Dispatch<React.SetStateAction<AreaSeries>>,
     currentExposure: string
     setExposure: React.Dispatch<React.SetStateAction<string>>,
     currentHazard: string,
     setHazard: React.Dispatch<React.SetStateAction<string>>,
     currentMeasure: {name: string, id: string},
     setMeasure: React.Dispatch<React.SetStateAction<{name: string, id: string}>>,
-    currentThreshold: {name: string, threshold: any},
-    currentSubnational: string[],
-    setCurrentSubnational: React.Dispatch<React.SetStateAction<string[]>>,
+    currentThreshold: {name: string, threshold: any}
 }
-
-type DataString = {
-    iso3: string,
-    name: string,
-};
 
 export const Region = ({
     currentTime, 
-    currentScenario, 
-    country, 
-    setCountry, 
-    mapPolygon, 
-    position, 
-    series, 
-    exposureState, 
+    currentScenario,
+    geoJson, 
     maxValue,
-    areaSeries,
-    setAreaSeries,
     currentExposure,
     currentHazard,
     currentMeasure,
     currentThreshold,
-    currentSubnational,
-    setCurrentSubnational
+    iso3
 }: Filters) => {
+
+    type Feature = Record<string, any>;
+
+    const [country, setPolygons] = React.useState(
+        {
+          features: [{}],
+          iso3: iso3,
+          name: ""
+        }
+    );
+
+    const [series, setSeries] = React.useState<Feature[]>([]);
+    const [currentSubnational, setCurrentSubnational] = React.useState("");
+
 
     const temperatureModel = [
         {name: "_Z", number: 0}, 
@@ -129,48 +103,39 @@ export const Region = ({
     }
 });
 
-
     useEffect(() => {
-        var data = { name: country[position].name, iso3: country[position].iso3 };
-        loadCountryData(data);
-    }, []);
-
-    useEffect(() => {
-        var data = { name: country[position].name, iso3: country[position].iso3 };
-        loadCountryData(data);
+        loadCountryData(country.iso3);
     }, [currentHazard, currentExposure]);
 
-    useEffect(() => {
-            arrangeData(tableData);
-    }, [exposureState, currentTime, currentScenario, currentMeasure]);
+    // useEffect(() => {
+    //         console.log("Series : ", series);
+    //         arrangeData(series);
+    // }, [currentTime, currentScenario, currentMeasure]);
 
-
-
-    var loadCountryData = async (data: DataString) => {
+    var loadCountryData = async (iso3: string) => {
 
         var countryPolygons = {
-            features: mapPolygon.features.filter((feature) => feature.properties.GID_0 == data.iso3),
-            name: data.name,
-            iso3: data.iso3
+            features: geoJson.features.filter((feature) => feature.properties.GID_0 == iso3),
+            iso3: iso3,
+            name: ""
         };
+        
+        countryPolygons.name = countryPolygons.features[0].properties.COUNTRY
+
         console.log("countryPolygons: ", countryPolygons);
 
-        const updateCountry = (position: number) => {
-            const newItems = country;
-            newItems.splice(position, 1, countryPolygons);
-            setCountry(newItems);
-        }
+        setPolygons(countryPolygons);
+       
+        var queryResults = await query(iso3);
+        
+        setSeries(queryResults);
 
-        console.log(country)
-        updateCountry(position);
-        return query(data.iso3);
+        arrangeData(series);
     }
 
     type ObjectID = {
       objectIds: number
     };
-
-    type Feature = Record<string, any>;
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
  
@@ -273,14 +238,11 @@ export const Region = ({
            
                     if (resultAmount < objectIdsArray.length) {
                         counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
-                    } else {
-                        return tableData;
                     }
                 });
         }
-
         counter({ start: 0, end: maxRecordsPerQuery });
-        console.log(tableData);
+        return tableData;
     }
     
 
@@ -313,7 +275,7 @@ export const Region = ({
     };
 
     var adm0ChartData: Record<string, any>[] = [];
-    var adm1Data: Record<string, any>[] = [];
+    var adm1Data: Record<string, Feature>[] = [];
 
     function dataPrep(data: Record<string, any>[], scenario: string) {
             const dataPointZero = data.filter((entry: Record<string, any>) => entry["CLIMATE_SCENARIO"] === "historical");
@@ -321,11 +283,11 @@ export const Region = ({
             return dataPointZero.concat(series.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD)).map((x) => x["MEDIAN"]);
     }
 
-    const arrangeData = (tableData: any[]) => {
-        console.log(tableData);
+    const arrangeData = (data: Feature[]) => {
+        console.log("data :", data);
 
         // legend values for map
-        var mapLegendValueRange: MeasureRange[] = tableData
+        var mapLegendValueRange: MeasureRange[] = data
             .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
             .reduce((acc: {measure: string, maxValue: number, minValue: number}[], entry: Record<string, any>) => {
                 const measure = entry["MEASURE"] as string;
@@ -349,7 +311,7 @@ export const Region = ({
         console.log("ADM1 Min and Max by Measure across all Thresholds: ", mapLegendValueRange);
 
         // country data for line chart
-         adm0ChartData = tableData
+         adm0ChartData = data
             .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm0")
             .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
             .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
@@ -358,7 +320,7 @@ export const Region = ({
             console.log("dataPrep", dataPrep(adm0ChartData, "rcp4p5"));
 
         // region selected data && adm1 data for polygons
-         adm1Data = tableData
+         adm1Data = data
             .filter((entry: Record<string, any>) => entry["ADMIN_FILTER"] === "adm1")
             .filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
             .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
@@ -462,322 +424,323 @@ export const Region = ({
     }
 
     return (
-        <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox loadCountryData={loadCountryData} setSubnationalName={setSubnationalName} country={country} position={position} />
-            { maxValue[position] && areaSeries[position]
-                ?
-                <div className='flex flex-col'>
-                    {/* <MapsChart
-                        options={{
-                            chart: {
-                                map: country[position],
-                                backgroundColor: 'RGBA(0,0,0,0)',
-                                animation: false,
-                            },
-                            mapView: {
-                                projection: {
-                                    name: 'WebMercator',
-                                    rotation: [-50, 0]
-                                },
-                                padding: 15,
-                            },
-                            colorAxis: {
-                                min: 0,
-                                max: maxValue[position].find(i => {
-                                    const isMatch = currentMeasure.measures.includes(i.measure);
+        // <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
+        //     <ComboBox loadCountryData={loadCountryData} setSubnationalName={setSubnationalName} country={country} position={position} />
+        //     { maxValue[position] && areaSeries[position]
+        //         ?
+        //         <div className='flex flex-col'>
+        //             {/* <MapsChart
+        //                 options={{
+        //                     chart: {
+        //                         map: country[position],
+        //                         backgroundColor: 'RGBA(0,0,0,0)',
+        //                         animation: false,
+        //                     },
+        //                     mapView: {
+        //                         projection: {
+        //                             name: 'WebMercator',
+        //                             rotation: [-50, 0]
+        //                         },
+        //                         padding: 15,
+        //                     },
+        //                     colorAxis: {
+        //                         min: 0,
+        //                         max: maxValue[position].find(i => {
+        //                             const isMatch = currentMeasure.measures.includes(i.measure);
 
-                                    console.log({
-                                        itemMeasure: i.measure,
-                                        filterMeasures: currentMeasure.measures,
-                                        isMatch
-                                    });
+        //                             console.log({
+        //                                 itemMeasure: i.measure,
+        //                                 filterMeasures: currentMeasure.measures,
+        //                                 isMatch
+        //                             });
 
-                                    return isMatch;
-                                })?.value ?  Math.max(...maxValue[position].filter((a) =>  currentMeasure.measures.includes(a.measure)).map((a) => a.value)) : Math.max(...maxValue[position].map((a) => a.value)),
-                                minColor: '#fcdba9',
-                                maxColor: '#E35205',
-                                labels: {
-                                    style: {
-                                        color: "#999999",
-                                        fontWeight: "bold",
-                                        textOverflow: 'none'
-                                    },
-                                    formatter: function () {
-                                        if (this.value >= 1000000) {
-                                            return this.value / 1000000 + 'M';
-                                        } else if (this.value < 1000000 && this.value >= 1000) {
-                                            return this.value / 1000 + 'k';
-                                        } else {
-                                            return this.value;
-                                        }
-                                    }
-                                },
-                                width: '90%',
+        //                             return isMatch;
+        //                         })?.value ?  Math.max(...maxValue[position].filter((a) =>  currentMeasure.measures.includes(a.measure)).map((a) => a.value)) : Math.max(...maxValue[position].map((a) => a.value)),
+        //                         minColor: '#fcdba9',
+        //                         maxColor: '#E35205',
+        //                         labels: {
+        //                             style: {
+        //                                 color: "#999999",
+        //                                 fontWeight: "bold",
+        //                                 textOverflow: 'none'
+        //                             },
+        //                             formatter: function () {
+        //                                 if (this.value >= 1000000) {
+        //                                     return this.value / 1000000 + 'M';
+        //                                 } else if (this.value < 1000000 && this.value >= 1000) {
+        //                                     return this.value / 1000 + 'k';
+        //                                 } else {
+        //                                     return this.value;
+        //                                 }
+        //                             }
+        //                         },
+        //                         width: '90%',
 
-                            },
-                            legend: {
-                                title: {
-                                    // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.title,
-                                    style: {
-                                        color: "white",
-                                        fontWeight: "bold"
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                formatter: function () {
-                                    var value = Math.ceil(this.point.value).toString();
-                                    var counter = 0;
+        //                     },
+        //                     legend: {
+        //                         title: {
+        //                             // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.title,
+        //                             style: {
+        //                                 color: "white",
+        //                                 fontWeight: "bold"
+        //                             }
+        //                         }
+        //                     },
+        //                     tooltip: {
+        //                         formatter: function () {
+        //                             var value = Math.ceil(this.point.value).toString();
+        //                             var counter = 0;
 
-                                    for (var i = value.length - 1; i > 0; i--) {
-                                        counter++;
-                                        if (counter % 3 === 0) {
-                                            value = value.slice(0, i) + "," + value.substring(i, value.length);
-                                        }
-                                    }
+        //                             for (var i = value.length - 1; i > 0; i--) {
+        //                                 counter++;
+        //                                 if (counter % 3 === 0) {
+        //                                     value = value.slice(0, i) + "," + value.substring(i, value.length);
+        //                                 }
+        //                             }
 
-                                    return `<b>${this.point.NAME_1}</b><br/>${value}`;
-                                },
-                                backgroundColor: "#212121",
-                                style: {
-                                    color: "white"
-                                },
-                            },
-                            credits: {
-                                enabled: false
-                            },
-                            plotOptions: {
-                                series: {
-                                    point: {
-                                        events: {
-                                            click: function () {
-                                                var tempGadm1: {data: number[], name: string, measure: string[], threshold: any}[] = [];
-                                                exposureState[position].forEach((element) => {
-                                                    if (this.NAME_1 === element[0]) {
-                                                        lineChartOrder.forEach((index) => {
-                                                            if (element[2] === index.period) {
-                                                                scenarioModel.forEach((item) => {
-                                                                    if (element[3] === item.scenario) {
-                                                                        if (!tempGadm1.some(i => i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6])) {
-                                                                            tempGadm1.push({ data: [0, 0, 0, 0], name: item.name, measure: [element[5]], threshold: element[6] });
-                                                                        } 
-                                                                        tempGadm1.forEach((i) => { 
-                                                                            if (i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6]) {
-                                                                                i.data[index.position] += element[1];
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                })
-                                                            }
-                                                        })
-                                                    }
-                                                });
-                                                console.log(tempGadm1);
-                                                const loadSubnationalArea = (position: number) => {
-                                                    setAreaSeries(prev => {
-                                                        const next = [...prev];
-                                                        next[position] = tempGadm1;
-                                                        return next;
-                                                    });
-                                                    console.log(areaSeries);
-                                                }
-                                                loadSubnationalArea(position);
-                                                setSubnationalName("(" + this.NAME_1 + ")");
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }}
-                    >
-                        <MapSeries
-                            data={Object.keys(series[position]["adm1Data"]).forEach((refArea)  =>  {
-                                entries = adm1Data[refArea];
-                                entries.filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
-                                        .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
-                            }) }
+        //                             return `<b>${this.point.NAME_1}</b><br/>${value}`;
+        //                         },
+        //                         backgroundColor: "#212121",
+        //                         style: {
+        //                             color: "white"
+        //                         },
+        //                     },
+        //                     credits: {
+        //                         enabled: false
+        //                     },
+        //                     plotOptions: {
+        //                         series: {
+        //                             point: {
+        //                                 events: {
+        //                                     click: function () {
+        //                                         var tempGadm1: {data: number[], name: string, measure: string[], threshold: any}[] = [];
+        //                                         exposureState[position].forEach((element) => {
+        //                                             if (this.NAME_1 === element[0]) {
+        //                                                 lineChartOrder.forEach((index) => {
+        //                                                     if (element[2] === index.period) {
+        //                                                         scenarioModel.forEach((item) => {
+        //                                                             if (element[3] === item.scenario) {
+        //                                                                 if (!tempGadm1.some(i => i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6])) {
+        //                                                                     tempGadm1.push({ data: [0, 0, 0, 0], name: item.name, measure: [element[5]], threshold: element[6] });
+        //                                                                 } 
+        //                                                                 tempGadm1.forEach((i) => { 
+        //                                                                     if (i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6]) {
+        //                                                                         i.data[index.position] += element[1];
+        //                                                                     }
+        //                                                                 });
+        //                                                             }
+        //                                                         })
+        //                                                     }
+        //                                                 })
+        //                                             }
+        //                                         });
+        //                                         console.log(tempGadm1);
+        //                                         const loadSubnationalArea = (position: number) => {
+        //                                             setAreaSeries(prev => {
+        //                                                 const next = [...prev];
+        //                                                 next[position] = tempGadm1;
+        //                                                 return next;
+        //                                             });
+        //                                             console.log(areaSeries);
+        //                                         }
+        //                                         loadSubnationalArea(position);
+        //                                         setSubnationalName("(" + this.NAME_1 + ")");
+        //                                     }
+        //                                 }
+        //                             }
+        //                         }
+        //                     }
+        //                 }}
+        //             >
+        //                 <MapSeries
+        //                     data={Object.keys(series[position]["adm1Data"]).forEach((refArea)  =>  {
+        //                         entries = adm1Data[refArea];
+        //                         entries.filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
+        //                                 .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
+        //                     }) }
                             
-                            joinBy={['GID_1', 'GID_1']}
-                            keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
-                            nullColor="#c9c9c9"
-                        />
-                    </MapsChart> */}
-                    {/* <Chart
-                        options={{
-                            chart: {
-                                type: 'line',
-                                height: 500,
-                                marginTop: 130,
-                                events: {
-                                    render() {
-                                        const chart = this as unknown as Highcharts.Chart;
-                                        const titleBBox = chart.title.getBBox();
-                                        chart.subtitle.attr({
-                                            y: titleBBox.y + titleBBox.height + 15
-                                        })
-                                    }
-                                }
-                            },
-                            legend: {
-                                itemStyle: {
-                                    color: '#ffffff',
-                                    fontWeight: "700",
-                                },
-                                itemHoverStyle: {
-                                    fontWeight: "900",
-                                    color: '#ffffff'
-                                },
-                                align: 'left',
-                                verticalAlign: 'top',
-                                x: 90,
-                                y: 75,
-                                floating: true,
-                                layout: 'vertical',
-                                symbolWidth: 1,
-                                symbolPadding: 15,
-                                itemMarginBottom: 3,
-                            },
-                            title: {
-                                text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
-                                 + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
-                                 + ": " + country[position].name + " " + currentSubnational[position],
-                                align: 'left',
-                                style: {
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    fontSize: '16px',
-                                    width: '60%'
-                                },
-                                useHTML: true,
-                                x: 18,
-                                y: 20,
-                            },
-                            subtitle: {
-                                text: "(Exposure quantity)",
-                                x: 16,
-                                style: {
-                                    color: "#999999",
-                                    fontSize: '13px'
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: "#212121",
-                                style: {
-                                    color: "white"
-                                },
-                                valueDecimals: 0,
-                                formatter: function (this: any) {
+        //                     joinBy={['GID_1', 'GID_1']}
+        //                     keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
+        //                     nullColor="#c9c9c9"
+        //                 />
+        //             </MapsChart> */}
+        //             {/* <Chart
+        //                 options={{
+        //                     chart: {
+        //                         type: 'line',
+        //                         height: 500,
+        //                         marginTop: 130,
+        //                         events: {
+        //                             render() {
+        //                                 const chart = this as unknown as Highcharts.Chart;
+        //                                 const titleBBox = chart.title.getBBox();
+        //                                 chart.subtitle.attr({
+        //                                     y: titleBBox.y + titleBBox.height + 15
+        //                                 })
+        //                             }
+        //                         }
+        //                     },
+        //                     legend: {
+        //                         itemStyle: {
+        //                             color: '#ffffff',
+        //                             fontWeight: "700",
+        //                         },
+        //                         itemHoverStyle: {
+        //                             fontWeight: "900",
+        //                             color: '#ffffff'
+        //                         },
+        //                         align: 'left',
+        //                         verticalAlign: 'top',
+        //                         x: 90,
+        //                         y: 75,
+        //                         floating: true,
+        //                         layout: 'vertical',
+        //                         symbolWidth: 1,
+        //                         symbolPadding: 15,
+        //                         itemMarginBottom: 3,
+        //                     },
+        //                     title: {
+        //                         text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
+        //                          + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
+        //                          + ": " + country[position].name + " " + currentSubnational[position],
+        //                         align: 'left',
+        //                         style: {
+        //                             color: "white",
+        //                             fontWeight: "bold",
+        //                             fontSize: '16px',
+        //                             width: '60%'
+        //                         },
+        //                         useHTML: true,
+        //                         x: 18,
+        //                         y: 20,
+        //                     },
+        //                     subtitle: {
+        //                         text: "(Exposure quantity)",
+        //                         x: 16,
+        //                         style: {
+        //                             color: "#999999",
+        //                             fontSize: '13px'
+        //                         }
+        //                     },
+        //                     tooltip: {
+        //                         backgroundColor: "#212121",
+        //                         style: {
+        //                             color: "white"
+        //                         },
+        //                         valueDecimals: 0,
+        //                         formatter: function (this: any) {
 
-                                    var value = Math.ceil(this.y).toString();
-                                    var counter = 0;
+        //                             var value = Math.ceil(this.y).toString();
+        //                             var counter = 0;
 
-                                    for (var i = value.length - 1; i > 0; i--) {
-                                        counter++;
-                                        if (counter % 3 === 0) {
-                                            value = value.slice(0, i) + "," + value.substring(i, value.length);
-                                        }
-                                    }
-                                    return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value; 
-                                }
-                            },
-                            colors: [
-                                {
-                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#0098FF'], [1, '#0098FF00']]
-                                },
-                                {
-                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#FF9500'], [1, '#FF950000']]
-                                },
-                                {
-                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#ff0040'], [1, '#FF950000']]
-                                },
+        //                             for (var i = value.length - 1; i > 0; i--) {
+        //                                 counter++;
+        //                                 if (counter % 3 === 0) {
+        //                                     value = value.slice(0, i) + "," + value.substring(i, value.length);
+        //                                 }
+        //                             }
+        //                             return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value; 
+        //                         }
+        //                     },
+        //                     colors: [
+        //                         {
+        //                             linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+        //                             stops: [[0, '#0098FF'], [1, '#0098FF00']]
+        //                         },
+        //                         {
+        //                             linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+        //                             stops: [[0, '#FF9500'], [1, '#FF950000']]
+        //                         },
+        //                         {
+        //                             linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
+        //                             stops: [[0, '#ff0040'], [1, '#FF950000']]
+        //                         },
 
-                            ],
-                            series: [
+        //                     ],
+        //                     series: [
 
-                            ],
-                            plotOptions: {
-                                series: {
-                                    lineWidth: 3.5,
-                                },
-                                area: {
-                                    marker: {
-                                        lineWidth: 2,
-                                        lineColor: 'white',
-                                    },
+        //                     ],
+        //                     plotOptions: {
+        //                         series: {
+        //                             lineWidth: 3.5,
+        //                         },
+        //                         area: {
+        //                             marker: {
+        //                                 lineWidth: 2,
+        //                                 lineColor: 'white',
+        //                             },
 
-                                }
-                            }
-                        }}
-                    >
-                        <Credits enabled={false} />
-                        <XAxis
-                            categories={["1980", "2030", "2050", "2080"]}
-                            tickmarkPlacement={'on'}
-                            lineWidth={1}
-                            lineColor={'#555555'}
-                            startOnTick={false}
-                            labels={{
-                                style: {
-                                    color: '#ffffff',
-                                    fontSize: '14px'
-                                }
-                            }}
-                        />
-                        <YAxis
-                            title={{ text: "" }}
-                            lineWidth={1}
-                            gridLineWidth={0}
-                            tickWidth={1}
-                            tickPosition={'inside'}
-                            tickLength={5}
-                            lineColor={'#555555'}
-                            tickColor={'#555555'}
-                            labels={{
-                                reserveSpace: true,
-                                style: {
-                                    color: '#ffffff',
-                                    fontSize: '14px'
-                                },
-                                formatter: function () {
-                                    if (this.value >= 1000000) {
-                                        return this.value / 1000000 + 'M';
-                                    } else if (this.value < 1000000 && this.value >= 1000) {
-                                        return this.value / 1000 + 'k';
-                                    } else {
-                                        return this.value;
-                                    }
-                                }
-                            }}
-                        />
-                        {urlObject[currentHazard][currentExposure].scenarios.map((scenario) =>
-                            <Series
-                                key={scenario}
-                                type="line"
-                                name={scenario}
-                                data={dataPrep(adm0ChartData, scenario)}
-                                marker={{
-                                    radius: 6,
-                                    lineWidth: 2,
-                                    lineColor: 'white',
-                                }}
-                            />
-                        )}
-                    </Chart> */}
-                </div>
-                :
-                country[position].name !== "string"
-                ?
-                    <Button disabled size="sm">
-                        <Spinner data-icon="inline-start" />
-                        Loading...
-                    </Button>
+        //                         }
+        //                     }
+        //                 }}
+        //             >
+        //                 <Credits enabled={false} />
+        //                 <XAxis
+        //                     categories={["1980", "2030", "2050", "2080"]}
+        //                     tickmarkPlacement={'on'}
+        //                     lineWidth={1}
+        //                     lineColor={'#555555'}
+        //                     startOnTick={false}
+        //                     labels={{
+        //                         style: {
+        //                             color: '#ffffff',
+        //                             fontSize: '14px'
+        //                         }
+        //                     }}
+        //                 />
+        //                 <YAxis
+        //                     title={{ text: "" }}
+        //                     lineWidth={1}
+        //                     gridLineWidth={0}
+        //                     tickWidth={1}
+        //                     tickPosition={'inside'}
+        //                     tickLength={5}
+        //                     lineColor={'#555555'}
+        //                     tickColor={'#555555'}
+        //                     labels={{
+        //                         reserveSpace: true,
+        //                         style: {
+        //                             color: '#ffffff',
+        //                             fontSize: '14px'
+        //                         },
+        //                         formatter: function () {
+        //                             if (this.value >= 1000000) {
+        //                                 return this.value / 1000000 + 'M';
+        //                             } else if (this.value < 1000000 && this.value >= 1000) {
+        //                                 return this.value / 1000 + 'k';
+        //                             } else {
+        //                                 return this.value;
+        //                             }
+        //                         }
+        //                     }}
+        //                 />
+        //                 {urlObject[currentHazard][currentExposure].scenarios.map((scenario) =>
+        //                     <Series
+        //                         key={scenario}
+        //                         type="line"
+        //                         name={scenario}
+        //                         data={dataPrep(adm0ChartData, scenario)}
+        //                         marker={{
+        //                             radius: 6,
+        //                             lineWidth: 2,
+        //                             lineColor: 'white',
+        //                         }}
+        //                     />
+        //                 )}
+        //             </Chart> */}
+        //         </div>
+        //         :
+        //         country[position].name !== "string"
+        //         ?
+        //             <Button disabled size="sm">
+        //                 <Spinner data-icon="inline-start" />
+        //                 Loading...
+        //             </Button>
                     
-                :
-                <div></div>
-            }
-        </Card>
+        //         :
+        //         <div></div>
+        //     }
+        // </Card>
+        <div></div>
     )
 }

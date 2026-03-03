@@ -1,7 +1,6 @@
 import './App.css'
-import { Header } from './sections/header';
 import React, { useState, useEffect } from 'react'
-import { ViewContainer } from './sections/ViewContainer';
+import { GridView } from './sections/GridView';
 import { Region } from './sections/templates/region';
 import { NewHeader } from './sections/newHeader';
 import { NewTemperatureThresholds } from './sections/templates/sub/newTemperatureThresholds';
@@ -9,42 +8,22 @@ import { NewTemperatureThresholds } from './sections/templates/sub/newTemperatur
 export type JsonShape = {
   features: Array<{
     properties: {
-      GID_0: string
+      GID_0: string,
+      GID_1: string,
+      COUNTRY: string,
+      NAME_1: string
     }
   }>
 };
 
 export type PolygonPosition = number;
 
-type SeriesTuple = [string, number, number, string, string, string, string];
-export type SeriesT = SeriesTuple[][];
-
 export type RegionSeries = object[];
-
-export type AreaSeries = {data: number[], name: string, measure: string[], threshold: any}[][];
-
-type PositionTableData = Array<{
-  features: Array<{
-    attributes?: {
-      NAME_1: string,
-      Reference_area_name: string,
-      MEDIAN: number,
-      period: number,
-      scenario: string,
-      Admin_Filter: string,
-      [key: string]: string | number,
-      Reference_area: string,
-      MEASURE: string,
-      TEMP_THRESHOLD: string
-    }
-  }>
-}>;
 
 function App() {
 
   const [currentView, setView] = useState("Compare");
-  const [currentDimension, setDimension] = useState("2D");
-  const [currentTime, setTime] = useState({ time: 1980, url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer" });
+  const [currentTime, setTime] = useState(1980);
   const [currentScenario, setScenario] = useState("rcp4p5");
   const [currentHazard, setHazard] = useState("Riverine Flooding");
   const [currentExposure, setExposure] = useState("Population");
@@ -57,87 +36,16 @@ function App() {
     const getGeoJson = async () => {
       var getData = await fetch('/geopulse-dev/GADM_ADMIN1.json');
       geoJson = await getData.json();
-      console.log(geoJson);
       setGeoJson(geoJson);
     }
     getGeoJson();
   }, []);
-
-  const [countries, setCountries] = React.useState([
-    {
-      features: [{}],
-      name: "Costa Rica",
-      iso3: "CRI",
-      data: [{}]
-    },
-    {
-      features: [{}],
-      name: "Bangladesh",
-      iso3: "BGD",
-      data: [{}]
-    }
-  ]);
  
-  const [exposureState, setExposureState] = React.useState<SeriesT>([[],[]]);  //8
-  const [series, setSeries] = React.useState<SeriesT>([[],[]]);
   const [maxValue, setMaxValue] = React.useState<{measure: string, value: number}[][]>([[]]);
-
-  const [regionExposure, setRegionExposure] = React.useState<RegionSeries>([{}]);
-
-  const [areaSeries, setAreaSeries] = React.useState<AreaSeries>(
-    [
-      [
-        { data: [0, 0, 0, 0], name: "Orderly trajectory", measure: [], threshold: ""},
-      ],
-    ]
-  );
-
-  const regionCount = [0, 1];
-
-  const [currentSubnational, setCurrentSubnational] = React.useState(["", ""]);
-
-  // const [currentTableData, setCurrentTableData] = React.useState<PositionTableData>(
-  //   [
-  //     {
-  //       features: [{
-  //         attributes: {
-  //           key: "",
-  //           NAME_1: "",
-  //           Reference_area_name: "",
-  //           MEDIAN: 0,
-  //           period: 0,
-  //           scenario: "",
-  //           Admin_Filter: "",
-  //           Reference_area: "",
-  //           MEASURE: "",
-  //           TEMP_THRESHOLD: ""
-  //         }
-  //       }]
-  //     },
-  //     {
-  //       features: [{
-  //         attributes: {
-  //           key: "",
-  //           NAME_1: "",
-  //           Reference_area_name: "",
-  //           MEDIAN: 0,
-  //           period: 0,
-  //           scenario: "",
-  //           Admin_Filter: "",
-  //           Reference_area: "",
-  //           MEASURE: "",
-  //           TEMP_THRESHOLD: ""
-  //         }
-  //       }]
-  //     }
-  //   ]
-  // );
 
   return (
     <div className='h-full'>
       <NewHeader 
-        currentDimension={currentDimension}
-        setDimension={setDimension}
         currentTime={currentTime}
         setTime={setTime}
         currentView={currentView}
@@ -154,14 +62,12 @@ function App() {
         />
       {currentView == "Grid"
         ?
-        <ViewContainer currentTime={currentTime} currentDimension={currentDimension} />
+        <GridView currentTime={currentTime} />
         :
         geoJson ?
         <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
           <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
-            {regionCount.map((i) =>
               <Region
-                key={i}
                 currentTime={currentTime}
                 currentScenario={currentScenario}
                 currentExposure={currentExposure}
@@ -171,24 +77,27 @@ function App() {
                 currentMeasure={currentMeasure}
                 setMeasure={setMeasure}
                 currentThreshold={currentThreshold}
-                countries={countries}
-                setCountries={setCountries}
-                mapPolygon={geoJson}
-                position={i}
-                series={series}
-                setSeries={setSeries}
-                exposureState={exposureState}
-                setExposureState={setExposureState}
+                iso3={"CRI"}
+                geoJson={geoJson}
                 maxValue={maxValue}
                 setMaxValue={setMaxValue}
-                regionExposure={regionExposure}
-                setRegionExposure={setRegionExposure}
-                areaSeries={areaSeries}
-                setAreaSeries={setAreaSeries}
-                currentSubnational={currentSubnational}
-                setCurrentSubnational={setCurrentSubnational}
               />
-            )}         
+                <Region
+                currentTime={currentTime}
+                currentScenario={currentScenario}
+                currentExposure={currentExposure}
+                setExposure={setExposure}
+                currentHazard={currentHazard}
+                setHazard={setHazard}
+                currentMeasure={currentMeasure}
+                setMeasure={setMeasure}
+                currentThreshold={currentThreshold}
+                iso3={"BGD"}
+                geoJson={geoJson}
+                maxValue={maxValue}
+                setMaxValue={setMaxValue}
+              />
+                   
                   <NewTemperatureThresholds 
                     currentHazard={currentHazard}
                     currentThreshold={currentThreshold}
