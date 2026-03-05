@@ -199,3 +199,7 @@ export type CountryString = {
   iso3: string,
   name: string
 };
+
+export const countryByIso3 = Object.fromEntries(
+        isoCountries.map(({ iso3, name }) => [iso3, name])
+    );

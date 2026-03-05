@@ -28,10 +28,10 @@ import {
     type RegionSeries,
 } from '../../App';
 
-import { isoCountries, type CountryString } from '@/data/isoCountries';
+import { isoCountries, type CountryString, countryByIso3 } from '@/data/isoCountries';
 
 export type Filters = {
-    iso3: string,
+    defaultIso3: string,
     currentTime: number,
     currentScenario: string,
     geoJson: JsonShape,
@@ -55,21 +55,28 @@ export const Region = ({
     currentHazard,
     currentMeasure,
     currentThreshold,
-    iso3
+    defaultIso3
 }: Filters) => {
 
     type Feature = Record<string, any>;
 
-    const [country, setPolygons] = React.useState({
+    type ChartData = {
+        // mapData: { GID_1: string, NAME_1: string, value: number }[],
+        adm1Data: Record<string, Feature[]>,
+        adm0ChartData: Feature[],
+        mapLegendValueRange: Record<string, MeasureRange>
+    };
+ 
+    const [iso3, setIso3] = React.useState(defaultIso3);
+    const [chartData, setChartData] = React.useState<ChartData | null>(null);
+    const [mapChartData, setMapChartData] = React.useState<Feature[]>([])
+    const [lineChartData, setLineChartData] = React.useState<Record<string, number[]>>({});
+    const [polygons, setPolygons] = React.useState({
         features: [{}],
         iso3: iso3,
-        name: ""
+        name: "",
+        type: "FeatureCollection"
     });
-
-    const [series, setSeries] = React.useState<Feature[]>([]);
-    const [selectedCountry, setCountry] = React.useState<CountryString>({iso3: "", name: ""});
-    const [currentSubnational, setCurrentSubnational] = React.useState("");
-    const [chartData, setChartData] = React.useState<React.ReactNode>(null);
 
     const temperatureModel = [
         {name: "_Z", number: 0}, 
@@ -104,25 +111,25 @@ export const Region = ({
     }
     });
 
-    const loadCountryData = async (iso3: string, name: string) => {
-    const countryPolygons = {
-        features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
-        iso3: iso3,
-        name: name
+    const loadCountryData = async (iso3: string) => {
+        const countryPolygons = {
+            features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
+            iso3: iso3,
+            name: countryByIso3[iso3],
+            type: "FeatureCollection"
+        };
+        setPolygons(countryPolygons);
+
+        const queryResults = await query(iso3);
+        const arrangedData = arrangeData(queryResults);
+        setChartData(arrangedData);
+        setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
+        setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
     };
-    setPolygons(countryPolygons);
- 
-    const queryResults = await query(iso3);
-    setSeries(queryResults);
-    setChartData(arrangeData(queryResults));
-};
  
 // Effect 1: fetch new data when country, hazard or exposure changes
 useEffect(() => {
-    const countryByIso3 = Object.fromEntries(
-        isoCountries.map(({ iso3, name }) => [iso3, name])
-    );
-    loadCountryData(iso3, countryByIso3[iso3])
+    loadCountryData(iso3)
 }, [iso3, currentHazard, currentExposure]);
 
     // Effect 1: fetch new data
@@ -131,14 +138,17 @@ useEffect(() => {
             const countryPolygons = {
                 features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
                 iso3,
-                name: ""
+                name: "",
+                type: "FeatureCollection"
             };
             countryPolygons.name = countryPolygons.features[0].properties.COUNTRY;
             setPolygons(countryPolygons);
 
             const queryResults = await query(iso3);
-            setSeries(queryResults);
-            arrangeData(queryResults); // ✅ pass directly, avoid stale closure
+            const arrangedData = arrangeData(queryResults);
+            setChartData(arrangedData);
+            setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
+            setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
         };
         load();
     }, [iso3, currentHazard, currentExposure]);
@@ -146,8 +156,10 @@ useEffect(() => {
 
     // Effect 2: re-process already-fetched data
     useEffect(() => {
-        if (series.length === 0) return; // guard: don't run before first fetch
-        arrangeData(series);
+        if (chartData == null) return; // guard: don't run before first fetch
+        setMapChartData(mapChartDataPrep(chartData.adm1Data));
+        setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
+
     }, [currentTime, currentScenario, currentMeasure, currentThreshold]);
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
@@ -298,20 +310,19 @@ useEffect(() => {
     // }
     
 
-    var lineChartModel = [
-        {label: "1980-2014", position: 0, year: 1980},
-        {label: "Early Century", position: 1, year: 2030},
-        {label: "Mid-Century", position: 2, year: 2050},
-        {label: "End-Century", position: 3, year: 2080}
+    var lineChartXLabels: string[] = [
+        "1980-2014",
+        "Early Century",
+        "Mid-Century",
+        "End-Century",
     ];
-    var scenarioModel = [
-        {scenario: 'rcp4p5', name: 'Orderly trajectory'},
-        {scenario: 'rcp8p5', name: 'Disorderly trajectory'},
-        {scenario: 'SSP126', name: 'Orderly trajectory'},
-        {scenario: 'SSP245', name: 'Disorderly trajectory'},
-        {scenario: 'SSP370', name: 'Hot House'},
-        {scenario: 'historical', name: 'Historical'} 
-    ];
+    var scenarioMapper: Record<string, string> = {
+        rcp4p5: 'Orderly trajectory',
+        rcp8p5: 'Disorderly trajectory',
+        SSP126: 'Orderly trajectory',
+        SSP245: 'Disorderly trajectory',
+        SSP370: 'Hot House'
+    };
 
     var measureModel = [ 
         { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"]},
@@ -321,56 +332,87 @@ useEffect(() => {
     ];
 
     type MeasureRange = {
-        measure: string;
         maxValue: number;
         minValue: number;
     };
 
-    function dataPrep(data: Record<string, any>[], scenario: string) {
-            const dataPointZero = data.filter((entry: Record<string, any>) => entry["CLIMATE_SCENARIO"] === "historical");
-            var series = data.filter((entry) => entry["CLIMATE_SCENARIO"] == scenario);            
-            return dataPointZero.concat(series.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD)).map((x) => x["MEDIAN"]);
+    // function lineChartDataPrep(data: Record<string, any>[]) {
+    //     const filteredData = data.filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+    //         .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true)
+    //     const dataPointZero = filteredData.filter((entry: Record<string, any>) => entry["CLIMATE_SCENARIO"] === "historical")
+    //     urlObject[currentHazard][currentExposure].scenarios.map((scenario: string) => {
+    //         var series = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] == scenario)
+    //         dataPointZero.concat(series.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD)).map((x) => x["MEDIAN"])
+    //     }
+    // }
+
+    function lineChartDataPrep(data: Record<string, any>[]) {
+    const filteredData = data
+        .filter((entry) => entry["MEASURE"] === currentMeasure.id)
+        .filter((entry) => urlObject[currentHazard][currentExposure].threshold 
+            ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold.threshold 
+            : true
+        );
+ 
+    const dataPointZero = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === "historical");
+ 
+    return urlObject[currentHazard][currentExposure].scenarios.reduce((acc: Record<string, number[]>, scenario: string) => {
+        const scenarioData = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === scenario);
+        acc[scenario] = dataPointZero
+            .concat(scenarioData.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD))
+            .map((x) => x["MEDIAN"]);
+        return acc;
+    }, {});
+}
+    
+
+    function mapChartDataPrep(data: Record<string, Feature[]>) {
+        const mapData = Object.keys(data).flatMap((refArea: string) => {
+            return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
+                .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+                .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
+                .filter((entry: Feature) => currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === currentScenario : true)
+                .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
+        });
+        return mapData;
     }
 
     const arrangeData = (data: Feature[]) => {
 
         // legend values for map
-        var mapLegendValueRange: MeasureRange[] = data
+        var mapLegendValueRange: Record<string, MeasureRange> = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
-            .reduce((acc: {measure: string, maxValue: number, minValue: number}[], entry: Feature) => {
+            .reduce((acc: Record<string, MeasureRange>, entry: Feature) => {
                 const measure = entry["MEASURE"] as string;
                 const median = Number(entry["MEDIAN"]);
- 
-                const existing = acc.find(obj => obj.measure === measure);
- 
-                if (!existing) {
-                    acc.push({
-                        measure,
+                
+                if (!acc[measure]) {
+                    acc[measure] = {
                         maxValue: median,
                         minValue: measure === "SPEI_CROP_EXP" ? median : 0
-                    });
+                    };
                 } else {
-                    existing.maxValue = Math.max(existing.maxValue, median);
-                    existing.minValue = measure === "SPEI_CROP_EXP" ? Math.min(existing.minValue, median) : 0
+                    acc[measure].maxValue = Math.max(acc[measure].maxValue, median);
+                    acc[measure].minValue = measure === "SPEI_CROP_EXP" ? Math.min(acc[measure].minValue, median) : 0
                 }
  
                 return acc;
-            }, []);
+            }, {});
         console.log("ADM1 Min and Max by Measure across all Thresholds: ", mapLegendValueRange);
 
         // country data for line chart
             const adm0ChartData: Feature[] = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0")
-            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
+            // .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+            // .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
             console.log("adm0ChartData ", adm0ChartData);
 
         // region selected data && adm1 data for polygons
             const adm1Data = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
-            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
-            .reduce((acc: Record<string, Feature>, entry: Feature) => {
+            // .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+            // .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
+            .reduce((acc: Record<string, Feature[]>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
                 
                 if (!acc[key]) {
@@ -383,13 +425,13 @@ useEffect(() => {
         console.log("adm1Data ", adm1Data);
 
         // map data: one value per region for the current time + scenario  
-        const mapData = Object.keys(adm1Data).flatMap((refArea: string) => {
-            return adm1Data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
-                .filter((entry: Feature) => currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === currentScenario : true)
-                .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
-        });
+        // const mapData = Object.keys(adm1Data).flatMap((refArea: string) => {
+        //     return adm1Data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
+        //         .filter((entry: Feature) => currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === currentScenario : true)
+        //         .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
+        // });
 
-        console.log("mapData: ", mapData);
+        // console.log("mapData: ", mapData);
 
     // function setSubnationalName(value: string) {
     //         setCurrentSubnational(prev => {
@@ -400,17 +442,18 @@ useEffect(() => {
     //         })
     // }
 
-    return mapData
+    return {adm1Data, adm0ChartData, mapLegendValueRange}
 }
 
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox loadCountryData={loadCountryData} selectedCountry={selectedCountry} country={country}/>
+            <ComboBox loadCountryData={loadCountryData} iso3={iso3} setIso3={setIso3}/>
+            {chartData ?  
                 <div className='flex flex-col'>
-                    {/* <MapsChart
+                    <MapsChart
                         options={{
                             chart: {
-                                map: country[position],
+                                map: polygons,
                                 backgroundColor: 'RGBA(0,0,0,0)',
                                 animation: false,
                             },
@@ -422,18 +465,8 @@ useEffect(() => {
                                 padding: 15,
                             },
                             colorAxis: {
-                                min: 0,
-                                max: maxValue[position].find(i => {
-                                    const isMatch = currentMeasure.measures.includes(i.measure);
-
-                                    console.log({
-                                        itemMeasure: i.measure,
-                                        filterMeasures: currentMeasure.measures,
-                                        isMatch
-                                    });
-
-                                    return isMatch;
-                                })?.value ?  Math.max(...maxValue[position].filter((a) =>  currentMeasure.measures.includes(a.measure)).map((a) => a.value)) : Math.max(...maxValue[position].map((a) => a.value)),
+                                min: chartData.mapLegendValueRange[currentMeasure.id].minValue,
+                                max: chartData.mapLegendValueRange[currentMeasure.id].maxValue,
                                 minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {
@@ -490,39 +523,9 @@ useEffect(() => {
                                 series: {
                                     point: {
                                         events: {
-                                            click: function () {
-                                                var tempGadm1: {data: number[], name: string, measure: string[], threshold: any}[] = [];
-                                                exposureState[position].forEach((element) => {
-                                                    if (this.NAME_1 === element[0]) {
-                                                        lineChartOrder.forEach((index) => {
-                                                            if (element[2] === index.period) {
-                                                                scenarioModel.forEach((item) => {
-                                                                    if (element[3] === item.scenario) {
-                                                                        if (!tempGadm1.some(i => i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6])) {
-                                                                            tempGadm1.push({ data: [0, 0, 0, 0], name: item.name, measure: [element[5]], threshold: element[6] });
-                                                                        } 
-                                                                        tempGadm1.forEach((i) => { 
-                                                                            if (i.name === item.name && i.measure.includes(element[5]) && i.threshold === element[6]) {
-                                                                                i.data[index.position] += element[1];
-                                                                            }
-                                                                        });
-                                                                    }
-                                                                })
-                                                            }
-                                                        })
-                                                    }
-                                                });
-                                                console.log(tempGadm1);
-                                                const loadSubnationalArea = (position: number) => {
-                                                    setAreaSeries(prev => {
-                                                        const next = [...prev];
-                                                        next[position] = tempGadm1;
-                                                        return next;
-                                                    });
-                                                    console.log(areaSeries);
-                                                }
-                                                loadSubnationalArea(position);
-                                                setSubnationalName("(" + this.NAME_1 + ")");
+                                            click: function () { 
+                                                console.log(this.GID_1);
+                                                setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]))                       
                                             }
                                         }
                                     }
@@ -531,18 +534,13 @@ useEffect(() => {
                         }}
                     >
                         <MapSeries
-                            data={Object.keys(series[position]["adm1Data"]).forEach((refArea)  =>  {
-                                entries = adm1Data[refArea];
-                                entries.filter((entry: Record<string, any>) => entry["MEASURE"] === currentMeasure.id)
-                                        .filter((entry: Record<string, any>) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )                                
-                            }) }
-                            
+                            data={mapChartData}
                             joinBy={['GID_1', 'GID_1']}
-                            keys={['NAME_1', 'value', 'year', 'scenario', 'GID_1']}
+                            keys={['NAME_1', 'value']}
                             nullColor="#c9c9c9"
                         />
-                    </MapsChart> */}
-                    {/* <Chart
+                    </MapsChart>
+                    <Chart
                         options={{
                             chart: {
                                 type: 'line',
@@ -578,9 +576,10 @@ useEffect(() => {
                                 itemMarginBottom: 3,
                             },
                             title: {
-                                text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
-                                 + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
-                                 + ": " + country[position].name + " " + currentSubnational[position],
+                                // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
+                                //  + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
+                                //  + ": " + country[position].name + " " + currentSubnational[position],
+                                text: countryByIso3[iso3],
                                 align: 'left',
                                 style: {
                                     color: "white",
@@ -654,7 +653,7 @@ useEffect(() => {
                     >
                         <Credits enabled={false} />
                         <XAxis
-                            categories={["1980", "2030", "2050", "2080"]}
+                            categories={lineChartXLabels}
                             tickmarkPlacement={'on'}
                             lineWidth={1}
                             lineColor={'#555555'}
@@ -692,12 +691,12 @@ useEffect(() => {
                                 }
                             }}
                         />
-                        {urlObject[currentHazard][currentExposure].scenarios.map((scenario) =>
+                        {urlObject[currentHazard][currentExposure].scenarios.map((scenario: string) =>
                             <Series
                                 key={scenario}
                                 type="line"
-                                name={scenario}
-                                data={dataPrep(adm0ChartData, scenario)}
+                                name={scenarioMapper[scenario]}
+                                data={lineChartData[scenario]}
                                 marker={{
                                     radius: 6,
                                     lineWidth: 2,
@@ -705,8 +704,14 @@ useEffect(() => {
                                 }}
                             />
                         )}
-                    </Chart> */}
+                    </Chart>
                 </div>
+                : 
+                <Button disabled size="sm">
+                    <Spinner data-icon="inline-start" />
+                    Loading...
+                </Button>
+        }
         </Card>
         )
     }

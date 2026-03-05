@@ -34,18 +34,18 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
-import { isoCountries, type CountryString } from "@/data/isoCountries";
+import { isoCountries, type CountryString, countryByIso3 } from "@/data/isoCountries";
 
 type ComboBoxProps = {
-  loadCountryData(value: CountryString): Promise<void>,
+  loadCountryData(iso3: string): Promise<void>,
   setSubnationalName(value: string): void,
-  iso3: string
+  iso3: string,
+  setIso3: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const ComboBox = ({ loadCountryData, iso3 }: ComboBoxProps) => {
+export const ComboBox = ({ loadCountryData, iso3, setIso3 }: ComboBoxProps) => {
 
     const [open, setOpen] = React.useState(false);
-    const [selectedCountry, setCountry] = React.useState<CountryString>({iso3: "", name: ""});
 
     return (
         <Popover open={open} onOpenChange={setOpen}>
@@ -56,7 +56,7 @@ export const ComboBox = ({ loadCountryData, iso3 }: ComboBoxProps) => {
                     aria-expanded={open}
                     className="w-[200px] justify-between dark"
                 >
-                { selectedCountry.name !== "" ? selectedCountry.name : isoCountries.find((country) => country.iso3 == iso3)?.name } 
+                { countryByIso3[iso3] } 
                 <ChevronsUpDown className="opacity-50" />
                 </Button>
             </PopoverTrigger>
@@ -71,16 +71,16 @@ export const ComboBox = ({ loadCountryData, iso3 }: ComboBoxProps) => {
                       key={country.iso3}
                       value={country.name}
                       onSelect={() => {
-                        loadCountryData(country)
+                        loadCountryData(country.iso3)
                         setOpen(false)
-                        setCountry(country)
+                        setIso3(country.iso3)
                       }}
                     >
                       {country.name}
                       <Check
                         className={cn(
                           "ml-auto",
-                          selectedCountry.name === country.name ? "opacity-100" : "opacity-0"
+                          iso3 === country.iso3 ? "opacity-100" : "opacity-0"
                         )}
                         />
                     </CommandItem>

@@ -77,7 +77,7 @@ function App() {
                 currentMeasure={currentMeasure}
                 setMeasure={setMeasure}
                 currentThreshold={currentThreshold}
-                iso3={"CRI"}
+                defaultIso3={"CRI"}
                 geoJson={geoJson}
                 maxValue={maxValue}
                 setMaxValue={setMaxValue}
@@ -92,7 +92,7 @@ function App() {
                 currentMeasure={currentMeasure}
                 setMeasure={setMeasure}
                 currentThreshold={currentThreshold}
-                iso3={"BGD"}
+                defaultIso3={"BGD"}
                 geoJson={geoJson}
                 maxValue={maxValue}
                 setMaxValue={setMaxValue}
