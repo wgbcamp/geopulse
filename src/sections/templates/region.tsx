@@ -127,7 +127,9 @@ export const Region = ({
         setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
     };
 
+    // Effect 1: fetch new data when country, hazard or exposure changes
     useEffect(() => {
+        console.log("iso3: ", iso3);
         loadCountryData(iso3);
     }, [iso3, currentHazard, currentExposure]);
 
