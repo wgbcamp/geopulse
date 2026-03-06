@@ -88,16 +88,16 @@ export const Region = ({
         {name: "H_40", number: 40}
     ];
 
-    let colorAxisTitle: {title: string, hazard: string[], exposure: string[], Measure: string[], lineChartInfo: string, lineChartInfo2: string}[] = [
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], Measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === currentThreshold.threshold)?.number}° Celsius` },
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], Measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: `` },
-    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], Measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], Measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], Measure: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], Measure: [""], lineChartInfo: "Percentage of GDP" , lineChartInfo2: `Exposed to ${currentHazard}`},
-    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], Measure: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], Measure: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
-    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], Measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
+    let colorAxisTitle: {title: string, hazard: string[], exposure: string[], measure: string[], lineChartInfo: string, lineChartInfo2: string}[] = [
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === currentThreshold.threshold)?.number}° Celsius` },
+    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: `` },
+    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], measure: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], measure: [""], lineChartInfo: "Percentage of GDP" , lineChartInfo2: `Exposed to ${currentHazard}`},
+    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], measure: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${currentHazard}` },
+    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], measure: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
+    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
 ];
 
     Highcharts.setOptions({
@@ -105,12 +105,13 @@ export const Region = ({
         backgroundColor: 'transparent',
         plotBackgroundColor: 'transparent',
             style: {
-              color: '#ffffff',
-              fontFamily: 'Arial'
+                color: '#ffffff',
+                fontFamily: 'Arial'
             },
-    }
+        }
     });
 
+    // Effect 1: fetch new data
     const loadCountryData = async (iso3: string) => {
         const countryPolygons = {
             features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
@@ -119,40 +120,16 @@ export const Region = ({
             type: "FeatureCollection"
         };
         setPolygons(countryPolygons);
-
         const queryResults = await query(iso3);
         const arrangedData = arrangeData(queryResults);
         setChartData(arrangedData);
         setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
         setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
     };
- 
-// Effect 1: fetch new data when country, hazard or exposure changes
-useEffect(() => {
-    loadCountryData(iso3)
-}, [iso3, currentHazard, currentExposure]);
 
-    // Effect 1: fetch new data
     useEffect(() => {
-        const load = async () => {
-            const countryPolygons = {
-                features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
-                iso3,
-                name: "",
-                type: "FeatureCollection"
-            };
-            countryPolygons.name = countryPolygons.features[0].properties.COUNTRY;
-            setPolygons(countryPolygons);
-
-            const queryResults = await query(iso3);
-            const arrangedData = arrangeData(queryResults);
-            setChartData(arrangedData);
-            setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
-            setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
-        };
-        load();
+        loadCountryData(iso3);
     }, [iso3, currentHazard, currentExposure]);
-
 
     // Effect 2: re-process already-fetched data
     useEffect(() => {
@@ -579,7 +556,7 @@ useEffect(() => {
                                 // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
                                 //  + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
                                 //  + ": " + country[position].name + " " + currentSubnational[position],
-                                text: countryByIso3[iso3],
+                                text: countryByIso3[iso3] + colorAxisTitle.filter((desc) => desc.exposure.includes(currentExposure) && desc.hazard.includes(currentHazard) && desc.measure.includes(currentMeasure.id)),
                                 align: 'left',
                                 style: {
                                     color: "white",
