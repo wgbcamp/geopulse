@@ -1,7 +1,7 @@
 import * as React from "react"
 import { useState } from 'react';
 
-import '../../../data/isoCountries';
+import '../../data/isoCountries';
 
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"

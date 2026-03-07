@@ -1,15 +1,9 @@
 import React, { useEffect } from 'react';
-import { ComboBox } from './sub/comboBox';
-
-import {
-    Card,
-} from "@/components/ui/card"
-
+import { ComboBox } from './comboBox';
+import { Card } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Spinner } from "@/components/ui/spinner"
-
 import { MapsChart } from '@highcharts/react/Maps';
-
 import {
     Chart,
     Title,
@@ -21,41 +15,13 @@ import {
     Highcharts
 } from '@highcharts/react';
 
-import { 
-    type JsonShape, 
-    type RegionSeries,
-} from '../../App';
-
 import { countryByIso3 } from '@/data/isoCountries';
 
-export type Filters = {
-    defaultIso3: string,
-    currentTime: number,
-    currentScenario: string,
-    geoJson: JsonShape,
-    maxValue: {measure: string, value: number}[][],
-    setMaxValue: React.Dispatch<React.SetStateAction<{measure: string, value: number}[][]>>,
-    currentExposure: string
-    setExposure: React.Dispatch<React.SetStateAction<string>>,
-    currentHazard: string,
-    setHazard: React.Dispatch<React.SetStateAction<string>>,
-    currentMeasure: {name: string, id: string},
-    setMeasure: React.Dispatch<React.SetStateAction<{name: string, id: string}>>,
-    currentThreshold: {name: string, threshold: any}
-}
-
-export const Region = ({
-    currentTime, 
-    currentScenario,
-    geoJson, 
-    maxValue,
-    currentExposure,
-    currentHazard,
-    currentMeasure,
-    currentThreshold,
-    defaultIso3
-}: Filters) => {
-
+export const Region = ( props: any ) => {
+    props = {
+        ...props.props,
+        defaultIso3: props.defaultIso3,
+    }
     type Feature = Record<string, any>;
 
     type ChartData = {
@@ -63,8 +29,8 @@ export const Region = ({
         adm0ChartData: Feature[],
         mapLegendValueRange: Record<string, MeasureRange>
     };
- 
-    const [iso3, setIso3] = React.useState(defaultIso3);
+
+    const [iso3, setIso3] = React.useState(props.defaultIso3);
     const [chartData, setChartData] = React.useState<ChartData | null>(null);
     const [mapChartData, setMapChartData] = React.useState<Feature[]>([])
     const [lineChartData, setLineChartData] = React.useState<Record<string, number[]>>({});
@@ -77,32 +43,32 @@ export const Region = ({
 
     // matrix for highcharts titles based on hazards, exposures, and measures
     const temperatureModel = [
-        {name: "_Z", number: 0}, 
-        {name: "H_20", number: 20}, 
-        {name: "H_26", number: 26}, 
-        {name: "H_32", number: 32}, 
-        {name: "H_30", number: 30}, 
-        {name: "H_35", number: 35}, 
-        {name: "H_40", number: 40}
+        { name: "_Z", number: 0 },
+        { name: "H_20", number: 20 },
+        { name: "H_26", number: 26 },
+        { name: "H_32", number: 32 },
+        { name: "H_30", number: 30 },
+        { name: "H_35", number: 35 },
+        { name: "H_40", number: 40 }
     ];
 
-    let colorAxisTitle: {title: string, hazard: string[], exposure: string[], measure: string[], lineChartInfo: string, lineChartInfo2: string}[] = [
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === currentThreshold.threshold)?.number}° Celsius` },
-    { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${currentExposure}-weighted Number of ${currentMeasure.name}`, lineChartInfo2: `` },
-    { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], measure: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], measure: [""], lineChartInfo: "Percentage of GDP" , lineChartInfo2: `Exposed to ${currentHazard}`},
-    { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], measure: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${currentHazard}` },
-    { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], measure: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
-    { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
-];
+    let colorAxisTitle: { title: string, hazard: string[], exposure: string[], measure: string[], lineChartInfo: string, lineChartInfo2: string }[] = [
+        { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === props.currentThreshold.threshold)?.number}° Celsius` },
+        { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: `` },
+        { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${props.currentHazard}` },
+        { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${props.currentHazard}` },
+        { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], measure: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${props.currentHazard}` },
+        { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], measure: [""], lineChartInfo: "Percentage of GDP", lineChartInfo2: `Exposed to ${props.currentHazard}` },
+        { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], measure: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${props.currentHazard}` },
+        { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], measure: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
+        { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
+    ];
 
     // set global highcharts chart styling options
     Highcharts.setOptions({
-    chart: {
-        backgroundColor: 'transparent',
-        plotBackgroundColor: 'transparent',
+        chart: {
+            backgroundColor: 'transparent',
+            plotBackgroundColor: 'transparent',
             style: {
                 color: '#ffffff',
                 fontFamily: 'Arial'
@@ -114,7 +80,7 @@ export const Region = ({
     useEffect(() => {
         var loadCountryData = async (iso3: string) => {
             const countryPolygons = {
-                features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
+                features: props.geoJson.features.filter((f: any) => f.properties.GID_0 === iso3),
                 iso3: iso3,
                 name: countryByIso3[iso3],
                 type: "FeatureCollection"
@@ -127,7 +93,7 @@ export const Region = ({
             setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
         };
         loadCountryData(iso3);
-    }, [iso3, currentHazard, currentExposure]);
+    }, [iso3, props.currentHazard, props.currentExposure]);
 
     // Effect 2: re-process already-fetched data
     useEffect(() => {
@@ -135,10 +101,10 @@ export const Region = ({
         setMapChartData(mapChartDataPrep(chartData.adm1Data));
         setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
 
-    }, [currentTime, currentScenario, currentMeasure, currentThreshold]);
+    }, [props.currentTime, props.currentScenario, props.currentMeasure, props.currentThreshold]);
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
- 
+
     const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: string, scenarios: string[] }>> = {
         "Riverine Flooding":
         {
@@ -170,7 +136,7 @@ export const Region = ({
                 scenarios: ["rcp4p5", "rcp8p5"],
                 threshold: "TEMP_THRESHOLD"
             }
-            
+
         }
     }
 
@@ -178,7 +144,7 @@ export const Region = ({
 
         const whereClause = `ISO3 IN ('${iso3}')`;
         const queryString = `where=${encodeURIComponent(whereClause)}`;
-        const url = urlObject[currentHazard][currentExposure].url + `?${queryString}`;
+        const url = urlObject[props.currentHazard][props.currentExposure].url + `?${queryString}`;
 
         const idResult = await fetch(url, {
             method: 'POST',
@@ -210,7 +176,7 @@ export const Region = ({
         }
 
         return tableData;
-    }   
+    }
 
     var lineChartXLabels: string[] = [
         "1980-2014",
@@ -226,11 +192,11 @@ export const Region = ({
         SSP370: 'Hot House'
     };
 
-    var measureModel = [ 
-        { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"]},
-        { hazard: "Temperature Extremes", exposure: "Population", measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"]},
-        { hazard: "Temperature Extremes", exposure: "Livestock", measure: ["HD_LW_EXP"]},
-        { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"]}
+    var measureModel = [
+        { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"] },
+        { hazard: "Temperature Extremes", exposure: "Population", measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"] },
+        { hazard: "Temperature Extremes", exposure: "Livestock", measure: ["HD_LW_EXP"] },
+        { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"] }
     ];
 
     type MeasureRange = {
@@ -239,30 +205,32 @@ export const Region = ({
     };
 
     function lineChartDataPrep(data: Record<string, any>[]) {
+        const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
         const filteredData = data
-        .filter((entry) => entry["MEASURE"] === currentMeasure.id)
-        .filter((entry) => urlObject[currentHazard][currentExposure].threshold 
-            ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold.threshold 
-            : true
-        );
- 
-    const dataPointZero = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === "historical");
- 
-    return urlObject[currentHazard][currentExposure].scenarios.reduce((acc: Record<string, number[]>, scenario: string) => {
-        const scenarioData = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === scenario);
-        acc[scenario] = dataPointZero
-            .concat(scenarioData.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD))
-            .map((x) => x["MEDIAN"]);
-        return acc;
-    }, {});
-}
-    
+            .filter((entry) => entry["MEASURE"] === props.currentMeasure.id)
+            .filter((entry) => thresholdKey
+                ? entry[thresholdKey] == props.currentThreshold.threshold
+                : true
+            );
+
+        const dataPointZero = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === "historical");
+
+        return urlObject[props.currentHazard][props.currentExposure].scenarios.reduce((acc: Record<string, number[]>, scenario: string) => {
+            const scenarioData = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === scenario);
+            acc[scenario] = dataPointZero
+                .concat(scenarioData.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD))
+                .map((x) => x["MEDIAN"]);
+            return acc;
+        }, {});
+    }
+
     function mapChartDataPrep(data: Record<string, Feature[]>) {
         const mapData = Object.keys(data).flatMap((refArea: string) => {
-            return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
-                .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-                .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
-                .filter((entry: Feature) => currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === currentScenario : true)
+            const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+            return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === props.currentTime)
+                .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
+                .filter((entry: Feature) => thresholdKey ? entry[thresholdKey] == props.currentThreshold : true)
+                .filter((entry: Feature) => props.currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === props.currentScenario : true)
                 .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
         });
         return mapData;
@@ -276,7 +244,7 @@ export const Region = ({
             .reduce((acc: Record<string, MeasureRange>, entry: Feature) => {
                 const measure = entry["MEASURE"] as string;
                 const median = Number(entry["MEDIAN"]);
-                
+
                 if (!acc[measure]) {
                     acc[measure] = {
                         maxValue: median,
@@ -286,26 +254,32 @@ export const Region = ({
                     acc[measure].maxValue = Math.max(acc[measure].maxValue, median);
                     acc[measure].minValue = measure === "SPEI_CROP_EXP" ? Math.min(acc[measure].minValue, median) : 0
                 }
- 
+
                 return acc;
             }, {});
         console.log("ADM1 Min and Max by Measure across all Thresholds: ", mapLegendValueRange);
 
         // country data for line chart
-            const adm0ChartData: Feature[] = data
+        const adm0ChartData: Feature[] = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0")
-            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
-            console.log("adm0ChartData ", adm0ChartData);
+            .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
+            .filter((entry: Feature) => {
+                const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+                return thresholdKey ? entry[thresholdKey] == props.currentThreshold : true;
+            });
+        console.log("adm0ChartData ", adm0ChartData);
 
         // region selected data && adm1 data for polygons
-            const adm1Data = data
+        const adm1Data = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
-            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
+            .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
+            .filter((entry: Feature) => {
+                const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+                return thresholdKey ? entry[thresholdKey] == props.currentThreshold : true;
+            })
             .reduce((acc: Record<string, Feature[]>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
-                
+
                 if (!acc[key]) {
                     acc[key] = [];
                 }
@@ -315,31 +289,13 @@ export const Region = ({
             }, {});
         console.log("adm1Data ", adm1Data);
 
-        // map data: one value per region for the current time + scenario  
-        // const mapData = Object.keys(adm1Data).flatMap((refArea: string) => {
-        //     return adm1Data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
-        //         .filter((entry: Feature) => currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === currentScenario : true)
-        //         .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
-        // });
-
-        // console.log("mapData: ", mapData);
-
-    // function setSubnationalName(value: string) {
-    //         setCurrentSubnational(prev => {
-    //             const next = [...prev];
-    //             next[position] = value;
-    //             console.log(next);
-    //             return next;
-    //         })
-    // }
-
-    return {adm1Data, adm0ChartData, mapLegendValueRange}
-}
+        return { adm1Data, adm0ChartData, mapLegendValueRange }
+    }
 
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox iso3={iso3} setIso3={setIso3}/>
-            {chartData && mapChartData.length > 0 ?  
+            <ComboBox iso3={iso3} setIso3={setIso3} />
+            {chartData && mapChartData.length > 0 ?
                 <div className='flex flex-col'>
                     <MapsChart
                         options={{
@@ -363,8 +319,8 @@ export const Region = ({
                                 nullColor: '#c9c9c9'
                             }],
                             colorAxis: {
-                                min: chartData.mapLegendValueRange[currentMeasure.id].minValue,
-                                max: chartData.mapLegendValueRange[currentMeasure.id].maxValue,
+                                min: chartData.mapLegendValueRange[props.currentMeasure.id].minValue,
+                                max: chartData.mapLegendValueRange[props.currentMeasure.id].maxValue,
                                 minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {
@@ -421,16 +377,16 @@ export const Region = ({
                                 series: {
                                     point: {
                                         events: {
-                                            click: function () { 
+                                            click: function () {
                                                 console.log(this.GID_1);
-                                                setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]))                       
+                                                setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]))
                                             }
                                         }
                                     }
                                 }
                             }
                         }}
-                    > 
+                    >
                     </MapsChart>
                     <Chart
                         options={{
@@ -471,7 +427,7 @@ export const Region = ({
                                 // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
                                 //  + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
                                 //  + ": " + country[position].name + " " + currentSubnational[position],
-                                text: countryByIso3[iso3] + colorAxisTitle.filter((desc) => desc.exposure.includes(currentExposure) && desc.hazard.includes(currentHazard) && desc.measure.includes(currentMeasure.id)),
+                                text: countryByIso3[iso3] + colorAxisTitle.filter((desc) => desc.exposure.includes(props.currentExposure) && desc.hazard.includes(props.currentHazard) && desc.measure.includes(props.currentMeasure.id)),
                                 align: 'left',
                                 style: {
                                     color: "white",
@@ -508,7 +464,7 @@ export const Region = ({
                                             value = value.slice(0, i) + "," + value.substring(i, value.length);
                                         }
                                     }
-                                    return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value; 
+                                    return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value;
                                 }
                             },
                             colors: [
@@ -526,7 +482,7 @@ export const Region = ({
                                 },
 
                             ],
-                            series: urlObject[currentHazard][currentExposure].scenarios.map((scenario: string) => ({
+                            series: urlObject[props.currentHazard][props.currentExposure].scenarios.map((scenario: string) => ({
                                 type: 'line',
                                 name: scenarioMapper[scenario],
                                 data: lineChartData[scenario],
@@ -592,12 +548,12 @@ export const Region = ({
                         />
                     </Chart>
                 </div>
-                : 
+                :
                 <Button disabled size="sm">
                     <Spinner data-icon="inline-start" />
                     Loading...
                 </Button>
-        }
+            }
         </Card>
-        )
-    }
+    )
+}

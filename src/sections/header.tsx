@@ -1,8 +1,6 @@
 import '../App.css';
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { Container } from './templates/container';
-import { Options } from './templates/sub/options';
 import { Button } from "@/components/ui/button"
 import {
   Item,
@@ -21,7 +19,7 @@ import { Globe32LightIcon } from '../components/icons/fluent-globe-32-light'
 import { Warning20RegularIcon } from '../components/icons/fluent-warning-20-regular'
 import { Layer20RegularIcon } from '@/components/icons/fluent-layer-20-regular'
 import { ChevronCircleDown20RegularIcon } from '@/components/icons/fluent-chevron-circle-down-20-regular'
-import { Timeline } from './templates/sub/timeline'
+import { Timeline } from './sub/timeline'
 import {
   Popover,
   PopoverContent,

@@ -81,7 +81,7 @@ const labels = [
 // ];
 
 
-export const NewTemperatureThresholds = ({ currentHazard, currentThreshold, currentMeasure, setCurrentThreshold, setMeasure }: TimelineProps) => {
+export const TemperatureThresholds = ({ currentHazard, currentThreshold, currentMeasure, setCurrentThreshold, setMeasure }: TimelineProps) => {
 
   const handleValueChange = (value: number[]) => {
   
