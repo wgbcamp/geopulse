@@ -10,10 +10,8 @@ import { Spinner } from "@/components/ui/spinner"
 
 import { MapsChart } from '@highcharts/react/Maps';
 
-import { MapSeries } from '@highcharts/react/series/Map';
 import {
     Chart,
-    Series,
     Title,
     Subtitle,
     YAxis,
@@ -76,7 +74,6 @@ export const Region = ({
         name: "",
         type: "FeatureCollection"
     });
-    const [show, updateShow] = React.useState(false);
 
     // matrix for highcharts titles based on hazards, exposures, and measures
     const temperatureModel = [
@@ -139,13 +136,6 @@ export const Region = ({
         setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
 
     }, [currentTime, currentScenario, currentMeasure, currentThreshold]);
-
-    // Effect 3: force state re-render to show highcharts data values
-    useEffect(() => {
-        if (mapChartData.length > 0) {
-            updateShow(true);
-        }
-    }, [mapChartData])
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
  
@@ -349,10 +339,9 @@ export const Region = ({
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
             <ComboBox iso3={iso3} setIso3={setIso3}/>
-            {chartData ?  
+            {chartData && mapChartData.length > 0 ?  
                 <div className='flex flex-col'>
                     <MapsChart
-                        immutable={true}
                         options={{
                             chart: {
                                 map: polygons,
@@ -366,6 +355,13 @@ export const Region = ({
                                 },
                                 padding: 15,
                             },
+                            series: [{
+                                type: 'map',
+                                data: mapChartData,
+                                joinBy: ['GID_1', 'GID_1'],
+                                keys: ['NAME_1', 'value'],
+                                nullColor: '#c9c9c9'
+                            }],
                             colorAxis: {
                                 min: chartData.mapLegendValueRange[currentMeasure.id].minValue,
                                 max: chartData.mapLegendValueRange[currentMeasure.id].maxValue,
@@ -434,15 +430,7 @@ export const Region = ({
                                 }
                             }
                         }}
-                    >
-                       
-                        <MapSeries
-                            data={mapChartData}
-                            joinBy={['GID_1', 'GID_1']}
-                            keys={['NAME_1', 'value']}
-                            nullColor="#c9c9c9"
-                        /> 
-                        
+                    > 
                     </MapsChart>
                     <Chart
                         options={{
@@ -451,11 +439,11 @@ export const Region = ({
                                 height: 500,
                                 marginTop: 130,
                                 events: {
-                                    render() {
+                                    load() {
                                         const chart = this as unknown as Highcharts.Chart;
                                         const titleBBox = chart.title.getBBox();
                                         chart.subtitle.attr({
-                                            y: titleBBox.y + titleBBox.height + 15
+                                            y: titleBBox.y + titleBBox.height + 25
                                         })
                                     }
                                 }
@@ -538,9 +526,16 @@ export const Region = ({
                                 },
 
                             ],
-                            series: [
-
-                            ],
+                            series: urlObject[currentHazard][currentExposure].scenarios.map((scenario: string) => ({
+                                type: 'line',
+                                name: scenarioMapper[scenario],
+                                data: lineChartData[scenario],
+                                marker: {
+                                    radius: 6,
+                                    lineWidth: 2,
+                                    lineColor: 'white'
+                                }
+                            })),
                             plotOptions: {
                                 series: {
                                     lineWidth: 3.5,
@@ -595,19 +590,6 @@ export const Region = ({
                                 }
                             }}
                         />
-                        {urlObject[currentHazard][currentExposure].scenarios.map((scenario: string) =>
-                            <Series
-                                key={scenario}
-                                type="line"
-                                name={scenarioMapper[scenario]}
-                                data={lineChartData[scenario]}
-                                marker={{
-                                    radius: 6,
-                                    lineWidth: 2,
-                                    lineColor: 'white',
-                                }}
-                            />
-                        )}
                     </Chart>
                 </div>
                 : 
