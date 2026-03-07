@@ -61,7 +61,6 @@ export const Region = ({
     type Feature = Record<string, any>;
 
     type ChartData = {
-        // mapData: { GID_1: string, NAME_1: string, value: number }[],
         adm1Data: Record<string, Feature[]>,
         adm0ChartData: Feature[],
         mapLegendValueRange: Record<string, MeasureRange>
@@ -112,24 +111,22 @@ export const Region = ({
         }
     });
 
-    // Effect 1: fetch new data
-    const loadCountryData = async (iso3: string) => {
-        const countryPolygons = {
-            features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
-            iso3: iso3,
-            name: countryByIso3[iso3],
-            type: "FeatureCollection"
-        };
-        setPolygons(countryPolygons);
-        const queryResults = await query(iso3);
-        const arrangedData = arrangeData(queryResults);
-        setChartData(arrangedData);
-        setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
-        setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
-    };
-
     // Effect 1: fetch new data when country, hazard or exposure changes
     useEffect(() => {
+        var loadCountryData = async (iso3: string) => {
+            const countryPolygons = {
+                features: geoJson.features.filter((f) => f.properties.GID_0 === iso3),
+                iso3: iso3,
+                name: countryByIso3[iso3],
+                type: "FeatureCollection"
+            };
+            setPolygons(countryPolygons);
+            const queryResults = await query(iso3);
+            const arrangedData = arrangeData(queryResults);
+            setChartData(arrangedData);
+            setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
+            setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
+        };
         loadCountryData(iso3);
     }, [iso3, currentHazard, currentExposure]);
 
@@ -220,80 +217,7 @@ export const Region = ({
         }
 
         return tableData;
-    }
-
-
-    // async function query(iso3: string) {
-
-    //     const whereClause = `ISO3 IN ('${iso3}')`;
-    //     var queryString = `where=${encodeURIComponent(whereClause)}`;
-        
-    //     const url = urlObject[currentHazard][currentExposure].url + `?${queryString}`;
-        
-
-    //     console.log(queryString);
-    //     console.log(url);
-
-    //     const parameters = new URLSearchParams({
-    //         returnIdsOnly: 'true',
-    //         cacheHint: 'true',
-    //         f: 'json'
-    //     });
-
-    //     const result = await fetch(url, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/x-www-form-urlencoded'
-    //         },
-    //         body: parameters
-    //     });
-    //     const x = await result.json();
-
-    //     var objectIdsArray = x.objectIds.filter((value: ObjectID) => value);
-    //     console.log("objectIdsArray: ", objectIdsArray.length);
-
-    //     var resultAmount = 0;
-    //     const maxRecordCountFactor: string = '5'; 
-    //     const maxRecordsPerQuery: number = Number(maxRecordCountFactor) * 1000;
-
-    //     type SliceNumber = {
-    //         start: number,
-    //         end: number
-    //     };
-
-    //     var tableData: {}[] = [];
-
-    //     function counter({ start, end }: SliceNumber) {
-
-    //         const params = new URLSearchParams({
-    //             objectIds: objectIdsArray.slice(start, end).join(","),
-    //             outFields: "*",
-    //             f: 'json',
-    //             maxRecordCountFactor: maxRecordCountFactor
-    //         });
-
-    //         fetch(url, {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/x-www-form-urlencoded'
-    //             },
-    //             body: params
-    //         })
-    //             .then(res => res.json())
-    //             .then(data => {
-                 
-    //                 tableData.push(...data.features.map((feature: { attributes: Feature }) => feature.attributes));
-    //                 resultAmount += data.features.length;
-           
-    //                 if (resultAmount < objectIdsArray.length) {
-    //                     counter({ start: resultAmount, end: resultAmount + maxRecordsPerQuery });
-    //                 }
-    //             });
-    //     }
-    //     counter({ start: 0, end: maxRecordsPerQuery });
-    //     return tableData;
-    // }
-    
+    }   
 
     var lineChartXLabels: string[] = [
         "1980-2014",
@@ -321,23 +245,7 @@ export const Region = ({
         minValue: number;
     };
 
-    // function lineChartDataPrep(data: Record<string, any>[]) {
-    //     const filteredData = data.filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-    //         .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true)
-    //     const dataPointZero = filteredData.filter((entry: Record<string, any>) => entry["CLIMATE_SCENARIO"] === "historical")
-    //     urlObject[currentHazard][currentExposure].scenarios.map((scenario: string) => {
-    //         var series = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] == scenario)
-    //         dataPointZero.concat(series.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD)).map((x) => x["MEDIAN"])
-    //     }
-    // }
-
     function lineChartDataPrep(data: Record<string, any>[]) {
-
-        console.log("=== lineChartDataPrep ==="); 
-        console.log("data length:", data.length); 
-        console.log("currentMeasure.id:", currentMeasure.id); 
-        console.log("sample entry:", data[0]);
-
         const filteredData = data
         .filter((entry) => entry["MEASURE"] === currentMeasure.id)
         .filter((entry) => urlObject[currentHazard][currentExposure].threshold 
@@ -358,14 +266,6 @@ export const Region = ({
     
 
     function mapChartDataPrep(data: Record<string, Feature[]>) {
-
-        console.log("=== mapChartDataPrep ==="); 
-        console.log("currentTime:", currentTime); 
-        console.log("currentScenario:", currentScenario); 
-        console.log("currentMeasure:", currentMeasure); 
-        console.log("currentThreshold:", currentThreshold); 
-        console.log("data keys:", Object.keys(data));
-
         const mapData = Object.keys(data).flatMap((refArea: string) => {
             return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
                 .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
@@ -402,15 +302,15 @@ export const Region = ({
         // country data for line chart
             const adm0ChartData: Feature[] = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0")
-            // .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-            // .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
+            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true );
             console.log("adm0ChartData ", adm0ChartData);
 
         // region selected data && adm1 data for polygons
             const adm1Data = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
-            // .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
-            // .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
+            .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
+            .filter((entry: Feature) => urlObject[currentHazard][currentExposure].threshold ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold : true )
             .reduce((acc: Record<string, Feature[]>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
                 
@@ -444,16 +344,9 @@ export const Region = ({
     return {adm1Data, adm0ChartData, mapLegendValueRange}
 }
 
-    console.log("RENDER STATE:", {
-        chartData: chartData ? "exists" : "null",
-        mapChartData,
-        lineChartData,
-        polygons: polygons.features.length
-    });
-
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
-            <ComboBox loadCountryData={loadCountryData} iso3={iso3} setIso3={setIso3}/>
+            <ComboBox iso3={iso3} setIso3={setIso3}/>
             {chartData ?  
                 <div className='flex flex-col'>
                     <MapsChart
@@ -549,7 +442,7 @@ export const Region = ({
                         /> 
                         
                     </MapsChart>
-                    {/* <Chart
+                    <Chart
                         options={{
                             chart: {
                                 type: 'line',
@@ -713,7 +606,7 @@ export const Region = ({
                                 }}
                             />
                         )}
-                    </Chart> */}
+                    </Chart>
                 </div>
                 : 
                 <Button disabled size="sm">

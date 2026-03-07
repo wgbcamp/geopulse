@@ -71,7 +71,6 @@ export const ComboBox = ({ loadCountryData, iso3, setIso3 }: ComboBoxProps) => {
                       key={country.iso3}
                       value={country.name}
                       onSelect={() => {
-                        loadCountryData(country.iso3)
                         setOpen(false)
                         setIso3(country.iso3)
                       }}
