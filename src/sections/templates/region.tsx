@@ -77,6 +77,7 @@ export const Region = ({
         name: "",
         type: "FeatureCollection"
     });
+    const [show, updateShow] = React.useState(false);
 
     const temperatureModel = [
         {name: "_Z", number: 0}, 
@@ -129,9 +130,14 @@ export const Region = ({
 
     // Effect 1: fetch new data when country, hazard or exposure changes
     useEffect(() => {
-        console.log("iso3: ", iso3);
         loadCountryData(iso3);
     }, [iso3, currentHazard, currentExposure]);
+
+    useEffect(() => {
+        if (mapChartData.length > 0) {
+            updateShow(true);
+        }
+    }, [mapChartData])
 
     // Effect 2: re-process already-fetched data
     useEffect(() => {
@@ -326,7 +332,13 @@ export const Region = ({
     // }
 
     function lineChartDataPrep(data: Record<string, any>[]) {
-    const filteredData = data
+
+        console.log("=== lineChartDataPrep ==="); 
+        console.log("data length:", data.length); 
+        console.log("currentMeasure.id:", currentMeasure.id); 
+        console.log("sample entry:", data[0]);
+
+        const filteredData = data
         .filter((entry) => entry["MEASURE"] === currentMeasure.id)
         .filter((entry) => urlObject[currentHazard][currentExposure].threshold 
             ? entry[urlObject[currentHazard][currentExposure].threshold] == currentThreshold.threshold 
@@ -346,6 +358,14 @@ export const Region = ({
     
 
     function mapChartDataPrep(data: Record<string, Feature[]>) {
+
+        console.log("=== mapChartDataPrep ==="); 
+        console.log("currentTime:", currentTime); 
+        console.log("currentScenario:", currentScenario); 
+        console.log("currentMeasure:", currentMeasure); 
+        console.log("currentThreshold:", currentThreshold); 
+        console.log("data keys:", Object.keys(data));
+
         const mapData = Object.keys(data).flatMap((refArea: string) => {
             return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)
                 .filter((entry: Feature) => entry["MEASURE"] === currentMeasure.id)
@@ -424,12 +444,20 @@ export const Region = ({
     return {adm1Data, adm0ChartData, mapLegendValueRange}
 }
 
+    console.log("RENDER STATE:", {
+        chartData: chartData ? "exists" : "null",
+        mapChartData,
+        lineChartData,
+        polygons: polygons.features.length
+    });
+
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
             <ComboBox loadCountryData={loadCountryData} iso3={iso3} setIso3={setIso3}/>
             {chartData ?  
                 <div className='flex flex-col'>
                     <MapsChart
+                        immutable={true}
                         options={{
                             chart: {
                                 map: polygons,
@@ -512,14 +540,16 @@ export const Region = ({
                             }
                         }}
                     >
+                       
                         <MapSeries
                             data={mapChartData}
                             joinBy={['GID_1', 'GID_1']}
                             keys={['NAME_1', 'value']}
                             nullColor="#c9c9c9"
-                        />
+                        /> 
+                        
                     </MapsChart>
-                    <Chart
+                    {/* <Chart
                         options={{
                             chart: {
                                 type: 'line',
@@ -683,7 +713,7 @@ export const Region = ({
                                 }}
                             />
                         )}
-                    </Chart>
+                    </Chart> */}
                 </div>
                 : 
                 <Button disabled size="sm">
