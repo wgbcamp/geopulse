@@ -4,7 +4,7 @@ import { GridView } from './sections/views/GridView';
 import { NewHeader } from './sections/header';
 import { CompareView } from './sections/views/CompareView';
 
-export type JsonShape = {
+type JsonShape = {
   features: Array<{
     properties: {
       GID_0: string,
@@ -14,10 +14,6 @@ export type JsonShape = {
     }
   }>
 };
-
-export type PolygonPosition = number;
-
-export type RegionSeries = object[];
 
 function App() {
 
