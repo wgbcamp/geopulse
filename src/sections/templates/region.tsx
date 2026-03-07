@@ -28,7 +28,7 @@ import {
     type RegionSeries,
 } from '../../App';
 
-import { isoCountries, type CountryString, countryByIso3 } from '@/data/isoCountries';
+import { countryByIso3 } from '@/data/isoCountries';
 
 export type Filters = {
     defaultIso3: string,
@@ -78,6 +78,7 @@ export const Region = ({
     });
     const [show, updateShow] = React.useState(false);
 
+    // matrix for highcharts titles based on hazards, exposures, and measures
     const temperatureModel = [
         {name: "_Z", number: 0}, 
         {name: "H_20", number: 20}, 
@@ -100,6 +101,7 @@ export const Region = ({
     { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
 ];
 
+    // set global highcharts chart styling options
     Highcharts.setOptions({
     chart: {
         backgroundColor: 'transparent',
@@ -130,12 +132,6 @@ export const Region = ({
         loadCountryData(iso3);
     }, [iso3, currentHazard, currentExposure]);
 
-    useEffect(() => {
-        if (mapChartData.length > 0) {
-            updateShow(true);
-        }
-    }, [mapChartData])
-
     // Effect 2: re-process already-fetched data
     useEffect(() => {
         if (chartData == null) return; // guard: don't run before first fetch
@@ -143,6 +139,13 @@ export const Region = ({
         setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
 
     }, [currentTime, currentScenario, currentMeasure, currentThreshold]);
+
+    // Effect 3: force state re-render to show highcharts data values
+    useEffect(() => {
+        if (mapChartData.length > 0) {
+            updateShow(true);
+        }
+    }, [mapChartData])
 
     const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
  
@@ -264,7 +267,6 @@ export const Region = ({
     }, {});
 }
     
-
     function mapChartDataPrep(data: Record<string, Feature[]>) {
         const mapData = Object.keys(data).flatMap((refArea: string) => {
             return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === currentTime)

@@ -2,8 +2,8 @@ import './App.css'
 import React, { useState, useEffect } from 'react'
 import { GridView } from './sections/GridView';
 import { Region } from './sections/templates/region';
-import { NewHeader } from './sections/newHeader';
-import { NewTemperatureThresholds } from './sections/templates/sub/newTemperatureThresholds';
+import { NewHeader } from './sections/header';
+import { NewTemperatureThresholds } from './sections/templates/sub/temperatureThresholds';
 
 export type JsonShape = {
   features: Array<{

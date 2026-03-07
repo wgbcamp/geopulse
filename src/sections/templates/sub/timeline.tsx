@@ -8,10 +8,10 @@ import {
 import { Slider } from "@/components/ui/slider"
 
 type TimelineProps = {
-  setTime: React.Dispatch<React.SetStateAction<{ time: number, url: string }>>,
+  setTime: React.Dispatch<React.SetStateAction<number>>,
   currentHazard: string,
   currentExposure: string,
-  currentTime: { time: number, url: string }
+  currentTime: number
 }
 
 //riverine flooding vs population 2080 is renamed to 2100
@@ -33,7 +33,7 @@ export const Timeline = ({ setTime, currentHazard, currentExposure, currentTime 
   }, [currentTime]);
 
   const handleValueChange = (value: number[]) => {
-    setTime({time: tileLayerURLs[value[0]].time, url: tileLayerURLs[value[0]].url})
+    setTime(tileLayerURLs[value[0]].time)
   }
 
   return (
