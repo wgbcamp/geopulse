@@ -59,7 +59,7 @@ export const Timeline = ({ setTime, currentHazard, currentExposure, currentTime 
                 style={{ left: `${percent}%`}}
               >
                 <div className="w-px h-2 bg-muted-foreground/50"></div>
-                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && currentTime.time === tileLayerURLs[index]?.time ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && currentTime === tileLayerURLs[index]?.time ? "font-bold" : "text-[black]"}`}>
                   {tick}
                 </span>
               </div>

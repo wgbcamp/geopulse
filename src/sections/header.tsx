@@ -26,6 +26,8 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
+import { urlObject, scenarioMapper } from '@/data/datasets';
+
 type HeaderProps = {
     currentTime: number,
     setTime: React.Dispatch<React.SetStateAction<number>>,
@@ -49,11 +51,13 @@ let risks: {hazard: string, exposure: string[], measureStat: string, measureName
   { hazard: "Drought", exposure: ["Cropland"], measureStat: "CDD_CROP_EXP", measureName: "Dry Days", thresholdStat: undefined, thresholdName: "" }
 ];
 
-var scenarioFlip = [
+const scenarioFlip = [
     { frontend: 'Orderly', data: 'rcp4p5' },
     { frontend: 'Disorderly', data: 'rcp8p5' },
     { frontend: 'Hot House', data: 'SSP370' }
 ];
+
+
 
 export const NewHeader: React.FC<HeaderProps> = ({ currentTime, currentView, currentScenario, currentHazard, currentExposure, currentMeasure,
     setExposure, setHazard, setTime, setView, setScenario, setMeasure, setThreshold
@@ -140,23 +144,23 @@ export const NewHeader: React.FC<HeaderProps> = ({ currentTime, currentView, cur
                             <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
                                 <div className='flex items-center'>
                                     <Layer20RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
-                                    <div className="text-[16px] font-bold text-end flex items-center">{scenarioFlip.find(x => x.data === currentScenario)?.frontend}</div>
+                                    <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[currentScenario]}</div>
                                 </div>
                                 <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
                             </div>
                         </PopoverTrigger>
                         <PopoverContent className="w-[225px] p-0">
-                            <div className="flex flex-row justify-center py-[10px] h-[240px]">
-                                <ItemGroup>
-                                    {scenarioFlip.map((x) =>
-                                        <Item key={x.frontend} className={`cursor-pointer hover:bg-gray-100 my-[8px] ${currentScenario === x.data ? 'bg-gray-100 font-bold border-b-3 border-black' : ""} transition-all duration-200 ease-in`} onClick={() => setScenario(x.data)}>
-                                            <ItemContent>
-                                                <ItemHeader onClick={() => setScenario(x.data)}>{x.frontend}</ItemHeader>
-                                            </ItemContent>
-                                        </Item>
-                                    )}
-                                </ItemGroup>
-                            </div>
+                                <div className={`flex flex-row justify-center py-[10px] h-[calc(80px*${urlObject[currentHazard][currentExposure].scenarios.length})]`}>
+                                    <ItemGroup>
+                                        {urlObject[currentHazard][currentExposure].scenarios.map((x) =>
+                                            <Item key={x} className={`cursor-pointer hover:bg-gray-100 my-[8px] ${scenarioMapper[currentScenario] === scenarioMapper[x] ? 'bg-gray-100 font-bold border-b-3 border-black' : ""} transition-all duration-200 ease-in`} onClick={() => setScenario(x)}>
+                                                <ItemContent>
+                                                    <ItemHeader onClick={() => setScenario(x)}>{scenarioMapper[x]}</ItemHeader>
+                                                </ItemContent>
+                                            </Item>
+                                        )}
+                                    </ItemGroup>
+                                </div>
                         </PopoverContent>
                     </Popover>
                 </Card>

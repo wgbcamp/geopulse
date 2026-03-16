@@ -11,6 +11,7 @@ html {
   --orange: #FF8200;
   --darkblue: #1F3764;
   --lightblue: #2C4F92;
+  --gray: #dadada;
 }
 
 .esri-view .esri-view-surface--touch-none:focus::after {

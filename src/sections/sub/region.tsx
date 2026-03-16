@@ -16,6 +16,7 @@ import {
 } from '@highcharts/react';
 
 import { countryByIso3 } from '@/data/isoCountries';
+import { urlObject, scenarioMapper } from '@/data/datasets';
 
 export const Region = ( props: any ) => {
     props = {
@@ -104,43 +105,6 @@ export const Region = ( props: any ) => {
 
     }, [props.currentTime, props.currentScenario, props.currentMeasure, props.currentThreshold]);
 
-    const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
-
-    const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: string, scenarios: string[] }>> = {
-        "Riverine Flooding":
-        {
-            "Population": {
-                url: `${URL_BASE}/riverine_population_table/FeatureServer/0/query`,
-                measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
-                scenarios: ["rcp4p5", "rcp8p5"]
-            }
-        },
-        "Drought":
-        {
-            "Cropland": {
-                url: `${URL_BASE}/drought_cropland_table/FeatureServer/0/query`,
-                measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"],
-                scenarios: ["SSP126", "SSP370", "SSP245"]
-            }
-        },
-        "Temperature Extremes":
-        {
-            "Population": {
-                url: `${URL_BASE}/temperature_population_table/FeatureServer/0/query`,
-                measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
-                scenarios: ["SSP126", "SSP370", "SSP245"],
-                threshold: "TEMP_THRESHOLD"
-            },
-            "Livestock": {
-                url: `${URL_BASE}/temperature_livestock_table/FeatureServer/0/query`,
-                measure: ["HD_LW_EXP"],
-                scenarios: ["SSP126", "SSP370", "SSP245"],
-                threshold: "TEMP_THRESHOLD"
-            }
-
-        }
-    }
-
     async function query(iso3: string) {
 
         const whereClause = `ISO3 IN ('${iso3}')`;
@@ -186,13 +150,6 @@ export const Region = ( props: any ) => {
         "Mid-Century",
         "End-Century",
     ];
-    var scenarioMapper: Record<string, string> = {
-        rcp4p5: 'Orderly trajectory',
-        rcp8p5: 'Disorderly trajectory',
-        SSP126: 'Orderly trajectory',
-        SSP245: 'Disorderly trajectory',
-        SSP370: 'Hot House'
-    };
 
     var measureModel = [
         { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"] },
@@ -270,21 +227,21 @@ export const Region = ( props: any ) => {
         // country data for line chart
         const adm0ChartData: Feature[] = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0")
-            .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
-            .filter((entry: Feature) => {
-                const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
-                return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
-            });
+            // .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
+            // .filter((entry: Feature) => {
+            //     const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+            //     return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
+            // });
         console.log("adm0ChartData ", adm0ChartData);
 
         // region selected data && adm1 data for polygons
         const adm1Data = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
-            .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
-            .filter((entry: Feature) => {
-                const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
-                return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
-            })
+            // .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
+            // .filter((entry: Feature) => {
+            //     const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+            //     return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
+            // })
             .reduce((acc: Record<string, Feature[]>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
 
@@ -327,8 +284,8 @@ export const Region = ( props: any ) => {
                                 nullColor: '#c9c9c9'
                             }],
                             colorAxis: {
-                                // min: chartData.mapLegendValueRange[props.currentMeasure.id].minValue,
-                                // max: chartData.mapLegendValueRange[props.currentMeasure.id].maxValue,
+                                min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
+                                max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
                                 minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {
