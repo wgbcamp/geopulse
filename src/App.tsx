@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { GridView } from './sections/views/GridView';
 import { NewHeader } from './sections/header';
 import { CompareView } from './sections/views/CompareView';
+import { TemperatureThresholds } from './sections/sub/temperatureThresholds';
 
 type JsonShape = {
   features: Array<{
@@ -23,7 +24,7 @@ function App() {
   const [currentHazard, setHazard] = useState<string>("Riverine Flooding");
   const [currentExposure, setExposure] = useState<string>("Population");
   const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "RF_PW_EXP" });
-  const [currentThreshold, setCurrentThreshold] = useState<{ name: string, threshold: any }>({ name: "Hot Days", threshold: undefined });
+  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "Hot Days", threshold: undefined });
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
@@ -51,26 +52,38 @@ function App() {
         setExposure={setExposure}
         currentMeasure={currentMeasure}
         setMeasure={setMeasure}
-        setCurrentThreshold={setCurrentThreshold}
+        setThreshold={setThreshold}
         />
       {currentView == "Grid"
         ?
         <GridView currentTime={currentTime} />
         :
         geoJson ?
-        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
-          <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
-              <CompareView props={{
-                currentTime,
-                currentScenario,
-                geoJson,
-                currentExposure,
-                currentHazard,
-                currentMeasure,
-                currentThreshold
-              }}/>
+          <div>
+            <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
+              <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
+                <CompareView props={{
+                  currentTime,
+                  currentScenario,
+                  geoJson,
+                  currentExposure,
+                  currentHazard,
+                  currentMeasure,
+                  currentThreshold
+                }} />
+              </div>
+            </div>
+            <TemperatureThresholds props={{
+              currentHazard,
+              currentExposure,
+              currentThreshold,
+              currentMeasure,
+              setThreshold,
+              setMeasure
+            }} />
+
+            
           </div>
-        </div>
         :
         <div></div>
       }

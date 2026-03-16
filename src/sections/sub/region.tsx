@@ -52,8 +52,9 @@ export const Region = ( props: any ) => {
         { name: "H_40", number: 40 }
     ];
 
+    //at Tmax ${temperatureModel.find(t => t.name === props.currentThreshold.threshold)?.number}° Celsius <<< this was the linechartinfo2 string on the first item
     let colorAxisTitle: { title: string, hazard: string[], exposure: string[], measure: string[], lineChartInfo: string, lineChartInfo2: string }[] = [
-        { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: ` at Tmax ${temperatureModel.find(t => t.name === props.currentThreshold.threshold)?.number}° Celsius` },
+        { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: ` ` },
         { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: `` },
         { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${props.currentHazard}` },
         { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${props.currentHazard}` },
@@ -119,7 +120,7 @@ export const Region = ( props: any ) => {
             "Cropland": {
                 url: `${URL_BASE}/drought_cropland_table/FeatureServer/0/query`,
                 measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"],
-                scenarios: ["rcp4p5", "rcp8p5"]
+                scenarios: ["SSP126", "SSP370", "SSP245"]
             }
         },
         "Temperature Extremes":
@@ -127,13 +128,13 @@ export const Region = ( props: any ) => {
             "Population": {
                 url: `${URL_BASE}/temperature_population_table/FeatureServer/0/query`,
                 measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
-                scenarios: ["rcp4p5", "rcp8p5"],
+                scenarios: ["SSP126", "SSP370", "SSP245"],
                 threshold: "TEMP_THRESHOLD"
             },
             "Livestock": {
                 url: `${URL_BASE}/temperature_livestock_table/FeatureServer/0/query`,
                 measure: ["HD_LW_EXP"],
-                scenarios: ["rcp4p5", "rcp8p5"],
+                scenarios: ["SSP126", "SSP370", "SSP245"],
                 threshold: "TEMP_THRESHOLD"
             }
 
@@ -175,6 +176,7 @@ export const Region = ( props: any ) => {
             tableData.push(...page.features.map((f: { attributes: Feature }) => f.attributes));
         }
 
+        console.log("logging tableData: ", tableData);
         return tableData;
     }
 
@@ -213,31 +215,37 @@ export const Region = ( props: any ) => {
                 : true
             );
 
-        const dataPointZero = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === "historical");
+        const dataPointZero = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === "historical" || entry["CLIMATE_SCENARIO"] === "H");
 
         return urlObject[props.currentHazard][props.currentExposure].scenarios.reduce((acc: Record<string, number[]>, scenario: string) => {
             const scenarioData = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === scenario);
             acc[scenario] = dataPointZero
                 .concat(scenarioData.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD))
                 .map((x) => x["MEDIAN"]);
+                console.log("logging line chart acc: ", acc);
             return acc;
+            
         }, {});
     }
 
     function mapChartDataPrep(data: Record<string, Feature[]>) {
+        console.log("logging data input: ", data);
         const mapData = Object.keys(data).flatMap((refArea: string) => {
             const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+            console.log("thresholdKey: ", thresholdKey);
             return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === props.currentTime)
                 .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
-                .filter((entry: Feature) => thresholdKey ? entry[thresholdKey] == props.currentThreshold : true)
-                .filter((entry: Feature) => props.currentTime !== 1980 ? entry["CLIMATE_SCENARIO"] === props.currentScenario : true)
+                .filter((entry: Feature) => thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true)
+                .filter((entry: Feature) => props.currentTime !== 1980 ? scenarioMapper[entry["CLIMATE_SCENARIO"]] === scenarioMapper[props.currentScenario] : true)
                 .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
         });
+        console.log("logging mapData: ", mapData);
         return mapData;
     }
 
     const arrangeData = (data: Feature[]) => {
-
+        console.log("arrange data input!: ", data)
+        console.log("Arrange data adm0 input: ", data.filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0"));
         // legend values for map
         var mapLegendValueRange: Record<string, MeasureRange> = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
@@ -265,7 +273,7 @@ export const Region = ( props: any ) => {
             .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
             .filter((entry: Feature) => {
                 const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
-                return thresholdKey ? entry[thresholdKey] == props.currentThreshold : true;
+                return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
             });
         console.log("adm0ChartData ", adm0ChartData);
 
@@ -275,7 +283,7 @@ export const Region = ( props: any ) => {
             .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
             .filter((entry: Feature) => {
                 const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
-                return thresholdKey ? entry[thresholdKey] == props.currentThreshold : true;
+                return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
             })
             .reduce((acc: Record<string, Feature[]>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
@@ -295,7 +303,7 @@ export const Region = ( props: any ) => {
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
             <ComboBox iso3={iso3} setIso3={setIso3} />
-            {chartData && mapChartData.length > 0 ?
+            {chartData && mapChartData ?
                 <div className='flex flex-col'>
                     <MapsChart
                         options={{
@@ -319,8 +327,8 @@ export const Region = ( props: any ) => {
                                 nullColor: '#c9c9c9'
                             }],
                             colorAxis: {
-                                min: chartData.mapLegendValueRange[props.currentMeasure.id].minValue,
-                                max: chartData.mapLegendValueRange[props.currentMeasure.id].maxValue,
+                                // min: chartData.mapLegendValueRange[props.currentMeasure.id].minValue,
+                                // max: chartData.mapLegendValueRange[props.currentMeasure.id].maxValue,
                                 minColor: '#fcdba9',
                                 maxColor: '#E35205',
                                 labels: {

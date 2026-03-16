@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, type ReactElement } from 'react'
 
 import {
   Item,
@@ -25,13 +25,13 @@ import {Beach20FilledIcon} from "@/components/icons/fluent-beach-20-filled"
 import {WeatherSnowflake20FilledIcon} from "@/components/icons/fluent-weather-snowflake-20-filled"
 import {WeatherSunny20FilledIcon} from "@/components/icons/fluent-weather-sunny-20-filled"
 
-type TimelineProps = {
-  currentHazard: string,
-  currentThreshold: { name: string, threshold: any },
-  currentMeasure: { name: string, id: string },
-  setCurrentThreshold: React.Dispatch<React.SetStateAction<{ name: string, threshold: any }>>,
-  setMeasure: React.Dispatch<React.SetStateAction<{ name: string, id: string }>>
-}
+// type TimelineProps = {
+//   currentHazard: string,
+//   currentThreshold: { name: string, threshold: any },
+//   currentMeasure: { name: string, id: string },
+//   setThreshold: React.Dispatch<React.SetStateAction<{ name: string, threshold: any }>>,
+//   setMeasure: React.Dispatch<React.SetStateAction<{ name: string, id: string }>>
+// }
 
 const ticks = [0, 20, 26, 32, 30, 35, 40];
 
@@ -81,63 +81,67 @@ const labels = [
 // ];
 
 
-export const TemperatureThresholds = ({ currentHazard, currentThreshold, currentMeasure, setCurrentThreshold, setMeasure }: TimelineProps) => {
+export const TemperatureThresholds = ( props: any ) => {
 
   const handleValueChange = (value: number[]) => {
   
     //livestock measure was removed in cases 4-6
     switch (value[0]) {
       case 0:
-        setMeasure({ name: "Icing Days", id: 'ID_PW_EXP' });
-        setCurrentThreshold({ name: "Icing Days", threshold: "_Z" });
+        props.setMeasure({ name: "Icing Days", id: 'ID_PW_EXP' });
+        props.setThreshold({ name: "Icing Days", threshold: "_Z" });
         break;
       case 1:
-        setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
-        setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_20' });
+        props.setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
+        props.setThreshold({ name: "Tropical Nights", threshold: 'H_20' });
         break;
       case 2:
-        setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
-        setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_26' });
+        props.setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
+        props.setThreshold({ name: "Tropical Nights", threshold: 'H_26' });
         break;
       case 3:
-        setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
-        setCurrentThreshold({ name: "Tropical Nights", threshold: 'H_32' });
+        props.setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
+        props.setThreshold({ name: "Tropical Nights", threshold: 'H_32' });
         break;
       case 4:
         //removed HD_LW_EXP
-        setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
-        setCurrentThreshold({ name: "Hot Days", threshold: 'H_30' });
+        props.setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
+        props.setThreshold({ name: "Hot Days", threshold: 'H_30' });
         break;
       case 5:
         //removed HD_LW_EXP
-        setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
-        setCurrentThreshold({ name: "Hot Days", threshold: 'H_35' });
+        props.setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
+        props.setThreshold({ name: "Hot Days", threshold: 'H_35' });
         break;
       case 6:
         //removed HD_LW_EXP
-        setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
-        setCurrentThreshold({ name: "Hot Days", threshold: 'H_40' });
+        props.setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
+        props.setThreshold({ name: "Hot Days", threshold: 'H_40' });
         break;
     }
   }
 
   const thresholdValues = ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"];
 
+  const thresholdObject = [
+    
+  ]
+
   const handleTabChange = (value: string) => {
     switch (value) {
       case "Dry Days":
-        setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
+        props.setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
         break;
       case "SPEI Index":
-        setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
+        props.setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
         break;
     }
   }
 
-  const conditionalMeasurements = [
+  const conditionalMeasurements: Record<string, Record<string, ReactElement>> = {
+    "Temperature Extremes":
     {
-      hazard: "Temperature Extremes",
-      component:
+      "Population":
         <div className="absolute w-[500px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
           style={{
             background:
@@ -153,7 +157,7 @@ export const TemperatureThresholds = ({ currentHazard, currentThreshold, current
                   step={1}
                   defaultValue={[0]}
                   onValueChange={handleValueChange}
-                  value={[thresholdValues.indexOf(currentThreshold.threshold)]}
+                // value={[thresholdValues.indexOf(props.currentThreshold.threshold)]}
                 />
                 <div className="relative h-6"
                   style={{ width: "calc(100% )" }}
@@ -167,10 +171,10 @@ export const TemperatureThresholds = ({ currentHazard, currentThreshold, current
                         style={{ left: `${percent}%` }}
                       >
                         <div className="w-px h-2 bg-muted-foreground/50"></div>
-                        <span className={`text-xs w-[42px] mt-0.5 ${tick === currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                        {/* <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                           <div>Tmax</div>
                           <div>{tick > 0 ? '>' : '<'} {tick}° C</div>
-                        </span>
+                        </span> */}
                       </div>
                     )
                   })
@@ -183,11 +187,11 @@ export const TemperatureThresholds = ({ currentHazard, currentThreshold, current
                         className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-13"
                         style={{ left: `${percent}%` }}
                       >
-                        <span className={`text-xs w-[42px] mt-0.5 flex items-end ${label.name === currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                        {/* <span className={`text-xs w-[42px] mt-0.5 flex items-end ${label.name === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                           <div dangerouslySetInnerHTML={{ __html: label.svg }} className="w-6 h-9" />
                           <div className=''>{label.icon && React.createElement(label.icon, { size: 24, color: label.color })}</div>
                           <div className="font-extrabold">{label.name}</div>
-                        </span>
+                        </span> */}
                       </div>
                     )
                   })
@@ -196,25 +200,33 @@ export const TemperatureThresholds = ({ currentHazard, currentThreshold, current
               </div>
             </Item>
           </div>
-        </div>
+        </div>,
+      "Livestock": <div></div>
     },
+    "Drought": 
     {
-      hazard: "Drought",
-      component:
-        <div className="absolute w-[500px] h-[30px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
-          <Tabs onValueChange={handleTabChange} value={currentMeasure.name} defaultValue="Dry Days">
-            <TabsList className='w-[300px]'>
-              <TabsTrigger value="Dry Days">Dry Days</TabsTrigger>
-              <TabsTrigger value="SPEI Index">SPEI Index</TabsTrigger>
-            </TabsList>
-          </Tabs>
-        </div> 
+      "Cropland":
+        // <div className="absolute w-[500px] h-[30px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
+        //   {/* <Tabs onValueChange={handleTabChange} value={props.currentMeasure.name} defaultValue="Dry Days">
+        //     <TabsList className='w-[300px]'>
+        //       <TabsTrigger value="Dry Days">Dry Days</TabsTrigger>
+        //       <TabsTrigger value="SPEI Index">SPEI Index</TabsTrigger>
+        //     </TabsList>
+        //   </Tabs> */}
+        // </div> 
+        <div></div>
+    },
+    "Riverine Flooding":
+    {
+      "Population": <div></div>
     }
-  ]
+  }
+    console.log("conditionalMeasurements: ", conditionalMeasurements);
+    console.log("test: ", conditionalMeasurements?.[props.currentHazard]?.[props.currentExposure]);
 
   return (
     <div>
-      {conditionalMeasurements.filter(i => i.hazard === currentHazard)[0]?.component}
+          {conditionalMeasurements?.[props.currentHazard]?.[props.currentExposure] ?? null}
     </div>
   )
 }
