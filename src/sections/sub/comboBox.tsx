@@ -38,12 +38,11 @@ import { isoCountries, type CountryString, countryByIso3 } from "@/data/isoCount
 
 type ComboBoxProps = {
   loadCountryData(iso3: string): Promise<void>,
-  setSubnationalName(value: string): void,
   iso3: string,
   setIso3: React.Dispatch<React.SetStateAction<string>>
 }
 
-export const ComboBox = ({ loadCountryData, iso3, setIso3 }: ComboBoxProps) => {
+export const ComboBox = ({ iso3, setIso3 }: ComboBoxProps) => {
 
     const [open, setOpen] = React.useState(false);
 

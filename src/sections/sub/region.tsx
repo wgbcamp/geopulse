@@ -16,7 +16,7 @@ import {
 } from '@highcharts/react';
 
 import { countryByIso3 } from '@/data/isoCountries';
-import { urlObject, scenarioMapper } from '@/data/datasets';
+import { urlObject, scenarioMapper, comparisonTitles } from '@/data/datasets';
 
 export const Region = ( props: any ) => {
     props = {
@@ -42,29 +42,7 @@ export const Region = ( props: any ) => {
         type: "FeatureCollection"
     });
 
-    // matrix for highcharts titles based on hazards, exposures, and measures
-    const temperatureModel = [
-        { name: "_Z", number: 0 },
-        { name: "H_20", number: 20 },
-        { name: "H_26", number: 26 },
-        { name: "H_32", number: 32 },
-        { name: "H_30", number: 30 },
-        { name: "H_35", number: 35 },
-        { name: "H_40", number: 40 }
-    ];
-
-    //at Tmax ${temperatureModel.find(t => t.name === props.currentThreshold.threshold)?.number}° Celsius <<< this was the linechartinfo2 string on the first item
-    let colorAxisTitle: { title: string, hazard: string[], exposure: string[], measure: string[], lineChartInfo: string, lineChartInfo2: string }[] = [
-        { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Population", "Livestock", "GDP", "Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: ` ` },
-        { title: "Number of Days", hazard: ["Temperature Extremes"], exposure: ["Urban GDP"], measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "HD_LW_EXP"], lineChartInfo: `${props.currentExposure}-weighted Number of ${props.currentMeasure.name}`, lineChartInfo2: `` },
-        { title: "Number of People", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Population"], measure: [""], lineChartInfo: "Number of People ", lineChartInfo2: `Exposed to ${props.currentHazard}` },
-        { title: "Number of Buildings", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Buildings"], measure: [""], lineChartInfo: "Number of Buildings", lineChartInfo2: `Exposed to ${props.currentHazard}` },
-        { title: "Builtup Area (Km²)", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Builtup Area"], measure: [""], lineChartInfo: "Builtup Area (Km²)", lineChartInfo2: `Exposed to ${props.currentHazard}` },
-        { title: "Percentage of GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["GDP"], measure: [""], lineChartInfo: "Percentage of GDP", lineChartInfo2: `Exposed to ${props.currentHazard}` },
-        { title: "Percentage of Urban GDP", hazard: ["Riverine Flooding", "Coastal Flooding"], exposure: ["Urban GDP"], measure: [""], lineChartInfo: "Percentage of Urban GDP", lineChartInfo2: `Exposed to ${props.currentHazard}` },
-        { title: "Number of Dry Days", hazard: ["Drought"], exposure: ["Cropland"], measure: ["CDD_CROP_EXP"], lineChartInfo: "Population-weighted Number of Dry Days", lineChartInfo2: "" },
-        { title: "SPEI Index", hazard: ["Drought"], exposure: ["Cropland"], measure: ["SPEI_CROP_EXP"], lineChartInfo: "Standardized Precipitation Evapotranspiration Index (SPEI)", lineChartInfo2: "" }
-    ];
+    const [currentSubnational, setSubnational] = React.useState<Record<any, any>>({refAreaName: null, refArea: null, iso3: null});
 
     // set global highcharts chart styling options
     Highcharts.setOptions({
@@ -78,9 +56,12 @@ export const Region = ( props: any ) => {
         }
     });
 
-    // Effect 1: fetch new data when country, hazard or exposure changes
+    // fetch new data when country, hazard or exposure changes
     useEffect(() => {
         var loadCountryData = async (iso3: string) => {
+            if (currentSubnational.iso3 && currentSubnational.iso3 !== iso3) {
+                setSubnational({refAreaName: null, refArea: null, iso3: null});
+            }
             const countryPolygons = {
                 features: props.geoJson.features.filter((f: any) => f.properties.GID_0 === iso3),
                 iso3: iso3,
@@ -92,18 +73,23 @@ export const Region = ( props: any ) => {
             const arrangedData = arrangeData(queryResults);
             setChartData(arrangedData);
             setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
-            setLineChartData(lineChartDataPrep(arrangedData.adm0ChartData));
+            setLineChartData(lineChartDataPrep(arrangedData.adm1Data[currentSubnational.refArea] ?? arrangedData.adm0ChartData));
+            console.log(arrangedData.adm1Data[currentSubnational.refArea])
         };
         loadCountryData(iso3);
     }, [iso3, props.currentHazard, props.currentExposure]);
 
-    // Effect 2: re-process already-fetched data
+    // re-process already-fetched data
     useEffect(() => {
-        if (chartData == null) return; // guard: don't run before first fetch
+        if (chartData == null) return; // guard
         setMapChartData(mapChartDataPrep(chartData.adm1Data));
-        setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
+        setLineChartData(lineChartDataPrep(chartData.adm1Data[currentSubnational.refArea] ?? chartData.adm0ChartData));
+    }, [props.currentMeasure, props.currentThreshold]);
 
-    }, [props.currentTime, props.currentScenario, props.currentMeasure, props.currentThreshold]);
+    useEffect(() => {
+        if (chartData == null) return; // guard
+        setMapChartData(mapChartDataPrep(chartData.adm1Data));
+    }, [props.currentTime, props.currentScenario]);
 
     async function query(iso3: string) {
 
@@ -149,13 +135,6 @@ export const Region = ( props: any ) => {
         "Early Century",
         "Mid-Century",
         "End-Century",
-    ];
-
-    var measureModel = [
-        { hazard: "Drought", exposure: "Cropland", measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"] },
-        { hazard: "Temperature Extremes", exposure: "Population", measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"] },
-        { hazard: "Temperature Extremes", exposure: "Livestock", measure: ["HD_LW_EXP"] },
-        { hazard: "Riverine Flooding", exposure: "Population", measure: ["RF_PW_EXP"] }
     ];
 
     type MeasureRange = {
@@ -309,7 +288,7 @@ export const Region = ( props: any ) => {
                             },
                             legend: {
                                 title: {
-                                    // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.title,
+                                    text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, iso3).colorAxis,
                                     style: {
                                         color: "white",
                                         fontWeight: "bold"
@@ -343,8 +322,14 @@ export const Region = ( props: any ) => {
                                     point: {
                                         events: {
                                             click: function () {
-                                                console.log(this.GID_1);
-                                                setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]))
+                                                if (this.point.NAME_1 == currentSubnational.refAreaName) {
+                                                    setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
+                                                    setSubnational({refAreaName: null, refArea: null, iso3: null});
+                                                } else {
+                                                    console.log("this: ", lineChartData);
+                                                    setSubnational({refAreaName: this.point.NAME_1, refArea: this.GID_1, iso3: iso3});
+                                                    setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]));
+                                                }
                                             }
                                         }
                                     }
@@ -389,10 +374,8 @@ export const Region = ( props: any ) => {
                                 itemMarginBottom: 3,
                             },
                             title: {
-                                // text: colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo
-                                //  + "" + colorAxisTitle.find(i => i.exposure.includes(currentExposure) && i.hazard.includes(currentHazard) && i.Measure.includes(currentMeasure.measures[0]))?.lineChartInfo2
-                                //  + ": " + country[position].name + " " + currentSubnational[position],
-                                text: countryByIso3[iso3] + colorAxisTitle.filter((desc) => desc.exposure.includes(props.currentExposure) && desc.hazard.includes(props.currentHazard) && desc.measure.includes(props.currentMeasure.id)),
+                                text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, iso3).chart 
+                                + (currentSubnational.refAreaName ? " (" + currentSubnational.refAreaName + ")" : "") ,
                                 align: 'left',
                                 style: {
                                     color: "white",
