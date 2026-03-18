@@ -59,6 +59,7 @@ export const Region = ( props: any ) => {
     // fetch new data when country, hazard or exposure changes
     useEffect(() => {
         var loadCountryData = async (iso3: string) => {
+            // reset subnational value when the iso3 property is not null and does not match the iso3 property of the new country
             if (currentSubnational.iso3 && currentSubnational.iso3 !== iso3) {
                 setSubnational({refAreaName: null, refArea: null, iso3: null});
             }
@@ -74,7 +75,11 @@ export const Region = ( props: any ) => {
             setChartData(arrangedData);
             setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
             setLineChartData(lineChartDataPrep(arrangedData.adm1Data[currentSubnational.refArea] ?? arrangedData.adm0ChartData));
-            console.log(arrangedData.adm1Data[currentSubnational.refArea])
+
+            // reset subnational value when the currentSubnational refArea property does not exist in the arrangedData.adm1Data object 
+            if (!arrangedData.adm1Data[currentSubnational.refArea]) {
+                setSubnational({refAreaName: null, refArea: null, iso3: null});
+            }
         };
         loadCountryData(iso3);
     }, [iso3, props.currentHazard, props.currentExposure]);
@@ -143,7 +148,7 @@ export const Region = ( props: any ) => {
     };
 
     function lineChartDataPrep(data: Record<string, any>[]) {
-        const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+        const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold?.type;
         const filteredData = data
             .filter((entry) => entry["MEASURE"] === props.currentMeasure.id)
             .filter((entry) => thresholdKey
@@ -167,7 +172,7 @@ export const Region = ( props: any ) => {
     function mapChartDataPrep(data: Record<string, Feature[]>) {
         console.log("logging data input: ", data);
         const mapData = Object.keys(data).flatMap((refArea: string) => {
-            const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
+            const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold?.type;
             console.log("thresholdKey: ", thresholdKey);
             return data[refArea].filter((entry: Feature) => entry["TIME_PERIOD"] === props.currentTime)
                 .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
@@ -206,21 +211,11 @@ export const Region = ( props: any ) => {
         // country data for line chart
         const adm0ChartData: Feature[] = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm0")
-            // .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
-            // .filter((entry: Feature) => {
-            //     const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
-            //     return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
-            // });
         console.log("adm0ChartData ", adm0ChartData);
 
         // region selected data && adm1 data for polygons
         const adm1Data = data
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
-            // .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
-            // .filter((entry: Feature) => {
-            //     const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold;
-            //     return thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true;
-            // })
             .reduce((acc: Record<string, Feature[]>, entry: Feature) => {
                 const key = entry["REF_AREA"] as string;
 
@@ -288,7 +283,7 @@ export const Region = ( props: any ) => {
                             },
                             legend: {
                                 title: {
-                                    text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, iso3).colorAxis,
+                                    text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).colorAxis,
                                     style: {
                                         color: "white",
                                         fontWeight: "bold"
@@ -345,13 +340,7 @@ export const Region = ( props: any ) => {
                                 height: 500,
                                 marginTop: 130,
                                 events: {
-                                    load() {
-                                        const chart = this as unknown as Highcharts.Chart;
-                                        const titleBBox = chart.title.getBBox();
-                                        chart.subtitle.attr({
-                                            y: titleBBox.y + titleBBox.height + 25
-                                        })
-                                    }
+                               
                                 }
                             },
                             legend: {
@@ -374,7 +363,7 @@ export const Region = ( props: any ) => {
                                 itemMarginBottom: 3,
                             },
                             title: {
-                                text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, iso3).chart 
+                                text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).chart 
                                 + (currentSubnational.refAreaName ? " (" + currentSubnational.refAreaName + ")" : "") ,
                                 align: 'left',
                                 style: {
@@ -385,7 +374,7 @@ export const Region = ( props: any ) => {
                                 },
                                 useHTML: true,
                                 x: 18,
-                                y: 20,
+                                y: 15,
                             },
                             subtitle: {
                                 text: "(Exposure quantity)",

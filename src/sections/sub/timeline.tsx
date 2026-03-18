@@ -7,13 +7,6 @@ import {
 
 import { Slider } from "@/components/ui/slider"
 
-type TimelineProps = {
-  setTime: React.Dispatch<React.SetStateAction<number>>,
-  currentHazard: string,
-  currentExposure: string,
-  currentTime: number
-}
-
 //riverine flooding vs population 2080 is renamed to 2100
 const tileLayerURLs = [
   { hazard: "Riverine Flooding", exposure: "Population", time: 1980, string: "1980-2014", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer" },
@@ -27,13 +20,14 @@ tileLayerURLs.forEach(layer => {
   ticks.push(layer.string);
 })
 
-export const Timeline = ({ setTime, currentHazard, currentExposure, currentTime }: TimelineProps) => {
+export const Timeline = ({ props }: any) => {
 
   useEffect(() => {
-  }, [currentTime]);
+    console.log("props: ",props)
+  }, [props.currentTime]);
 
   const handleValueChange = (value: number[]) => {
-    setTime(tileLayerURLs[value[0]].time)
+    props.setTime(tileLayerURLs[value[0]].time)
   }
 
   return (
@@ -59,7 +53,7 @@ export const Timeline = ({ setTime, currentHazard, currentExposure, currentTime 
                 style={{ left: `${percent}%`}}
               >
                 <div className="w-px h-2 bg-muted-foreground/50"></div>
-                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && currentTime === tileLayerURLs[index]?.time ? "font-bold" : "text-[black]"}`}>
+                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && props.currentTime === tileLayerURLs[index]?.time ? "font-bold" : "text-[black]"}`}>
                   {tick}
                 </span>
               </div>

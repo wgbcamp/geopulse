@@ -124,10 +124,6 @@ export const TemperatureThresholds = ( { props }: any ) => {
 
   const thresholdValues = ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"];
 
-  const thresholdObject = [
-    
-  ]
-
   const handleDroughtTabChange = (value: string) => {
     switch (value) {
       case "Dry Days":

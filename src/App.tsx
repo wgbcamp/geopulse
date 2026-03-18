@@ -39,21 +39,21 @@ function App() {
  
   return (
     <div className='h-full'>
-      <NewHeader 
-        currentTime={currentTime}
-        setTime={setTime}
-        currentView={currentView}
-        setView={setView}
-        currentScenario={currentScenario}
-        setScenario={setScenario}
-        currentHazard={currentHazard}
-        setHazard={setHazard}
-        currentExposure={currentExposure}
-        setExposure={setExposure}
-        currentMeasure={currentMeasure}
-        setMeasure={setMeasure}
-        setThreshold={setThreshold}
-        />
+      <NewHeader props={{
+        currentTime,
+        setTime,
+        currentView,
+        setView,
+        currentScenario,
+        setScenario,
+        currentHazard,
+        setHazard,
+        currentExposure,
+        setExposure,
+        currentMeasure,
+        setMeasure,
+        setThreshold
+      }} />
       {currentView == "Grid"
         ?
         <GridView currentTime={currentTime} />

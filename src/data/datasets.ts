@@ -2,12 +2,12 @@ import { countryByIso3 } from '@/data/isoCountries';
 
 export const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
 
-export const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: string, scenarios: string[] }>> = {
+export const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: {type: string; group: string[]}, scenarios: string[] }>> = {
     "Riverine Flooding":
     {
         "Population": {
             url: `${URL_BASE}/riverine_population_table/FeatureServer/0/query`,
-            measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
+            measure: ["RF_PW_EXP"],
             scenarios: ["rcp4p5", "rcp8p5"]
         }
     },
@@ -23,15 +23,21 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
     {
         "Population": {
             url: `${URL_BASE}/temperature_population_table/FeatureServer/0/query`,
-            measure: ["HD_PW_EXP", "TN_PW_EXP", "ID_PW_EXP"],
+            measure: ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP"],
             scenarios: ["SSP126", "SSP245", "SSP370"],
-            threshold: "TEMP_THRESHOLD"
+            threshold: {
+                type: "TEMP_THRESHOLD",
+                group: ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"]
+            }
         },
         "Livestock": {
             url: `${URL_BASE}/temperature_livestock_table/FeatureServer/0/query`,
             measure: ["HD_LW_EXP"],
             scenarios: ["SSP126", "SSP245", "SSP370"],
-            threshold: "TEMP_THRESHOLD"
+            threshold: {
+                type: "TEMP_THRESHOLD",
+                group: ["H_35"]
+            }
         }
 
     }
@@ -54,25 +60,35 @@ export const measureMapper: Record<string, string> = {
     HD_LW_EXP: "Hot Days"
 };
 
-export const comparisonTitles = (hazard: string, exposure: string, measure: string, iso3: string) => {
+const thresholdToTitle: Record<string, string> = {
+    _Z: "< 0",
+    H_20: "> 20",
+    H_26: "> 26",
+    H_32: "> 32",
+    H_30: "> 30",
+    H_35: "> 35",
+    H_40: "> 40"
+}
+
+export const comparisonTitles = (hazard: string, exposure: string, measure: string, threshold: string, iso3: string) => {
 
     const colorAxisTitleMapper: Record<string, Record<string, Record<string, string>>> = {
         "Temperature Extremes": {
             "Population": {
                 colorAxis: "Number of Days",
-                chart: `Population-weighted Number of ${measureMapper[measure]} at Tmax {#}° Celsius: ${countryByIso3[iso3]}`
+                chart: `Population-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             },
             "Livestock": {
                 colorAxis: "Number of Days",
-                chart: `Livestock-weighted Number of ${measureMapper[measure]} at Tmax {#}° Celsius: ${countryByIso3[iso3]}`
+                chart: `Livestock-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             },
             "GDP": {
                 colorAxis: "Number of Days",
-                chart: `GDP-weighted Number of ${measureMapper[measure]} at Tmax {#}° Celsius: ${countryByIso3[iso3]}`
+                chart: `GDP-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             },
             "Urban GDP": {
                 colorAxis: "Number of Days",
-                chart: `Urban GDP-weighted Number of ${measureMapper[measure]} at Tmax {#}° Celsius: ${countryByIso3[iso3]}`
+                chart: `Urban GDP-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             }
         },
         "Riverine Flooding": {
