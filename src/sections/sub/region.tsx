@@ -14,6 +14,10 @@ import {
     Credits,
     Highcharts
 } from '@highcharts/react';
+// import 'highcharts/modules/exporting';
+// import 'highcharts/modules/export-data';
+import { Exporting } from '@highcharts/react/options/exporting';
+
 
 import { countryByIso3 } from '@/data/isoCountries';
 import { urlObject, scenarioMapper, comparisonTitles } from '@/data/datasets';
@@ -56,6 +60,25 @@ export const Region = ( props: any ) => {
         }
     });
 
+    Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
+    const path = [
+        // Arrow stem
+        'M', x + w * 0.5, y,
+        'L', x + w * 0.5, y + h * 0.7,
+        // Arrow head
+        'M', x + w * 0.3, y + h * 0.5,
+        'L', x + w * 0.5, y + h * 0.7,
+        'L', x + w * 0.7, y + h * 0.5,
+        // Box
+        'M', x, y + h * 0.9,
+        'L', x, y + h,
+        'L', x + w, y + h,
+        'L', x + w, y + h * 0.9
+    ];
+    return path;
+};
+
+
     const lineChartStyleMapper: Record<string, Record<string, string>> = {
         rcp4p5: {color: '#407EC9', symbol: 'circle'},
         rcp8p5: {color: '#FF8200', symbol: 'triangle'},
@@ -72,16 +95,28 @@ export const Region = ( props: any ) => {
             if (currentSubnational.iso3 && currentSubnational.iso3 !== iso3) {
                 setSubnational({refAreaName: null, refArea: null, iso3: null});
             }
+        
+            // retrieve polygons from geoJson object
             const countryPolygons = {
                 features: props.geoJson.features.filter((f: any) => f.properties.GID_0 === iso3),
                 iso3: iso3,
                 name: countryByIso3[iso3],
                 type: "FeatureCollection"
             };
+
+            // store polygon data for selected country
             setPolygons(countryPolygons);
+
+            // run query based on iso3
             const queryResults = await query(iso3);
+
+            // first data organization based on filters
             const arrangedData = arrangeData(queryResults);
+
+            // assign data to chartData state
             setChartData(arrangedData);
+
+            // second data organization for filters, used in map and line chart
             setMapChartData(mapChartDataPrep(arrangedData.adm1Data));
             setLineChartData(lineChartDataPrep(arrangedData.adm1Data[currentSubnational.refArea] ?? arrangedData.adm0ChartData));
 
@@ -89,6 +124,14 @@ export const Region = ( props: any ) => {
             if (!arrangedData.adm1Data[currentSubnational.refArea]) {
                 setSubnational({refAreaName: null, refArea: null, iso3: null});
             }
+
+            // check and see if the currentScenario exists on the chosen table based on urlObject
+            if (
+                !Object.values(urlObject[props.currentHazard][props.currentExposure].scenarios)
+                    .map((k) => scenarioMapper[k])
+                    .includes(scenarioMapper[props.currentScenario])) {
+                props.setScenario(urlObject[props.currentHazard][props.currentExposure].scenarios[0]); 
+            } 
         };
         loadCountryData(iso3);
     }, [iso3, props.currentHazard, props.currentExposure]);
@@ -156,6 +199,8 @@ export const Region = ( props: any ) => {
         minValue: number;
     };
 
+    const daysOfMeasure = ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "CDD_CROP_EXP", "HD_LW_EXP"];
+
     function lineChartDataPrep(data: Record<string, any>[]) {
         const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold?.type;
         const filteredData = data
@@ -209,7 +254,8 @@ export const Region = ( props: any ) => {
                         minValue: measure === "SPEI_CROP_EXP" ? median : 0
                     };
                 } else {
-                    acc[measure].maxValue = Math.max(acc[measure].maxValue, median);
+                    
+                    acc[measure].maxValue = daysOfMeasure.includes(measure) ? Math.max(acc[measure].maxValue, 365) : Math.max(acc[measure].maxValue, median);
                     acc[measure].minValue = measure === "SPEI_CROP_EXP" ? Math.min(acc[measure].minValue, median) : 0
                 }
 
@@ -269,11 +315,37 @@ export const Region = ( props: any ) => {
                                 nullColor: '#c9c9c9'
                             }],
                             colorAxis: {
-                                min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
-                                max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
-                                minColor: '#fcdba9',
-                                maxColor: '#E35205',
+                                // min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
+                                // max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
+                                min: -2.5,
+                                max: 2.5,
+                                // endOnTick: false,
+                                // minColor: '#fcdba9',
+                                // maxColor: '#E35205',
+                                stops: [
+                                    [0.0, '#791F1F'], // Extremely dry
+                                    [0.2, '#BA7517'], // Severely dry
+                                    [0.3, '#FAC775'], // Moderately dry
+                                    [0.5, '#FFFFFF'], // Near normal
+                                    [0.7, '#85B7EB'], // Moderately wet
+                                    [0.8, '#378ADD'], // Very wet
+                                    [1.0, '#0C447C']  // Extremely wet
+                                ],
+
+                                tickPositions: [-2.5, -2, -1.5, -1, 0, 1, 1.5, 2, 2.5],
                                 labels: {
+                                    formatter: function () {
+                                        const map = {
+                                            '-2': 'Extremely dry',
+                                            '-1.5': 'Severely dry',
+                                            '-1': 'Moderately dry',
+                                            '0': 'Near normal',
+                                            '1': 'Moderately wet',
+                                            '1.5': 'Very wet',
+                                            '2': 'Extremely wet'
+                                        };
+                                        return map[this.value] || this.value;
+                                    },
                                     style: {
                                         color: "#999999",
                                         fontWeight: "bold",
@@ -303,7 +375,11 @@ export const Region = ( props: any ) => {
                             },
                             tooltip: {
                                 formatter: function () {
-                                    var value = Math.ceil(this.point.value).toString();
+
+                                    var value = this.point.value;
+                                    if (props.currentMeasure.id !== "SPEI_CROP_EXP") {
+                                        value = Math.ceil(value).toString();
+                                    }
                                     var counter = 0;
 
                                     for (var i = value.length - 1; i > 0; i--) {
@@ -312,7 +388,6 @@ export const Region = ( props: any ) => {
                                             value = value.slice(0, i) + "," + value.substring(i, value.length);
                                         }
                                     }
-
                                     return `<b>${this.point.NAME_1}</b><br/>${value}`;
                                 },
                                 backgroundColor: "#212121",
@@ -352,6 +427,32 @@ export const Region = ( props: any ) => {
                             }
                         }}
                     >
+                        <Exporting 
+                            buttons={{
+                                contextButton: {
+                                    symbol: 'download',
+                                    symbolSize: 20,      // default is 12, increase as needed
+                                    symbolX: 22,         // adjust position to keep it centered
+                                    symbolY: 22,
+                                    theme: {
+                                        fill: 'transparent',
+                                        stroke: 'none',
+                                        states: {
+                                            hover: {
+                                                fill: 'transparent', 
+                                                stroke: 'none' 
+                                            },
+                                            select: {
+                                                 fill: 'transparent', 
+                                                stroke: 'none' 
+                                            }
+                                        }
+                                    },
+                                    symbolStroke: '#a3a3a3',
+                                    symbolFill: '#a3a3a3',
+                                }
+                            }}
+                        />
                     </MapsChart>
                     <Chart
                         options={{
@@ -474,6 +575,32 @@ export const Region = ( props: any ) => {
                                     } else {
                                         return this.value;
                                     }
+                                }
+                            }}
+                        />
+                        <Exporting 
+                            buttons={{
+                                contextButton: {
+                                    symbol: 'download',
+                                    symbolSize: 20,      // default is 12, increase as needed
+                                    symbolX: 22,         // adjust position to keep it centered
+                                    symbolY: 22,
+                                    theme: {
+                                        fill: 'transparent',
+                                        stroke: 'none',
+                                        states: {
+                                            hover: {
+                                                fill: 'transparent', 
+                                                stroke: 'none' 
+                                            },
+                                            select: {
+                                                 fill: 'transparent', 
+                                                stroke: 'none' 
+                                            }
+                                        }
+                                    },
+                                    symbolStroke: '#a3a3a3',
+                                    symbolFill: '#a3a3a3',
                                 }
                             }}
                         />

@@ -169,7 +169,7 @@ export const TemperatureThresholds = ( { props }: any ) => {
                       >
                         <div className="w-px h-2 bg-muted-foreground/50"></div>
                         <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
-                          <div>Tmax</div>
+                          <div>{index >= 1 && index <= 3 ? 'Tmin' : 'Tmax'}</div>
                           <div>{tick > 0 ? '>' : '<'} {tick}° C</div>
                         </span>
                       </div>

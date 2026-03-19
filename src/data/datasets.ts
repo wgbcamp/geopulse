@@ -61,13 +61,13 @@ export const measureMapper: Record<string, string> = {
 };
 
 const thresholdToTitle: Record<string, string> = {
-    _Z: "< 0",
-    H_20: "> 20",
-    H_26: "> 26",
-    H_32: "> 32",
-    H_30: "> 30",
-    H_35: "> 35",
-    H_40: "> 40"
+    _Z: "Tmax < 0",
+    H_20: "Tmin > 20",
+    H_26: "Tmin > 26",
+    H_32: "Tmin > 32",
+    H_30: "Tmax > 30",
+    H_35: "Tmax > 35",
+    H_40: "Tmax > 40"
 }
 
 export const comparisonTitles = (hazard: string, exposure: string, measure: string, threshold: string, iso3: string) => {
@@ -76,19 +76,19 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
         "Temperature Extremes": {
             "Population": {
                 colorAxis: "Number of Days",
-                chart: `Population-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
+                chart: `Population-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             },
             "Livestock": {
                 colorAxis: "Number of Days",
-                chart: `Livestock-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
+                chart: `Livestock-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             },
             "GDP": {
                 colorAxis: "Number of Days",
-                chart: `GDP-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
+                chart: `GDP-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             },
             "Urban GDP": {
                 colorAxis: "Number of Days",
-                chart: `Urban GDP-weighted Number of ${measureMapper[measure]} at Tmax ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
+                chart: `Urban GDP-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`
             }
         },
         "Riverine Flooding": {

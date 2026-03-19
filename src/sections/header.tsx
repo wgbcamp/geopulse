@@ -31,6 +31,13 @@ import { urlObject, scenarioMapper, measureMapper } from '@/data/datasets';
 export const NewHeader = ({ props }: any) => {
 
     const [riskState, setRiskState] = useState<string>("Riverine Flooding");
+    const [riskOpened, setRiskOpened] = useState<boolean>(false);
+    const handleOpenChange = (newOpenState: boolean) => {
+        if (newOpenState) {
+            setRiskState(props.currentHazard)
+        }
+        setRiskOpened(newOpenState);
+    };
 
     return (
         <div className={`h-[69px] sticky top-0 z-50`}>
@@ -67,8 +74,8 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                 </Card>
                 <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0">
-                    <Popover>
-                        <PopoverTrigger>
+                    <Popover open={riskOpened} onOpenChange={handleOpenChange}>
+                        <PopoverTrigger  >
                             <div className="flex flex-row items-center justify-between w-[295px] px-5">
                                 <div className='flex items-center cursor-pointer'>
                                     <Warning20RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
