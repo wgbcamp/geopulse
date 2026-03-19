@@ -30,7 +30,7 @@ import { urlObject, scenarioMapper, measureMapper } from '@/data/datasets';
 
 export const NewHeader = ({ props }: any) => {
 
-    const [riskState, setRiskState] = useState<{hazard: string, exposure: string}>({hazard: props.currentHazard, exposure: props.currentExposure});
+    const [riskState, setRiskState] = useState<string>("Riverine Flooding");
 
     return (
         <div className={`h-[69px] sticky top-0 z-50`}>
@@ -85,12 +85,12 @@ export const NewHeader = ({ props }: any) => {
                             <div className="flex flex-row justify-center">
                                 <ItemGroup>
                                     {Object.entries(urlObject).map(([key, value]) => {
-                                        return <Item key={key} className={`cursor-pointer my-[4px] hover:bg-gray-200 ${riskState.hazard === key ? 'bg-gray-100 border-b-3 border-black' : ""} transition-all hover:duration-50 duration-200 ease-in`} onClick={() => setRiskState({ hazard: key, exposure: props.currentExposure })}>
+                                        return <Item key={key} className={`cursor-pointer my-[4px] hover:bg-gray-200 ${riskState === key ? 'bg-gray-100 border-b-3 border-black' : ""} transition-all hover:duration-50 duration-200 ease-in`} onClick={() => setRiskState(key)}>
                                             <ItemContent>
-                                                <ItemHeader className={`${riskState.hazard === key ? 'font-bold' : 'font-medium'} text-[16px]`}>{key}</ItemHeader>
-                                                <div className={`${riskState.hazard === key ? `h-[calc(80px*${value.length})]` : "h-0 hidden"}`}>
+                                                <ItemHeader className={`${riskState === key ? 'font-bold' : 'font-medium'} text-[16px]`}>{key}</ItemHeader>
+                                                <div className={`${riskState === key ? `h-[calc(80px*${value.length})]` : "h-0 hidden"}`}>
                                                         {Object.entries(value).map(([a, b]) =>
-                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${riskState.exposure === a && riskState.hazard === props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState({ hazard: key, exposure: a }); props.setHazard(key); props.setExposure(a); props.setThreshold({ name: "", threshold: b.threshold?.group[0] }); props.setMeasure({ id: b.measure[0], name: measureMapper[b.measure[0]]}); }}>
+                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${props.currentExposure == a && riskState == props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState(key); props.setHazard(key); props.setExposure(a); props.setThreshold({ name: "", threshold: b.threshold?.group[0] }); props.setMeasure({ id: b.measure[0], name: measureMapper[b.measure[0]]}); }}>
                                                                 <ItemContent>
                                                                     <ItemHeader className=''>{a}</ItemHeader>
                                                                 </ItemContent>

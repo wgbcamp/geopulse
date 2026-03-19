@@ -56,6 +56,15 @@ export const Region = ( props: any ) => {
         }
     });
 
+    const lineChartStyleMapper: Record<string, Record<string, string>> = {
+        rcp4p5: {color: '#407EC9', symbol: 'circle'},
+        rcp8p5: {color: '#FF8200', symbol: 'triangle'},
+        SSP126: {color: '#407EC9', symbol: 'circle'},
+        SSP245: {color: '#FF8200', symbol: 'triangle'},
+        SSP370: {color: '#DA291C', symbol: 'diamond'}
+    }
+
+
     // fetch new data when country, hazard or exposure changes
     useEffect(() => {
         var loadCountryData = async (iso3: string) => {
@@ -242,6 +251,8 @@ export const Region = ( props: any ) => {
                                 map: polygons,
                                 backgroundColor: 'RGBA(0,0,0,0)',
                                 animation: false,
+                                events: {
+                                }
                             },
                             mapView: {
                                 projection: {
@@ -321,13 +332,22 @@ export const Region = ( props: any ) => {
                                                     setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
                                                     setSubnational({refAreaName: null, refArea: null, iso3: null});
                                                 } else {
-                                                    console.log("this: ", lineChartData);
                                                     setSubnational({refAreaName: this.point.NAME_1, refArea: this.GID_1, iso3: iso3});
                                                     setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]));
                                                 }
-                                            }
+                                            },
                                         }
+                                    },
+                                    allowPointSelect: false,
+                                    states: {
+                                        select: {
+                                           
+                                        }
+                                    },
+                                    events: {
+                       
                                     }
+
                                 }
                             }
                         }}
@@ -404,43 +424,17 @@ export const Region = ( props: any ) => {
                                     return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value;
                                 }
                             },
-                            colors: [
-                                {
-                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#0098FF'], [1, '#0098FF00']]
-                                },
-                                {
-                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#FF9500'], [1, '#FF950000']]
-                                },
-                                {
-                                    linearGradient: { x1: 0, x2: 0, y1: 0, y2: 1 },
-                                    stops: [[0, '#ff0040'], [1, '#FF950000']]
-                                },
-
-                            ],
                             series: urlObject[props.currentHazard][props.currentExposure].scenarios.map((scenario: string) => ({
                                 type: 'line',
                                 name: scenarioMapper[scenario],
                                 data: lineChartData[scenario],
+                                color: lineChartStyleMapper[scenario].color,
                                 marker: {
                                     radius: 6,
                                     lineWidth: 2,
-                                    lineColor: 'white'
+                                    symbol: lineChartStyleMapper[scenario].symbol
                                 }
-                            })),
-                            plotOptions: {
-                                series: {
-                                    lineWidth: 3.5,
-                                },
-                                area: {
-                                    marker: {
-                                        lineWidth: 2,
-                                        lineColor: 'white',
-                                    },
-
-                                }
-                            }
+                            }))
                         }}
                     >
                         <Credits enabled={false} />
