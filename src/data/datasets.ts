@@ -137,8 +137,8 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
         },
         "Drought": {
             "Cropland": {
-                colorAxis: `${measureMapper[measure] == "Dry Days" ? "Number of Dry Days" : "SPEI Index"}`,
-                chart: `${measureMapper[measure] == "Dry Days" ? `Population-weighted Number of Dry Days: ${countryByIso3[iso3]}` : "Standardized Precipitation Evapotranspiration"}`
+                colorAxis: `${measureMapper[measure] == "Dry Days" ? "Maximum Number of Consecutive Dry Days" : "Cropland SPEI Index"}`,
+                chart: `${measureMapper[measure] == "Dry Days" ? `Population-weighted Number of Dry Days: ${countryByIso3[iso3]}` : "Standardized Precipitation Evapotranspiration Index for Cropland"}`
             }
         }
     }

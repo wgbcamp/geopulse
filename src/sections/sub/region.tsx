@@ -332,8 +332,7 @@ export const Region = ( props: any ) => {
                                 min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
                                 max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
                                 endOnTick: false,
-                                minColor: '#fcdba9',
-                                maxColor: '#E35205',
+                               
                                   labels: {
                                         style: {
                                             color: "#999999",
@@ -341,7 +340,7 @@ export const Region = ( props: any ) => {
                                             textOverflow: 'none'
                                         }
                                     },
-                                ...(props.currentMeasure.id == "SPEI_CROP_EXP" && {
+                                ...(props.currentMeasure.id == "SPEI_CROP_EXP" ? {
                                     stops: [
                                         [0.0, '#791F1F'], // Extremely dry
                                         [0.2, '#BA7517'], // Severely dry
@@ -352,7 +351,13 @@ export const Region = ( props: any ) => {
                                         [1.0, '#0C447C']  // Extremely wet
                                     ],
                                     tickPositions: [-2.5, -2, -1.5, -1, 0, 1, 1.5, 2, 2.5],
+                                } : {
+                                    stops: undefined,
+                                    tickPositions: undefined,
+                                    minColor: '#fcdba9',
+                                    maxColor: '#E35205',
                                 }),
+                                    
                                 width: '90%',
                             },
 
