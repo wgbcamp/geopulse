@@ -197,8 +197,6 @@ export const Region = ( props: any ) => {
         minValue: number;
     };
 
-    const daysOfMeasure = ["ID_PW_EXP", "TN_PW_EXP", "HD_PW_EXP", "CDD_CROP_EXP", "HD_LW_EXP"];
-
     function lineChartDataPrep(data: Record<string, any>[]) {
         const thresholdKey = urlObject[props.currentHazard][props.currentExposure].threshold?.type;
         const filteredData = data
@@ -214,7 +212,7 @@ export const Region = ( props: any ) => {
             const scenarioData = filteredData.filter((entry) => entry["CLIMATE_SCENARIO"] === scenario);
             acc[scenario] = dataPointZero
                 .concat(scenarioData.sort((a, b) => a.TIME_PERIOD - b.TIME_PERIOD))
-                .map((x) => x["MEDIAN"]);
+                .map((x) => x[urlObject[props.currentHazard][props.currentExposure].value]);
                 console.log("logging line chart acc: ", acc);
             return acc;
             
@@ -230,7 +228,7 @@ export const Region = ( props: any ) => {
                 .filter((entry: Feature) => entry["MEASURE"] === props.currentMeasure.id)
                 .filter((entry: Feature) => thresholdKey ? entry[thresholdKey] == props.currentThreshold.threshold : true)
                 .filter((entry: Feature) => props.currentTime !== 1980 ? scenarioMapper[entry["CLIMATE_SCENARIO"]] === scenarioMapper[props.currentScenario] : true)
-                .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry["MEDIAN"] }))
+                .map((entry: Feature) => ({ GID_1: entry["REF_AREA"], NAME_1: entry["REF_AREA_NAME"], value: entry[urlObject[props.currentHazard][props.currentExposure].value] }))
         });
         console.log("logging mapData: ", mapData);
         return mapData;
@@ -244,12 +242,12 @@ export const Region = ( props: any ) => {
             .filter((entry: Feature) => entry["ADMIN_FILTER"] === "adm1")
             .reduce((acc: Record<string, MeasureRange>, entry: Feature) => {
                 const measure = entry["MEASURE"] as string;
-                const median = Number(entry["MEDIAN"]);
+                const obsValue = Number(entry[urlObject[props.currentHazard][props.currentExposure].value]);
 
                 if (!acc[measure]) {
                     acc[measure] = {
-                        maxValue: median,
-                        minValue: measure === "SPEI_CROP_EXP" ? median : 0
+                        maxValue: obsValue,
+                        minValue: measure === "SPEI_CROP_EXP" ? obsValue : 0
                     };
                 } else {
                     
@@ -266,8 +264,8 @@ export const Region = ( props: any ) => {
                             acc[measure].minValue = 0;
                             break;
                         default: 
-                            acc[measure].maxValue = Math.max(acc[measure].maxValue, median);
-                            acc[measure].minValue = Math.min(acc[measure].minValue, median);  
+                            acc[measure].maxValue = Math.max(acc[measure].maxValue, obsValue);
+                            acc[measure].minValue = Math.min(acc[measure].minValue, obsValue);  
                     }
                 }
                 
@@ -312,6 +310,13 @@ export const Region = ( props: any ) => {
                                 backgroundColor: 'RGBA(0,0,0,0)',
                                 animation: false,
                                 events: {
+                                }
+                            },
+                            caption: {
+                                text: `${urlObject[props.currentHazard][props.currentExposure].source}`,
+                                align: 'right',
+                                style: {
+                                    color: "#999999"
                                 }
                             },
                             mapView: {
@@ -458,7 +463,13 @@ export const Region = ( props: any ) => {
                                 height: 500,
                                 marginTop: 130,
                                 events: {
-                               
+                                }
+                            },
+                            caption: {
+                                text: `${urlObject[props.currentHazard][props.currentExposure].source}`,
+                                align: 'right',
+                                style: {
+                                    color: "#999999"
                                 }
                             },
                             legend: {
