@@ -15,8 +15,7 @@ import {
     Highcharts
 } from '@highcharts/react';
 
-import type { Exporting } from '@highcharts/react/options/exporting.js';
-
+import { Exporting } from '@highcharts/react/options/Exporting';
 
 import { countryByIso3 } from '@/data/isoCountries';
 import { urlObject, scenarioMapper, comparisonTitles } from '@/data/datasets';
