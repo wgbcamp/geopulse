@@ -253,9 +253,25 @@ export const Region = ( props: any ) => {
                     };
                 } else {
                     
-                    acc[measure].maxValue = daysOfMeasure.includes(measure) ? Math.max(acc[measure].maxValue, 365) : Math.max(acc[measure].maxValue, median);
-                    acc[measure].minValue = measure === "SPEI_CROP_EXP" ? Math.min(acc[measure].minValue, median) : 0
+                    switch (measure) {
+                        case "SPEI_CROP_EXP" : 
+                            acc[measure].maxValue = 2.5;
+                            acc[measure].minValue = -2.5;
+                            break;
+                        case "ID_PW_EXP":
+                        case "TN_PW_EXP":
+                        case "HD_PW_EXP":
+                        case "CDD_CROP_EXP":
+                            acc[measure].maxValue = 365;
+                            acc[measure].minValue = 0;
+                            break;
+                        default: 
+                            acc[measure].maxValue = Math.max(acc[measure].maxValue, median);
+                            acc[measure].minValue = Math.min(acc[measure].minValue, median);  
+                    }
                 }
+                
+
 
                 return acc;
             }, {});
@@ -312,56 +328,34 @@ export const Region = ( props: any ) => {
                                 keys: ['NAME_1', 'value'],
                                 nullColor: '#c9c9c9'
                             }],
-                            colorAxis: {
-                                // min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
-                                // max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
-                                min: -2.5,
-                                max: 2.5,
-                                // endOnTick: false,
-                                // minColor: '#fcdba9',
-                                // maxColor: '#E35205',
-                                stops: [
-                                    [0.0, '#791F1F'], // Extremely dry
-                                    [0.2, '#BA7517'], // Severely dry
-                                    [0.3, '#FAC775'], // Moderately dry
-                                    [0.5, '#FFFFFF'], // Near normal
-                                    [0.7, '#85B7EB'], // Moderately wet
-                                    [0.8, '#378ADD'], // Very wet
-                                    [1.0, '#0C447C']  // Extremely wet
-                                ],
-
-                                tickPositions: [-2.5, -2, -1.5, -1, 0, 1, 1.5, 2, 2.5],
-                                labels: {
-                                    formatter: function () {
-                                        const map = {
-                                            '-2': 'Extremely dry',
-                                            '-1.5': 'Severely dry',
-                                            '-1': 'Moderately dry',
-                                            '0': 'Near normal',
-                                            '1': 'Moderately wet',
-                                            '1.5': 'Very wet',
-                                            '2': 'Extremely wet'
-                                        };
-                                        return map[this.value] || this.value;
-                                    },
-                                    style: {
-                                        color: "#999999",
-                                        fontWeight: "bold",
-                                        textOverflow: 'none'
-                                    },
-                                    formatter: function () {
-                                        if (this.value >= 1000000) {
-                                            return this.value / 1000000 + 'M';
-                                        } else if (this.value < 1000000 && this.value >= 1000) {
-                                            return this.value / 1000 + 'k';
-                                        } else {
-                                            return this.value;
+                            colorAxis: { 
+                                min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
+                                max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
+                                endOnTick: false,
+                                minColor: '#fcdba9',
+                                maxColor: '#E35205',
+                                  labels: {
+                                        style: {
+                                            color: "#999999",
+                                            fontWeight: "bold",
+                                            textOverflow: 'none'
                                         }
-                                    }
-                                },
+                                    },
+                                ...(props.currentMeasure.id == "SPEI_CROP_EXP" && {
+                                    stops: [
+                                        [0.0, '#791F1F'], // Extremely dry
+                                        [0.2, '#BA7517'], // Severely dry
+                                        [0.3, '#FAC775'], // Moderately dry
+                                        [0.5, '#FFFFFF'], // Near normal
+                                        [0.7, '#85B7EB'], // Moderately wet
+                                        [0.8, '#378ADD'], // Very wet
+                                        [1.0, '#0C447C']  // Extremely wet
+                                    ],
+                                    tickPositions: [-2.5, -2, -1.5, -1, 0, 1, 1.5, 2, 2.5],
+                                }),
                                 width: '90%',
-
                             },
+
                             legend: {
                                 title: {
                                     text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).colorAxis,
