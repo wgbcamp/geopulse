@@ -14,9 +14,8 @@ import {
     Credits,
     Highcharts
 } from '@highcharts/react';
-// import 'highcharts/modules/exporting';
-// import 'highcharts/modules/export-data';
-import { Exporting } from '@highcharts/react/options/exporting';
+
+import type { Exporting } from '@highcharts/react/options/exporting.js';
 
 
 import { countryByIso3 } from '@/data/isoCountries';
