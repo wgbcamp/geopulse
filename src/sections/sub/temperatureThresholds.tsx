@@ -34,6 +34,7 @@ import {WeatherSunny20FilledIcon} from "@/components/icons/fluent-weather-sunny-
 // }
 
 const ticks = [0, 20, 26, 32, 30, 35, 40];
+const floodingTicks = [20, 10, 4, 2, 1, 0.4, 0.2, 0.1];
 
 const labels = [
   {
@@ -121,8 +122,10 @@ export const TemperatureThresholds = ( { props }: any ) => {
         break;
     }
   }
+  
 
   const thresholdValues = ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"];
+  const floodingValues = [20, 10, 4, 2, 1, 0.4, 0.2, 0.1];
 
   const handleDroughtTabChange = (value: string) => {
     switch (value) {
@@ -214,7 +217,49 @@ export const TemperatureThresholds = ( { props }: any ) => {
     },
     "Riverine Flooding":
     {
-      "Population": <div></div>
+      "Population": <div className="absolute w-[500px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
+          style={{
+            background:
+              "linear-gradient(174.18deg, #0084FF 7.23%, rgba(92, 92, 92, 0) 95.52%)",
+          }}>
+          <div className="w-full h-full rounded-xl bg-[#1D1D1D]">
+            <Item className='w-100 py-0 px-2 -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2'>
+              <div className="text-lg w-full font-extrabold text-[var(--muted-foreground)] absolute top-[-35px]">ANNUAL PROBABILITY OF FLOODING</div>
+              <div className='w-full flex flex-col items-center'>
+                <Slider
+                  className='w-full z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[rgb(16,48,80)] [&_[data-slot=slider-track]]:to-[rgb(116,221,208)]'
+                  min={0}
+                  max={floodingTicks.length - 1}
+                  step={1}
+                  defaultValue={[0]}
+                  onValueChange={handleValueChange}
+                  // value={[floodingValues]}
+                />
+                <div className="relative h-6"
+                  style={{ width: "calc(100% )" }}
+                >
+                  {floodingTicks.map((tick: any, index: any) => {
+                    const percent = (index / (floodingTicks.length - 1)) * 100;
+                    return (
+                      <div
+                        key={tick}
+                        className="absolute flex flex-col items-center -translate-x-1/2"
+                        style={{ left: `${percent}%` }}
+                      >
+                        <div className="w-px h-2 bg-muted-foreground/50"></div>
+                        <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                          <div>{tick}%</div>
+                          <div>{index == 0 ? 'High' : index == floodingTicks.length-1 ? "Low" : <br></br>}</div>
+                        </span>
+                      </div>
+                    )
+                  })
+                  }
+                </div>
+              </div>
+            </Item>
+          </div>
+        </div>
     }
   }
     console.log("conditionalMeasurements: ", conditionalMeasurements);

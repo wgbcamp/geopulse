@@ -9,6 +9,10 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             url: `${URL_BASE}/riverine_population_table/FeatureServer/0/query`,
             measure: ["RF_PW_EXP"],
             scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: ["rp01000", "rp00500", "rp00100", "rp00050", "rp00025", "rp00010", "rp00005"]
+            },
             value: "MEDIAN",
             source: "Sources: IMF Staff Calculations."
         }
