@@ -1,4 +1,4 @@
-import { countryByIso3 } from '@/data/isoCountries';
+import { countryByIso3 } from '@/config/isoCountries';
 
 export const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
 

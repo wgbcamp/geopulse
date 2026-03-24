@@ -13,20 +13,20 @@ import {
 import {
   Card
 } from "@/components/ui/card"
-import { WeatherHailDay24RegularIcon } from '../components/icons/fluent-weather-hail-day-24-regular'
-import { Scales20RegularIcon } from '../components/icons/fluent-scales-20-regular'
-import { Globe32LightIcon } from '../components/icons/fluent-globe-32-light'
-import { Warning20RegularIcon } from '../components/icons/fluent-warning-20-regular'
+import { WeatherHailDay24RegularIcon } from '../../components/icons/fluent-weather-hail-day-24-regular'
+import { Scales20RegularIcon } from '../../components/icons/fluent-scales-20-regular'
+import { Globe32LightIcon } from '../../components/icons/fluent-globe-32-light'
+import { Warning20RegularIcon } from '../../components/icons/fluent-warning-20-regular'
 import { Layer20RegularIcon } from '@/components/icons/fluent-layer-20-regular'
 import { ChevronCircleDown20RegularIcon } from '@/components/icons/fluent-chevron-circle-down-20-regular'
-import { Timeline } from './sub/timeline'
+import { Timeline } from './timeline'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { urlObject, scenarioMapper, measureMapper } from '@/data/datasets';
+import { urlObject, scenarioMapper, measureMapper } from '@/config/datasets';
 
 export const NewHeader = ({ props }: any) => {
 
@@ -43,7 +43,7 @@ export const NewHeader = ({ props }: any) => {
         <div className={`h-[69px] sticky top-0 z-50`}>
             <div className='flex flex-row h-[69px] w-full'>
                 <Button className='rounded-none h-full w-[67px] bg-[var(--darkblue)] text-white hover:bg-[var(--darkblue)]'>Menu</Button>
-                <Card className="rounded-none w-[208px] p-0 flex flex-row items-center justify-center font-semibold bg-[var(--lightblue)] text-white border-0">IMF | GEO PULSE</Card>
+                <Card className="rounded-none w-[208px] p-0 flex flex-row items-center justify-center font-semibold bg-[var(--lightblue)] text-white border-0">IMF | GEOPULSE</Card>
                 <Card className="rounded-none w-[208px] p-0 flex flex-col items-center justify-center gap-0">
                     <div className="text-[11px]">REALTIME</div>
                     <div className="flex flex-row">

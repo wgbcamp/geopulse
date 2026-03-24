@@ -17,8 +17,8 @@ import {
 
 import { Exporting } from '@highcharts/react/options/Exporting';
 
-import { countryByIso3 } from '@/data/isoCountries';
-import { urlObject, scenarioMapper, comparisonTitles } from '@/data/datasets';
+import { countryByIso3 } from '@/config/isoCountries';
+import { urlObject, scenarioMapper, comparisonTitles } from '@/config/datasets';
 
 export const Region = ( props: any ) => {
     props = {
@@ -55,10 +55,36 @@ export const Region = ( props: any ) => {
                 color: '#ffffff',
                 fontFamily: 'Arial'
             },
+        },
+        exporting: {
+            buttons: {
+                contextButton: {
+                    symbol: 'download',
+                    symbolSize: 20,      // default is 12, increase as needed
+                    symbolX: 22,         // adjust position to keep it centered
+                    symbolY: 22,
+                    theme: {
+                        fill: 'transparent',
+                        stroke: 'none',
+                        states: {
+                            hover: {
+                                fill: 'transparent',
+                                stroke: 'none'
+                            },
+                            select: {
+                                fill: 'transparent',
+                                stroke: 'none'
+                            }
+                        }
+                    } as any,
+                    symbolStroke: '#a3a3a3',
+                    symbolFill: '#a3a3a3'
+                }
+            }
         }
     });
 
-    Highcharts.SVGRenderer.prototype.symbols.download = function (x, y, w, h) {
+    Highcharts.SVGRenderer.prototype.symbols.download = function (x: number, y: number, w: number, h: number) {
     const path = [
         // Arrow stem
         'M', x + w * 0.5, y,
@@ -376,7 +402,7 @@ export const Region = ( props: any ) => {
                                 }
                             },
                             tooltip: {
-                                formatter: function () {
+                                formatter: function (this: any) {
 
                                     var value = this.point.value;
                                     if (props.currentMeasure.id !== "SPEI_CROP_EXP") {
@@ -404,7 +430,7 @@ export const Region = ( props: any ) => {
                                 series: {
                                     point: {
                                         events: {
-                                            click: function () {
+                                            click: function (this: any) {
                                                 if (this.point.NAME_1 == currentSubnational.refAreaName) {
                                                     setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
                                                     setSubnational({refAreaName: null, refArea: null, iso3: null});
@@ -429,32 +455,7 @@ export const Region = ( props: any ) => {
                             }
                         }}
                     >
-                        <Exporting 
-                            buttons={{
-                                contextButton: {
-                                    symbol: 'download',
-                                    symbolSize: 20,      // default is 12, increase as needed
-                                    symbolX: 22,         // adjust position to keep it centered
-                                    symbolY: 22,
-                                    theme: {
-                                        fill: 'transparent',
-                                        stroke: 'none',
-                                        states: {
-                                            hover: {
-                                                fill: 'transparent', 
-                                                stroke: 'none' 
-                                            },
-                                            select: {
-                                                 fill: 'transparent', 
-                                                stroke: 'none' 
-                                            }
-                                        }
-                                    },
-                                    symbolStroke: '#a3a3a3',
-                                    symbolFill: '#a3a3a3',
-                                }
-                            }}
-                        />
+                    <Exporting/>
                     </MapsChart>
                     <Chart
                         options={{
@@ -499,7 +500,6 @@ export const Region = ( props: any ) => {
                                     color: "white",
                                     fontWeight: "bold",
                                     fontSize: '16px',
-                                    width: '60%'
                                 },
                                 useHTML: true,
                                 x: 18,
@@ -557,7 +557,7 @@ export const Region = ( props: any ) => {
                                 style: {
                                     color: '#ffffff',
                                     fontSize: '14px'
-                                }
+                                } as Highcharts.CSSObject
                             }}
                         />
                         <YAxis
@@ -574,8 +574,8 @@ export const Region = ( props: any ) => {
                                 style: {
                                     color: '#ffffff',
                                     fontSize: '14px'
-                                },
-                                formatter: function () {
+                                } as Highcharts.CSSObject,
+                                formatter: function (this: any) {
                                     if (this.value >= 1000000) {
                                         return this.value / 1000000 + 'M';
                                     } else if (this.value < 1000000 && this.value >= 1000) {
@@ -586,32 +586,7 @@ export const Region = ( props: any ) => {
                                 }
                             }}
                         />
-                        <Exporting 
-                            buttons={{
-                                contextButton: {
-                                    symbol: 'download',
-                                    symbolSize: 20,      // default is 12, increase as needed
-                                    symbolX: 22,         // adjust position to keep it centered
-                                    symbolY: 22,
-                                    theme: {
-                                        fill: 'transparent',
-                                        stroke: 'none',
-                                        states: {
-                                            hover: {
-                                                fill: 'transparent', 
-                                                stroke: 'none' 
-                                            },
-                                            select: {
-                                                 fill: 'transparent', 
-                                                stroke: 'none' 
-                                            }
-                                        }
-                                    },
-                                    symbolStroke: '#a3a3a3',
-                                    symbolFill: '#a3a3a3',
-                                }
-                            }}
-                        />
+                        <Exporting />
                     </Chart>
                 </div>
                 :

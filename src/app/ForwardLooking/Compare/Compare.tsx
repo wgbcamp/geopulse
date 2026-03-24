@@ -1,4 +1,4 @@
-import { Region } from "../sub/region";
+import { Region } from "./region";
 
 export const CompareView = (props: any) => {
     return (

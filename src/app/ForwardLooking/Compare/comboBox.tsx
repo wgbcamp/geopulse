@@ -1,7 +1,7 @@
 import * as React from "react"
 import { useState } from 'react';
 
-import '../../data/isoCountries';
+import '../../../config/isoCountries';
 
 import { Button } from "@/components/ui/button"
 import { Check, ChevronsUpDown } from "lucide-react"
@@ -21,23 +21,9 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
-
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-
-import { isoCountries, type CountryString, countryByIso3 } from "@/data/isoCountries";
+import { isoCountries, countryByIso3 } from "@/config/isoCountries";
 
 type ComboBoxProps = {
-  loadCountryData(iso3: string): Promise<void>,
   iso3: string,
   setIso3: React.Dispatch<React.SetStateAction<string>>
 }

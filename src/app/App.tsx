@@ -1,9 +1,9 @@
 import './App.css'
 import React, { useState, useEffect } from 'react'
-import { GridView } from './sections/views/GridView';
-import { NewHeader } from './sections/header';
-import { CompareView } from './sections/views/CompareView';
-import { TemperatureThresholds } from './sections/sub/temperatureThresholds';
+import { GridView } from './ForwardLooking/Grid/Grid';
+import { NewHeader } from './Header/Header';
+import { CompareView } from './ForwardLooking/Compare/Compare';
+import { TemperatureThresholds } from './ForwardLooking/Compare/temperatureThresholds';
 
 type JsonShape = {
   features: Array<{

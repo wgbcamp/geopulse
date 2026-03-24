@@ -21,8 +21,8 @@ import {
 
 import { Slider } from "@/components/ui/slider"
 
-import { urlObject } from "@/data/datasets"
-import { measureMapper } from "@/data/datasets"
+import { urlObject } from "@/config/datasets"
+import { measureMapper } from "@/config/datasets"
 
 import {Beach20FilledIcon} from "@/components/icons/fluent-beach-20-filled"
 import {WeatherSnowflake20FilledIcon} from "@/components/icons/fluent-weather-snowflake-20-filled"
