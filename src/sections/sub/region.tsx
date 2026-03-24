@@ -123,7 +123,7 @@ export const Region = ( props: any ) => {
                 setSubnational({refAreaName: null, refArea: null, iso3: null});
             }
 
-            // check and see if the currentScenario exists on the chosen table based on urlObject
+            // check and see if the currentScenario exists on the chosen table based on urlObject, NEEDS FIXING
             if (
                 !Object.values(urlObject[props.currentHazard][props.currentExposure].scenarios)
                     .map((k) => scenarioMapper[k])

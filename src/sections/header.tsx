@@ -97,9 +97,9 @@ export const NewHeader = ({ props }: any) => {
                                                 <ItemHeader className={`${riskState === key ? 'font-bold' : 'font-medium'} text-[16px]`}>{key}</ItemHeader>
                                                 <div className={`${riskState === key ? `h-[calc(80px*${value.length})]` : "h-0 hidden"}`}>
                                                         {Object.entries(value).map(([a, b]) =>
-                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${props.currentExposure == a && riskState == props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState(key); props.setHazard(key); props.setExposure(a); props.setThreshold({ name: "", threshold: b.threshold?.group[0] }); props.setMeasure({ id: b.measure[0], name: measureMapper[b.measure[0]]}); }}>
+                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${props.currentExposure == a && riskState == props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState(key); props.setHazard(key); props.setExposure(a); props.setThreshold({ name: "", threshold: Object.keys(b.threshold?.group || {})[0] }); props.setMeasure({ id: b.measure[0], name: measureMapper[b.measure[0]]}); }}>
                                                                 <ItemContent>
-                                                                    <ItemHeader className=''>{a}</ItemHeader>
+                                                                    <ItemHeader>{a}</ItemHeader>
                                                                 </ItemContent>
                                                             </Item>
                                                         )}

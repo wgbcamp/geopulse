@@ -21,19 +21,13 @@ import {
 
 import { Slider } from "@/components/ui/slider"
 
+import { urlObject } from "@/data/datasets"
+import { measureMapper } from "@/data/datasets"
+
 import {Beach20FilledIcon} from "@/components/icons/fluent-beach-20-filled"
 import {WeatherSnowflake20FilledIcon} from "@/components/icons/fluent-weather-snowflake-20-filled"
 import {WeatherSunny20FilledIcon} from "@/components/icons/fluent-weather-sunny-20-filled"
 
-// type TimelineProps = {
-//   currentHazard: string,
-//   currentThreshold: { name: string, threshold: any },
-//   currentMeasure: { name: string, id: string },
-//   setThreshold: React.Dispatch<React.SetStateAction<{ name: string, threshold: any }>>,
-//   setMeasure: React.Dispatch<React.SetStateAction<{ name: string, id: string }>>
-// }
-
-const ticks = [0, 20, 26, 32, 30, 35, 40];
 const floodingTicks = [20, 10, 4, 2, 1, 0.4, 0.2, 0.1];
 
 const labels = [
@@ -66,67 +60,25 @@ const labels = [
     </svg>`
    }
 ];
-// let temperatureExposures = ["Hot Days", "Tropical Nights", "Icing Days"];
-// let thresholds = [
-//   { category: "Hot Days", symbols: ["H_30", "H_35", "H_40"] },
-//   { category: "Tropical Nights", symbols: ["H_20", "H_26", "H_32"] },
-//   { category: "Icing Days", symbols: ["_Z"] }
-// ];
-
-// var measureModel = [
-//   { measures: ['SPEI_CROP_EXP'], name: "SPEI Index" },
-//   { measures: ['CDD_CROP_EXP'], name: "Dry Days" },
-//   { measures: ["HD_PW_EXP", "HD_LW_EXP"], name: "Hot Days" },
-//   { measures: ['TN_PW_EXP'], name: "Tropical Nights" },
-//   { measures: ['ID_PW_EXP'], name: "Icing Days" }
-// ];
-
 
 export const TemperatureThresholds = ( { props }: any ) => {
  
 
+  const config = urlObject[props.currentHazard][props.currentExposure];
+  const thresholdGroup = config?.threshold?.group ?? {};
+
   const handleValueChange = (value: number[]) => {
-  
-    //livestock measure was removed in cases 4-6
-    switch (value[0]) {
-      case 0:
-        props.setMeasure({ name: "Icing Days", id: 'ID_PW_EXP' });
-        props.setThreshold({ name: "Icing Days", threshold: "_Z" });
-        break;
-      case 1:
-        props.setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
-        props.setThreshold({ name: "Tropical Nights", threshold: 'H_20' });
-        break;
-      case 2:
-        props.setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
-        props.setThreshold({ name: "Tropical Nights", threshold: 'H_26' });
-        break;
-      case 3:
-        props.setMeasure({ name: "Tropical Nights", id: 'TN_PW_EXP' });
-        props.setThreshold({ name: "Tropical Nights", threshold: 'H_32' });
-        break;
-      case 4:
-        //removed HD_LW_EXP
-        props.setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
-        props.setThreshold({ name: "Hot Days", threshold: 'H_30' });
-        break;
-      case 5:
-        //removed HD_LW_EXP
-        props.setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
-        props.setThreshold({ name: "Hot Days", threshold: 'H_35' });
-        break;
-      case 6:
-        //removed HD_LW_EXP
-        props.setMeasure({ name: "Hot Days", id: "HD_PW_EXP" });
-        props.setThreshold({ name: "Hot Days", threshold: 'H_40' });
-        break;
-    }
-  }
-  
+    const config = urlObject[props.currentHazard][props.currentExposure];
+    if (!config?.threshold || !config?.thresholdToMeasure) return;
 
-  const thresholdValues = ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"];
-  const floodingValues = [20, 10, 4, 2, 1, 0.4, 0.2, 0.1];
+    const thresholdKey = Object.keys(config.threshold.group)[value[0]];
+    const measureId = config.thresholdToMeasure[thresholdKey];
+    const measureName = measureMapper[measureId];
 
+    props.setThreshold({ name: measureName, threshold: thresholdKey });
+    props.setMeasure({ name: measureName, id: measureId });
+};
+  
   const handleDroughtTabChange = (value: string) => {
     switch (value) {
       case "Dry Days":
@@ -153,27 +105,26 @@ export const TemperatureThresholds = ( { props }: any ) => {
                 <Slider
                   className='w-full z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[#004C97] [&_[data-slot=slider-track]]:via-[#FDBB33] [&_[data-slot=slider-track]]:to-[#FF0000]'
                   min={0}
-                  max={6}
+                  max={Object.values(thresholdGroup).length - 1}
                   step={1}
                   defaultValue={[0]}
                   onValueChange={handleValueChange}
-                value={[thresholdValues.indexOf(props.currentThreshold.threshold)]}
                 />
                 <div className="relative h-6"
                   style={{ width: "calc(100% )" }}
                 >
-                  {ticks.map((tick: any, index: any) => {
-                    const percent = (index / (ticks.length - 1)) * 100;
+                  {Object.entries(thresholdGroup).map(([key, value], index: any) => {
+                    const percent = (index / (Object.entries(thresholdGroup).length - 1)) * 100;
                     return (
                       <div
-                        key={tick}
+                        key={key}
                         className="absolute flex flex-col items-center -translate-x-1/2"
                         style={{ left: `${percent}%` }}
                       >
                         <div className="w-px h-2 bg-muted-foreground/50"></div>
-                        <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                        <span className={`text-xs w-[42px] mt-0.5 ${value === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                           <div>{index >= 1 && index <= 3 ? 'Tmin' : 'Tmax'}</div>
-                          <div>{tick > 0 ? '>' : '<'} {tick}° C</div>
+                          <div>{value}° C</div>
                         </span>
                       </div>
                     )
@@ -229,17 +180,16 @@ export const TemperatureThresholds = ( { props }: any ) => {
                 <Slider
                   className='w-full z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[rgb(16,48,80)] [&_[data-slot=slider-track]]:to-[rgb(116,221,208)]'
                   min={0}
-                  max={floodingTicks.length - 1}
+                  max={Object.values(thresholdGroup).length - 1}
                   step={1}
                   defaultValue={[0]}
                   onValueChange={handleValueChange}
-                  // value={[floodingValues]}
                 />
                 <div className="relative h-6"
                   style={{ width: "calc(100% )" }}
                 >
-                  {floodingTicks.map((tick: any, index: any) => {
-                    const percent = (index / (floodingTicks.length - 1)) * 100;
+                  {Object.values(thresholdGroup).map((tick: any, index: any) => {
+                    const percent = (index / (Object.values(thresholdGroup).length - 1)) * 100;
                     return (
                       <div
                         key={tick}
@@ -248,8 +198,8 @@ export const TemperatureThresholds = ( { props }: any ) => {
                       >
                         <div className="w-px h-2 bg-muted-foreground/50"></div>
                         <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
-                          <div>{tick}%</div>
-                          <div>{index == 0 ? 'High' : index == floodingTicks.length-1 ? "Low" : <br></br>}</div>
+                          <div>{tick}</div>
+                          <div>{index == 0 ? 'High' : index == Object.values(thresholdGroup).length-1 ? "Low" : <br></br>}</div>
                         </span>
                       </div>
                     )

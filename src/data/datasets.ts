@@ -2,7 +2,7 @@ import { countryByIso3 } from '@/data/isoCountries';
 
 export const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
 
-export const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: {type: string; group: string[]}, scenarios: string[], source: string, value: string }>> = {
+export const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: {type: string; group: Record<string, string>}, thresholdToMeasure?: Record<string, string>, scenarios: string[], source: string, value: string }>> = {
     "Riverine Flooding":
     {
         "Population": {
@@ -11,7 +11,24 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             scenarios: ["rcp4p5", "rcp8p5"],
             threshold: {
                 type: "RETURN_PERIOD",
-                group: ["rp01000", "rp00500", "rp00100", "rp00050", "rp00025", "rp00010", "rp00005"]
+                group: { 
+                    "rp01000": "20%",
+                    "rp00500": "10%",  
+                    "rp00100": "2%",  
+                    "rp00050": "1%",  
+                    "rp00025": "0.4%",  
+                    "rp00010": "0.2%",  
+                    "rp00005": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp01000": "RF_PW_EXP",
+                "rp00500": "RF_PW_EXP",
+                "rp00100": "RF_PW_EXP",
+                "rp00050": "RF_PW_EXP",
+                "rp00025": "RF_PW_EXP",
+                "rp00010": "RF_PW_EXP",
+                "rp00005": "RF_PW_EXP",
             },
             value: "MEDIAN",
             source: "Sources: IMF Staff Calculations."
@@ -35,7 +52,24 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             scenarios: ["SSP126", "SSP245", "SSP370"],
             threshold: {
                 type: "TEMP_THRESHOLD",
-                group: ["_Z", "H_20", "H_26", "H_32", "H_30", "H_35", "H_40"]
+                group: { 
+                    "_Z": "< 0",
+                    "H_20": "> 20",  
+                    "H_26": "> 26",  
+                    "H_32": "> 32",  
+                    "H_30": "> 30",  
+                    "H_35": "> 35",  
+                    "H_40": "> 40"
+                }
+            },
+            thresholdToMeasure: {
+                "_Z": "ID_PW_EXP",
+                "H_20": "TN_PW_EXP",
+                "H_26": "TN_PW_EXP",
+                "H_32": "TN_PW_EXP",
+                "H_30": "HD_PW_EXP",
+                "H_35": "HD_PW_EXP",
+                "H_40": "HD_PW_EXP",
             },
             value: "MEDIAN",
             source: "Sources: OECD."
@@ -46,7 +80,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             scenarios: ["SSP126", "SSP245", "SSP370"],
             threshold: {
                 type: "TEMP_THRESHOLD",
-                group: ["H_35"]
+                group: { "H_35": "> 35" }
             },
             value: "MEDIAN",
             source: "Sources: OECD."
@@ -70,7 +104,8 @@ export const measureMapper: Record<string, string> = {
     ID_PW_EXP: "Icing Days",
     CDD_CROP_EXP: "Dry Days",
     SPEI_CROP_EXP: "SPEI",
-    HD_LW_EXP: "Hot Days"
+    HD_LW_EXP: "Hot Days",
+    RF_PW_EXP: "Flood Level" // not sure
 };
 
 const thresholdToTitle: Record<string, string> = {

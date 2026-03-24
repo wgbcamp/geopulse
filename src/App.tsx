@@ -24,7 +24,7 @@ function App() {
   const [currentHazard, setHazard] = useState<string>("Riverine Flooding");
   const [currentExposure, setExposure] = useState<string>("Population");
   const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "RF_PW_EXP" });
-  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "Hot Days", threshold: undefined });
+  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp01000" });
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
