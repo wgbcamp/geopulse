@@ -12,13 +12,13 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp1000": "20%",
-                    "rp0500": "10%",  
-                    "rp0100": "2%",  
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
                     "rp0050": "1%",  
-                    "rp0025": "0.4%",  
-                    "rp0010": "0.2%",  
-                    "rp0005": "0.1%"
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
                 }
             },
             thresholdToMeasure: {
@@ -40,13 +40,13 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp1000": "20%",
-                    "rp0500": "10%",  
-                    "rp0100": "2%",  
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
                     "rp0050": "1%",  
-                    "rp0025": "0.4%",  
-                    "rp0010": "0.2%",  
-                    "rp0005": "0.1%"
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
                 }
             },
             thresholdToMeasure: {
@@ -68,13 +68,13 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp1000": "20%",
-                    "rp0500": "10%",  
-                    "rp0100": "2%",  
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
                     "rp0050": "1%",  
-                    "rp0025": "0.4%",  
-                    "rp0010": "0.2%",  
-                    "rp0005": "0.1%"
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
                 }
             },
             thresholdToMeasure: {
@@ -99,13 +99,13 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp1000": "20%",
-                    "rp0500": "10%",  
-                    "rp0100": "2%",  
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
                     "rp0050": "1%",  
-                    "rp0025": "0.4%",  
-                    "rp0010": "0.2%",  
-                    "rp0005": "0.1%"
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
                 }
             },
             thresholdToMeasure: {
@@ -127,13 +127,13 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp1000": "20%",
-                    "rp0500": "10%",  
-                    "rp0100": "2%",  
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
                     "rp0050": "1%",  
-                    "rp0025": "0.4%",  
-                    "rp0010": "0.2%",  
-                    "rp0005": "0.1%"
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
                 }
             },
             thresholdToMeasure: {
@@ -155,13 +155,13 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp1000": "20%",
-                    "rp0500": "10%",  
-                    "rp0100": "2%",  
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
                     "rp0050": "1%",  
-                    "rp0025": "0.4%",  
-                    "rp0010": "0.2%",  
-                    "rp0005": "0.1%"
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
                 }
             },
             thresholdToMeasure: {
@@ -284,12 +284,12 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
         },
         "Riverine Flooding": {
             "Population": {
-                colorAxis: "Number of People",
-                chart: `Number of People Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percentage of Population",
+                chart: `Percentage of Population Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
             },
             "Buildings": {
-                colorAxis: "Number of Buildings",
-                chart: `Number of Buildings Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percentage of Buildings",
+                chart: `Percentage of Buildings Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
             },
             "Builtup Area": {
                 colorAxis: "Builtup Area (Km²)",
@@ -306,12 +306,12 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
         },
         "Coastal Flooding": {
             "Population": {
-                colorAxis: "Number of People",
-                chart: `Number of People Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percentage of Population",
+                chart: `Percentage of Population Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
             },
             "Buildings": {
-                colorAxis: "Number of Buildings",
-                chart: `Number of Buildings Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percentage of Buildings",
+                chart: `Percentage of Buildings Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
             },
             "Builtup Area": {
                 colorAxis: "Builtup Area (Km²)",

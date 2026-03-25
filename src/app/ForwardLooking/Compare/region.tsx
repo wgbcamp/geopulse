@@ -212,7 +212,7 @@ export const Region = ( props: any ) => {
     }
 
     var lineChartXLabels: string[] = [
-        "1980-2014",
+        "Historical",
         "Early Century",
         "Mid-Century",
         "End-Century",
@@ -285,8 +285,18 @@ export const Region = ( props: any ) => {
                         case "ID_PW_EXP":
                         case "TN_PW_EXP":
                         case "HD_PW_EXP":
+                        case "HD_LW_EXP":
                         case "CDD_CROP_EXP":
                             acc[measure].maxValue = 365;
+                            acc[measure].minValue = 0;
+                            break;
+                        case "RF_PW_EXP":
+                        case "CF_PW_EXP":
+                        case "RF_BLD_EXP":
+                        case "CF_BLD_EXP":
+                        case "RF_GDP_EXP":
+                        case "CF_GDP_EXP":
+                            acc[measure].maxValue = 100;
                             acc[measure].minValue = 0;
                             break;
                         default: 

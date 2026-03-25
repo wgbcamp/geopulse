@@ -9,7 +9,7 @@ import { Slider } from "@/components/ui/slider"
 
 //riverine flooding vs population 2080 is renamed to 2100
 const tileLayerURLs = [
-  { hazard: "Riverine Flooding", exposure: "Population", time: 1980, string: "1980-2014", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer" },
+  { hazard: "Riverine Flooding", exposure: "Population", time: 1980, string: "Historical", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer" },
   { hazard: "Riverine Flooding", exposure: "Population", time: 2030, string: "Early Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2030/VectorTileServer" },
   { hazard: "Riverine Flooding", exposure: "Population", time: 2050, string: "Mid-Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2050/VectorTileServer" },
   { hazard: "Riverine Flooding", exposure: "Population", time: 2080, string: "End-Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2080/VectorTileServer" }

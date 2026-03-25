@@ -42,6 +42,40 @@ export const NewHeader = ({ props }: any) => {
         setRiskOpened(newOpenState);
     };
 
+    const calendarData = [
+        {
+            name: "START",
+            style: {
+                border: "border-r-0"
+            }
+        }
+    ]
+
+    const calendarComponent =
+        <Card className="rounded-none w-[200px] p-0 items-start justify-center border-r-0 gap-0">
+            <div className="font-extrabold">START</div>
+            <Popover>
+                <PopoverTrigger >
+                    <Button
+                        variant="outline"
+                        // data-empty={!date}
+                        className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                    >
+                        {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
+                        <ChevronCircleDown20RegularIcon />
+                    </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                        mode="single"
+                    // selected={date}
+                    // onSelect={setDate}
+                    // defaultMonth={date}
+                    />
+                </PopoverContent>
+            </Popover>
+        </Card>;
+
     return (
         <div className={`h-[69px] sticky top-0 z-50`}>
             <div className='flex flex-row h-[69px] w-full'>
@@ -51,45 +85,45 @@ export const NewHeader = ({ props }: any) => {
                     <div className="text-[11px]">REALTIME</div>
                     <div className="flex flex-row">
                         <Timer20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
-                        <div className="text-[16px] font-bold text-end flex items-center pl-2">Event Tracking</div>  
+                        <div className="text-[16px] font-bold text-end flex items-center pl-2 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>  
                     </div>
                 </Card>
-                {props.currentView === "Event tracking" ? 
-                <div className='flex w-[700px]'>
-                    <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
-                        <Popover>
-                            <PopoverTrigger>
-                                <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
-                                    <div className='flex items-center'>
-                                        {/* <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div> */}
-                                        Events
+                {props.currentView === "Event tracking" ?
+                    <div className='flex w-[700px]'>
+                        <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
+                            <Popover>
+                                <PopoverTrigger>
+                                    <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
+                                        <div className='flex items-center'>
+                                            {/* <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div> */}
+                                            Events
+                                        </div>
+                                        <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
                                     </div>
-                                    <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
-                                </div>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-[225px] p-0">
-                                <div className={`flex flex-row justify-center py-[10px] h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
-                                    <ItemGroup>
-                                        {urlObject[props.currentHazard][props.currentExposure].scenarios.map((x) =>
-                                            <Item key={x} className={`cursor-pointer hover:bg-gray-100 my-[8px] ${scenarioMapper[props.currentScenario] === scenarioMapper[x] ? 'bg-gray-100 font-bold border-b-3 border-black' : ""} transition-all duration-200 ease-in`} onClick={() => props.setScenario(x)}>
-                                                <ItemContent>
-                                                    <ItemHeader onClick={() => props.setScenario(x)}>{scenarioMapper[x]}</ItemHeader>
-                                                </ItemContent>
-                                            </Item>
-                                        )}
-                                    </ItemGroup>
-                                </div>
-                            </PopoverContent>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-[225px] p-0">
+                                    <div className={`flex flex-row justify-center py-[10px] h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
+                                        <ItemGroup>
+                                            {urlObject[props.currentHazard][props.currentExposure].scenarios.map((x) =>
+                                                <Item key={x} className={`cursor-pointer hover:bg-gray-100 my-[8px] ${scenarioMapper[props.currentScenario] === scenarioMapper[x] ? 'bg-gray-100 font-bold border-b-3 border-black' : ""} transition-all duration-200 ease-in`} onClick={() => props.setScenario(x)}>
+                                                    <ItemContent>
+                                                        <ItemHeader onClick={() => props.setScenario(x)}>{scenarioMapper[x]}</ItemHeader>
+                                                    </ItemContent>
+                                                </Item>
+                                            )}
+                                        </ItemGroup>
+                                    </div>
+                                </PopoverContent>
                             </Popover>
                         </Card>
-                        <Card className="rounded-none w-full p-0 items-start gap-0">
+                        <Card className="rounded-none w-[200px] p-0 items-start justify-center border-r-0 gap-0">
                             <div className="font-extrabold">START</div>
                             <Popover>
                                 <PopoverTrigger >
                                     <Button
                                         variant="outline"
                                         // data-empty={!date}
-                                        className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                                        className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
                                     >
                                         {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
                                         <ChevronCircleDown20RegularIcon />
@@ -105,15 +139,15 @@ export const NewHeader = ({ props }: any) => {
                                 </PopoverContent>
                             </Popover>
                         </Card>
-                        <Card className="rounded-none w-full p-0 items-start gap-0">
-                            <div>
+                        <Card className="flex flex-row w-[200px] justify-center rounded-none h-full w-full shadow-none border-l-0 p-0 items-start gap-0">
+                            <div className="flex flex-col">
                                 <div className="font-extrabold">END</div>
                                 <Popover>
                                     <PopoverTrigger>
                                         <Button
                                             variant="outline"
                                             // data-empty={!date}
-                                            className="w-[212px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                                            className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
                                         >
                                             {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
                                             <ChevronCircleDown20RegularIcon />
@@ -128,6 +162,11 @@ export const NewHeader = ({ props }: any) => {
                                         />
                                     </PopoverContent>
                                 </Popover>
+                            </div>
+                            <div className="flex items-center h-full">
+                                <Button>
+                                    Apply
+                                </Button>
                             </div>
                         </Card>
                         

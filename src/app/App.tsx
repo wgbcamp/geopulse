@@ -18,7 +18,7 @@ type JsonShape = {
 
 function App() {
 
-  const [currentView, setView] = useState("Compare");
+  const [currentView, setView] = useState("Event tracking");
   const [currentTime, setTime] = useState<number>(1980);
   const [currentScenario, setScenario] = useState<string>("rcp4p5");
   const [currentHazard, setHazard] = useState<string>("Riverine Flooding");
