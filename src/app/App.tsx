@@ -18,13 +18,13 @@ type JsonShape = {
 
 function App() {
 
-  const [currentView, setView] = useState("Event tracking");
+  const [currentView, setView] = useState("Compare");
   const [currentTime, setTime] = useState<number>(1980);
   const [currentScenario, setScenario] = useState<string>("rcp4p5");
-  const [currentHazard, setHazard] = useState<string>("Riverine Flooding");
+  const [currentHazard, setHazard] = useState<string>("Coastal Flooding");
   const [currentExposure, setExposure] = useState<string>("Population");
-  const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "RF_PW_EXP" });
-  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp1000" });
+  const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "CF_PW_EXP" });
+  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp0005" });
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
