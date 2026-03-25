@@ -54,11 +54,15 @@ function App() {
         setMeasure,
         setThreshold
       }} />
+
       {currentView == "Grid"
         ?
         <GridView currentTime={currentTime} />
         :
-        geoJson ?
+        <div></div>
+      }
+      {currentView == "Compare" && geoJson 
+      ? 
           <div>
             <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
               <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
@@ -82,13 +86,17 @@ function App() {
               setThreshold,
               setMeasure
             }} />
-
-            
-          </div>
-        :
-        <div></div>
+          </div> 
+          :
+          <div></div>
+          }
+      {currentView == "Event tracking"
+      ?
+        <div className='w-full h-full flex items-center justify-center'>
+        </div>
+      :
+      <div></div>
       }
-
     </div>
 
   )

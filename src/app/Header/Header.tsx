@@ -42,39 +42,47 @@ export const NewHeader = ({ props }: any) => {
         setRiskOpened(newOpenState);
     };
 
-    const calendarData = [
+    const calendarData: {name: string, style: Record<string, string>}[] = [
         {
             name: "START",
             style: {
-                border: "border-r-0"
+            }
+        },
+        {
+            name: "END",
+            style: {
             }
         }
-    ]
+    ];
 
-    const calendarComponent =
-        <Card className="rounded-none w-[200px] p-0 items-start justify-center border-r-0 gap-0">
-            <div className="font-extrabold">START</div>
-            <Popover>
-                <PopoverTrigger >
-                    <Button
-                        variant="outline"
-                        // data-empty={!date}
-                        className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                    >
-                        {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
-                        <ChevronCircleDown20RegularIcon />
-                    </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                        mode="single"
-                    // selected={date}
-                    // onSelect={setDate}
-                    // defaultMonth={date}
-                    />
-                </PopoverContent>
-            </Popover>
-        </Card>;
+    const calendarComponent = (value: { name: string, style: Record<string, string> }) => {
+        return (
+            <Card className={`rounded-none w-[200px] p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
+                <div className='w-7/10 flex flex-col items-start'>
+                    <div className="font-extrabold text-[#707070] text-[11px]">{value.name}</div>
+                    <Popover>
+                        <PopoverTrigger >
+                            <Button
+                                variant="outline"
+                                // data-empty={!date}
+                                className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                            >
+                                {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                            <Calendar
+                                mode="single"
+                            // selected={date}
+                            // onSelect={setDate}
+                            // defaultMonth={date}
+                            />
+                        </PopoverContent>
+                    </Popover>
+                </div>
+            </Card>
+        )
+    };
 
     return (
         <div className={`h-[69px] sticky top-0 z-50`}>
@@ -89,7 +97,7 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                 </Card>
                 {props.currentView === "Event tracking" ?
-                    <div className='flex w-[700px]'>
+                    <div className='flex w-[750px]'>
                         <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
                             <Popover>
                                 <PopoverTrigger>
@@ -116,60 +124,14 @@ export const NewHeader = ({ props }: any) => {
                                 </PopoverContent>
                             </Popover>
                         </Card>
-                        <Card className="rounded-none w-[200px] p-0 items-start justify-center border-r-0 gap-0">
-                            <div className="font-extrabold">START</div>
-                            <Popover>
-                                <PopoverTrigger >
-                                    <Button
-                                        variant="outline"
-                                        // data-empty={!date}
-                                        className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                                    >
-                                        {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
-                                        <ChevronCircleDown20RegularIcon />
-                                    </Button>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-auto p-0" align="start">
-                                    <Calendar
-                                        mode="single"
-                                        // selected={date}
-                                        // onSelect={setDate}
-                                        // defaultMonth={date}
-                                    />
-                                </PopoverContent>
-                            </Popover>
-                        </Card>
-                        <Card className="flex flex-row w-[200px] justify-center rounded-none h-full w-full shadow-none border-l-0 p-0 items-start gap-0">
-                            <div className="flex flex-col">
-                                <div className="font-extrabold">END</div>
-                                <Popover>
-                                    <PopoverTrigger>
-                                        <Button
-                                            variant="outline"
-                                            // data-empty={!date}
-                                            className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                                        >
-                                            {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
-                                            <ChevronCircleDown20RegularIcon />
-                                        </Button>
-                                    </PopoverTrigger>
-                                    <PopoverContent className="w-auto p-0" align="start">
-                                        <Calendar
-                                            mode="single"
-                                        // selected={date}
-                                        // onSelect={setDate}
-                                        // defaultMonth={date}
-                                        />
-                                    </PopoverContent>
-                                </Popover>
-                            </div>
-                            <div className="flex items-center h-full">
-                                <Button>
-                                    Apply
+                        {calendarData.map((x) => calendarComponent(x))}
+                        <div className='flex h-full items-end'>
+                            <div className="flex items-center justify-center h-[52.5px]">
+                                <Button className='bg-(--evenlighterblue) text-[11px] font-extrabold'>
+                                    UPDATE
                                 </Button>
                             </div>
-                        </Card>
-                        
+                        </div>
                     </div>
                     : 
                     <div></div>}
