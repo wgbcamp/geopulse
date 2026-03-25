@@ -12,25 +12,168 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             threshold: {
                 type: "RETURN_PERIOD",
                 group: { 
-                    "rp01000": "20%",
-                    "rp00500": "10%",  
-                    "rp00100": "2%",  
-                    "rp00050": "1%",  
-                    "rp00025": "0.4%",  
-                    "rp00010": "0.2%",  
-                    "rp00005": "0.1%"
+                    "rp1000": "20%",
+                    "rp0500": "10%",  
+                    "rp0100": "2%",  
+                    "rp0050": "1%",  
+                    "rp0025": "0.4%",  
+                    "rp0010": "0.2%",  
+                    "rp0005": "0.1%"
                 }
             },
             thresholdToMeasure: {
-                "rp01000": "RF_PW_EXP",
-                "rp00500": "RF_PW_EXP",
-                "rp00100": "RF_PW_EXP",
-                "rp00050": "RF_PW_EXP",
-                "rp00025": "RF_PW_EXP",
-                "rp00010": "RF_PW_EXP",
-                "rp00005": "RF_PW_EXP",
+                "rp1000": "RF_PW_EXP",
+                "rp0500": "RF_PW_EXP",
+                "rp0100": "RF_PW_EXP",
+                "rp0050": "RF_PW_EXP",
+                "rp0025": "RF_PW_EXP",
+                "rp0010": "RF_PW_EXP",
+                "rp0005": "RF_PW_EXP",
             },
-            value: "MEDIAN",
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
+        },
+        "Buildings": {
+            url: `${URL_BASE}/riverine_buildings_table/FeatureServer/0/query`,
+            measure: ["RF_BLD_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: { 
+                    "rp1000": "20%",
+                    "rp0500": "10%",  
+                    "rp0100": "2%",  
+                    "rp0050": "1%",  
+                    "rp0025": "0.4%",  
+                    "rp0010": "0.2%",  
+                    "rp0005": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "RF_BLD_EXP",
+                "rp0500": "RF_BLD_EXP",
+                "rp0100": "RF_BLD_EXP",
+                "rp0050": "RF_BLD_EXP",
+                "rp0025": "RF_BLD_EXP",
+                "rp0010": "RF_BLD_EXP",
+                "rp0005": "RF_BLD_EXP",
+            },
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
+        },
+        "GDP": {
+            url: `${URL_BASE}/riverine_gdp_table/FeatureServer/0/query`,
+            measure: ["RF_GDP_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: { 
+                    "rp1000": "20%",
+                    "rp0500": "10%",  
+                    "rp0100": "2%",  
+                    "rp0050": "1%",  
+                    "rp0025": "0.4%",  
+                    "rp0010": "0.2%",  
+                    "rp0005": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "RF_GDP_EXP",
+                "rp0500": "RF_GDP_EXP",
+                "rp0100": "RF_GDP_EXP",
+                "rp0050": "RF_GDP_EXP",
+                "rp0025": "RF_GDP_EXP",
+                "rp0010": "RF_GDP_EXP",
+                "rp0005": "RF_GDP_EXP",
+            },
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
+        }
+    },
+    "Coastal Flooding":
+    {
+        "Population": {
+            url: `${URL_BASE}/coastal_population_table/FeatureServer/0/query`,
+            measure: ["CF_PW_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: { 
+                    "rp1000": "20%",
+                    "rp0500": "10%",  
+                    "rp0100": "2%",  
+                    "rp0050": "1%",  
+                    "rp0025": "0.4%",  
+                    "rp0010": "0.2%",  
+                    "rp0005": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "CF_PW_EXP",
+                "rp0500": "CF_PW_EXP",
+                "rp0100": "CF_PW_EXP",
+                "rp0050": "CF_PW_EXP",
+                "rp0025": "CF_PW_EXP",
+                "rp0010": "CF_PW_EXP",
+                "rp0005": "CF_PW_EXP",
+            },
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
+        },
+        "Buildings": {
+            url: `${URL_BASE}/coastal_buildings_table/FeatureServer/0/query`,
+            measure: ["CF_BLD_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: { 
+                    "rp1000": "20%",
+                    "rp0500": "10%",  
+                    "rp0100": "2%",  
+                    "rp0050": "1%",  
+                    "rp0025": "0.4%",  
+                    "rp0010": "0.2%",  
+                    "rp0005": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "CF_BLD_EXP",
+                "rp0500": "CF_BLD_EXP",
+                "rp0100": "CF_BLD_EXP",
+                "rp0050": "CF_BLD_EXP",
+                "rp0025": "CF_BLD_EXP",
+                "rp0010": "CF_BLD_EXP",
+                "rp0005": "CF_BLD_EXP",
+            },
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
+        },
+        "GDP": {
+            url: `${URL_BASE}/coastal_gdp_table/FeatureServer/0/query`,
+            measure: ["CF_GDP_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: { 
+                    "rp1000": "20%",
+                    "rp0500": "10%",  
+                    "rp0100": "2%",  
+                    "rp0050": "1%",  
+                    "rp0025": "0.4%",  
+                    "rp0010": "0.2%",  
+                    "rp0005": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "CF_GDP_EXP",
+                "rp0500": "CF_GDP_EXP",
+                "rp0100": "CF_GDP_EXP",
+                "rp0050": "CF_GDP_EXP",
+                "rp0025": "CF_GDP_EXP",
+                "rp0010": "CF_GDP_EXP",
+                "rp0005": "CF_GDP_EXP",
+            },
+            value: "PERCENT_",
             source: "Sources: IMF Staff Calculations."
         }
     },
@@ -103,7 +246,7 @@ export const measureMapper: Record<string, string> = {
     TN_PW_EXP: "Tropical Nights",
     ID_PW_EXP: "Icing Days",
     CDD_CROP_EXP: "Dry Days",
-    SPEI_CROP_EXP: "SPEI",
+    SPEI_CROP_EXP: "SPEI Index",
     HD_LW_EXP: "Hot Days",
     RF_PW_EXP: "Flood Level" // not sure
 };

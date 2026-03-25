@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { GridView } from './ForwardLooking/Grid/Grid';
 import { NewHeader } from './Header/Header';
 import { CompareView } from './ForwardLooking/Compare/Compare';
-import { TemperatureThresholds } from './ForwardLooking/Compare/temperatureThresholds';
+import { Thresholds } from './ForwardLooking/Compare/thresholds';
 
 type JsonShape = {
   features: Array<{
@@ -24,7 +24,7 @@ function App() {
   const [currentHazard, setHazard] = useState<string>("Riverine Flooding");
   const [currentExposure, setExposure] = useState<string>("Population");
   const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "RF_PW_EXP" });
-  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp01000" });
+  const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp1000" });
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
@@ -74,7 +74,7 @@ function App() {
                 }} />
               </div>
             </div>
-            <TemperatureThresholds props={{
+            <Thresholds props={{
               currentHazard,
               currentExposure,
               currentThreshold,
