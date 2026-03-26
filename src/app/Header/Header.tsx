@@ -99,7 +99,7 @@ export const NewHeader = ({ props }: any) => {
             <div className='flex flex-row h-[69px] w-full'>
                 <Button className='rounded-none h-full w-[67px] bg-[var(--darkblue)] text-white hover:bg-[var(--darkblue)]'>Menu</Button>
                 <Card className="rounded-none w-[208px] p-0 flex flex-row items-center justify-center font-semibold bg-[var(--lightblue)] text-white border-0">IMF GEOPULSE</Card>
-                <Card className={`rounded-none w-[208px] p-0 flex flex-col items-center justify-center gap-0 bg-${props.currentView !== "Event tracking" ? '[var(--lightestblue)]' : 'none'} border-0`}>
+                <Card className={`rounded-none w-[208px] p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
                         <div className='h-full flex flex-col justify-center'>
                             <div className="text-[11px]">REALTIME</div>
                             <div className="flex flex-row">
@@ -148,7 +148,7 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                     : 
                     <div></div>}
-                <Card className={`rounded-none w-[366px] p-0 flex flex-col items-center justify-end gap-0 bg-${props.currentView == "Event tracking" ? '[var(--lightestblue)]' : 'none'} border-0`}>
+                <Card className={`rounded-none w-[366px] p-0 flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
                     <div className="text-[11px]">FORWARD LOOKING</div>
                     <div className="flex flex-end flex-col w-full ">
                         <div className="flex flex-row justify-evenly items-start w-full h-full">

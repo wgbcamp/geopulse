@@ -116,7 +116,7 @@ export const EventTracking = (props: any) => {
     ]
 
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full" >
             <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
              <div className="absolute z-50 top-50 h-full w-[300px] flex flex-col justify-start items-start pointer-events-none">
                     {tempExposuresArray.map((e: any) =>
