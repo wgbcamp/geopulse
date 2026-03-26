@@ -95,19 +95,22 @@ export const NewHeader = ({ props }: any) => {
     };
 
     return (
-        <div className={`h-[69px] sticky top-0 z-50`}>
+        <div className={`h-[69px] fixed top-0 z-50`}>
             <div className='flex flex-row h-[69px] w-full'>
                 <Button className='rounded-none h-full w-[67px] bg-[var(--darkblue)] text-white hover:bg-[var(--darkblue)]'>Menu</Button>
-                <Card className="rounded-none w-[208px] p-0 flex flex-row items-center justify-center font-semibold bg-[var(--lightblue)] text-white border-0">IMF | GEOPULSE</Card>
-                <Card className="rounded-none w-[208px] p-0 flex flex-col items-center justify-center gap-0">
-                    <div className="text-[11px]">REALTIME</div>
-                    <div className="flex flex-row">
-                        <Timer20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
-                        <div className="text-[16px] font-bold text-end flex items-center pl-2 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>  
-                    </div>
+                <Card className="rounded-none w-[208px] p-0 flex flex-row items-center justify-center font-semibold bg-[var(--lightblue)] text-white border-0">IMF GEOPULSE</Card>
+                <Card className={`rounded-none w-[208px] p-0 flex flex-col items-center justify-center gap-0 bg-${props.currentView !== "Event tracking" ? '[var(--lightestblue)]' : 'none'} border-0`}>
+                        <div className='h-full flex flex-col justify-center'>
+                            <div className="text-[11px]">REALTIME</div>
+                            <div className="flex flex-row">
+                                <Timer20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
+                                <div className="text-[16px] font-bold text-end flex items-center pl-2 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>
+                            </div>
+                        </div>
+                        <div className={`h-[4px] w-full bg-[var(--orange)] ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
                 </Card>
                 {props.currentView === "Event tracking" ?
-                    <div className='flex w-[750px]'>
+                    <div className='flex '>
                         <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
                             <Popover>
                                 <PopoverTrigger>
@@ -135,8 +138,8 @@ export const NewHeader = ({ props }: any) => {
                             </Popover>
                         </Card>
                         {calendarData.map((x) => calendarComponent(x))}
-                        <div className='flex h-full items-end'>
-                            <div className="flex items-center justify-center h-[52.5px]">
+                        <div className='flex h-full items-end bg-white'>
+                            <div className="flex items-center justify-center h-[52.5px] w-[100px]">
                                 <Button className='bg-(--evenlighterblue) text-[11px] font-extrabold'>
                                     UPDATE
                                 </Button>
@@ -145,7 +148,7 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                     : 
                     <div></div>}
-                <Card className="rounded-none w-[366px] p-0 flex flex-col items-center justify-end gap-0">
+                <Card className={`rounded-none w-[366px] p-0 flex flex-col items-center justify-end gap-0 bg-${props.currentView == "Event tracking" ? '[var(--lightestblue)]' : 'none'} border-0`}>
                     <div className="text-[11px]">FORWARD LOOKING</div>
                     <div className="flex flex-end flex-col w-full ">
                         <div className="flex flex-row justify-evenly items-start w-full h-full">

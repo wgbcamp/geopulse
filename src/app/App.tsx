@@ -93,9 +93,7 @@ function App() {
           }
       {currentView == "Event tracking"
         ?
-        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
           <EventTracking />
-        </div> 
         :
         <div></div>
       }
