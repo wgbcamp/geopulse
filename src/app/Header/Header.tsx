@@ -103,7 +103,7 @@ export const NewHeader = ({ props }: any) => {
                         <div className='h-full flex flex-col justify-center'>
                             <div className="text-[11px]">REALTIME</div>
                             <div className="flex flex-row">
-                                <Timer20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
+                                <Timer20RegularIcon size={26} strokeWidth={1} color={`${props.currentView !== "Event tracking" ? 'black'  : 'var(--orange)'}`} />
                                 <div className="text-[16px] font-bold text-end flex items-center pl-2 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>
                             </div>
                         </div>
