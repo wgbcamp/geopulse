@@ -212,13 +212,15 @@ export const Thresholds = ( { props }: any ) => {
     {
       "Population": floodingSliderComponent,
       "Buildings": floodingSliderComponent,
-      "GDP": floodingSliderComponent
+      "GDP": floodingSliderComponent,
+      "Urban GDP": floodingSliderComponent
     },
     "Coastal Flooding":
     {
       "Population": floodingSliderComponent,
       "Buildings": floodingSliderComponent,
-      "GDP": floodingSliderComponent
+      "GDP": floodingSliderComponent,
+      "Urban GDP": floodingSliderComponent
     },
     "Drought":
     {

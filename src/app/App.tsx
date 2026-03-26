@@ -4,6 +4,7 @@ import { GridView } from './ForwardLooking/Grid/Grid';
 import { NewHeader } from './Header/Header';
 import { CompareView } from './ForwardLooking/Compare/Compare';
 import { Thresholds } from './ForwardLooking/Compare/thresholds';
+import { EventTracking } from './Realtime/EventTracking';
 
 type JsonShape = {
   features: Array<{
@@ -91,11 +92,12 @@ function App() {
           <div></div>
           }
       {currentView == "Event tracking"
-      ?
-        <div className='w-full h-full flex items-center justify-center'>
-        </div>
-      :
-      <div></div>
+        ?
+        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
+          <EventTracking />
+        </div> 
+        :
+        <div></div>
       }
     </div>
 

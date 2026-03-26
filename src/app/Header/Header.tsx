@@ -42,40 +42,50 @@ export const NewHeader = ({ props }: any) => {
         setRiskOpened(newOpenState);
     };
 
-    const calendarData: {name: string, style: Record<string, string>}[] = [
+    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+
+    const calendarData: {name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>>}[] = [
         {
             name: "START",
             style: {
-            }
+            },
+            date: startDate,
+            setDate: setStartDate
         },
         {
             name: "END",
             style: {
-            }
+            },
+            date: endDate,
+            setDate: setEndDate
         }
     ];
 
-    const calendarComponent = (value: { name: string, style: Record<string, string> }) => {
+
+
+    const calendarComponent = (value: { name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>> }) => {
         return (
             <Card className={`rounded-none w-[200px] p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
                 <div className='w-7/10 flex flex-col items-start'>
                     <div className="font-extrabold text-[#707070] text-[11px]">{value.name}</div>
                     <Popover>
-                        <PopoverTrigger >
-                            <Button
+                        <PopoverTrigger asChild>
+                            <Button 
                                 variant="outline"
-                                // data-empty={!date}
+                                data-empty={!value.date}
                                 className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                            >
-                                {/* {date ? format(date, "PPP") : <span>Pick a date</span>} */}
+                                >
+                                {value.date ? format(value.date, "PPP") : <span>Select a date</span>}
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                                 mode="single"
-                            // selected={date}
-                            // onSelect={setDate}
-                            // defaultMonth={date}
+                                selected={value.date}
+                                onSelect={value.setDate}
+                                defaultMonth={value.date}
+                                captionLayout='dropdown'
                             />
                         </PopoverContent>
                     </Popover>

@@ -88,6 +88,34 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             },
             value: "PERCENT_",
             source: "Sources: IMF Staff Calculations."
+        },
+        "Urban GDP": {
+            url: `${URL_BASE}/riverine_ugdp_table/FeatureServer/0/query`,
+            measure: ["RF_UGDP_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: {
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
+                    "rp0050": "1%",  
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "RF_UGDP_EXP",
+                "rp0500": "RF_UGDP_EXP",
+                "rp0100": "RF_UGDP_EXP",
+                "rp0050": "RF_UGDP_EXP",
+                "rp0025": "RF_UGDP_EXP",
+                "rp0010": "RF_UGDP_EXP",
+                "rp0005": "RF_UGDP_EXP",
+            },
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
         }
     },
     "Coastal Flooding":
@@ -172,6 +200,34 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0025": "CF_GDP_EXP",
                 "rp0010": "CF_GDP_EXP",
                 "rp0005": "CF_GDP_EXP",
+            },
+            value: "PERCENT_",
+            source: "Sources: IMF Staff Calculations."
+        },
+        "Urban GDP": {
+            url: `${URL_BASE}/coastal_ugdp_table/FeatureServer/0/query`,
+            measure: ["CF_UGDP_EXP"],
+            scenarios: ["rcp4p5", "rcp8p5"],
+            threshold: {
+                type: "RETURN_PERIOD",
+                group: {
+                    "rp0005": "20%",
+                    "rp0010": "10%",  
+                    "rp0025": "2%",  
+                    "rp0050": "1%",  
+                    "rp0100": "0.4%",  
+                    "rp0500": "0.2%",  
+                    "rp1000": "0.1%"
+                }
+            },
+            thresholdToMeasure: {
+                "rp1000": "CF_UGDP_EXP",
+                "rp0500": "CF_UGDP_EXP",
+                "rp0100": "CF_UGDP_EXP",
+                "rp0050": "CF_UGDP_EXP",
+                "rp0025": "CF_UGDP_EXP",
+                "rp0010": "CF_UGDP_EXP",
+                "rp0005": "CF_UGDP_EXP",
             },
             value: "PERCENT_",
             source: "Sources: IMF Staff Calculations."

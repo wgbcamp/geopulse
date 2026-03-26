@@ -150,12 +150,12 @@ export const Region = ( props: any ) => {
             }
 
             // check and see if the currentScenario exists on the chosen table based on urlObject, NEEDS FIXING
-            if (
-                !Object.values(urlObject[props.currentHazard][props.currentExposure].scenarios)
-                    .map((k) => scenarioMapper[k])
-                    .includes(scenarioMapper[props.currentScenario])) {
-                props.setScenario(urlObject[props.currentHazard][props.currentExposure].scenarios[0]); 
-            } 
+            // if (
+            //     !Object.values(urlObject[props.currentHazard][props.currentExposure].scenarios)
+            //         .map((k) => scenarioMapper[k])
+            //         .includes(scenarioMapper[props.currentScenario])) {
+            //     props.setScenario(urlObject[props.currentHazard][props.currentExposure].scenarios[0]); 
+            // } 
         };
         loadCountryData(iso3);
     }, [iso3, props.currentHazard, props.currentExposure]);
@@ -296,6 +296,8 @@ export const Region = ( props: any ) => {
                         case "CF_BLD_EXP":
                         case "RF_GDP_EXP":
                         case "CF_GDP_EXP":
+                        case "RF_UGDP_EXP":
+                        case "CF_UGDP_EXP":
                             acc[measure].maxValue = 100;
                             acc[measure].minValue = 0;
                             break;
