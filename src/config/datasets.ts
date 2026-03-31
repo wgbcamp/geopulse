@@ -317,6 +317,48 @@ const thresholdToTitle: Record<string, string> = {
     H_40: "Tmax > 40"
 }
 
+export const URL_RTBASE = "https://tiledimageservices9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
+
+export const realtimeObject: Record<string, { url: string }> = {
+
+    "Population": 
+    {
+        url: `${URL_RTBASE}/worldpop_population/ImageServer`
+    },
+    "Vulnerable People":
+    {
+        url: `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer`
+    },
+    "Buildings":
+    {
+       url: `${URL_RTBASE}/gba_buildings_count/ImageServer`
+    },
+    "Nightlights":
+    {
+      url: `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer`
+    },
+      "GDP": 
+    {
+        url: `${URL_RTBASE}/murakami_gdp/ImageServer`
+    },
+    "Urban GDP":
+    {
+        url: `${URL_RTBASE}/murakami_urbangdp/ImageServer`
+    },
+    "Cropland":
+    {
+       url: `${URL_RTBASE}/esri_cropland/ImageServer`
+    },
+    "Airports":
+    {
+      url: `${URL_BASE}/airports_latest/FeatureServer`
+    },
+    "Ports":
+    {
+        url: `${URL_BASE}/PortWatch_ports_database/FeatureServer`
+    }
+}
+
 export const comparisonTitles = (hazard: string, exposure: string, measure: string, threshold: string, iso3: string) => {
 
     const colorAxisTitleMapper: Record<string, Record<string, Record<string, string>>> = {
