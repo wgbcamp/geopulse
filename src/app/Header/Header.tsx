@@ -42,23 +42,20 @@ export const NewHeader = ({ props }: any) => {
         setRiskOpened(newOpenState);
     };
 
-    const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-    const [endDate, setEndDate] = useState<Date | undefined>(undefined);
-
     const calendarData: {name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>>}[] = [
         {
             name: "START",
             style: {
             },
-            date: startDate,
-            setDate: setStartDate
+            date: props.startDate,
+            setDate: props.setStartDate
         },
         {
             name: "END",
             style: {
             },
-            date: endDate,
-            setDate: setEndDate
+            date: props.endDate,
+            setDate: props.setEndDate
         }
     ];
 
@@ -66,7 +63,7 @@ export const NewHeader = ({ props }: any) => {
 
     const calendarComponent = (value: { name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>> }) => {
         return (
-            <Card className={`rounded-none w-[200px] p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
+            <Card className={`rounded-none w-[220px] p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
                 <div className='w-7/10 flex flex-col items-start'>
                     <div className="font-extrabold text-[#707070] text-[11px]">{value.name}</div>
                     <Popover>
@@ -74,7 +71,7 @@ export const NewHeader = ({ props }: any) => {
                             <Button 
                                 variant="outline"
                                 data-empty={!value.date}
-                                className="w-[150px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                                className="w-[175px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
                                 >
                                 {value.date ? format(value.date, "PPP") : <span>Select a date</span>}
                             </Button>
@@ -82,6 +79,8 @@ export const NewHeader = ({ props }: any) => {
                         <PopoverContent className="w-auto p-0" align="start">
                             <Calendar
                                 mode="single"
+                                disabled={(date) => date < new Date("2019-01-01")}
+                                startMonth={new Date("2019-01-07")}
                                 selected={value.date}
                                 onSelect={value.setDate}
                                 defaultMonth={value.date}
@@ -111,12 +110,12 @@ export const NewHeader = ({ props }: any) => {
                 </Card>
                 {props.currentView === "Event tracking" ?
                     <div className='flex '>
-                        <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
+                        {/* <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
                             <Popover>
                                 <PopoverTrigger>
                                     <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
                                         <div className='flex items-center'>
-                                            {/* <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div> */}
+                                            <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div>
                                             Events
                                         </div>
                                         <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
@@ -136,15 +135,15 @@ export const NewHeader = ({ props }: any) => {
                                     </div>
                                 </PopoverContent>
                             </Popover>
-                        </Card>
+                        </Card> */}
                         {calendarData.map((x) => calendarComponent(x))}
-                        <div className='flex h-full items-end bg-white'>
+                        {/* <div className='flex h-full items-end bg-white'>
                             <div className="flex items-center justify-center h-[52.5px] w-[100px]">
                                 <Button className='bg-(--evenlighterblue) text-[11px] font-extrabold'>
                                     UPDATE
                                 </Button>
                             </div>
-                        </div>
+                        </div> */}
                     </div>
                     : 
                     <div></div>}

@@ -8,7 +8,8 @@ import MapView from "@arcgis/core/views/MapView.js";
 
 import { realtimeObject } from '@/config/datasets';
 
-export const EventTracking = (props: any) => {
+export const EventTracking = ({props}: any) => {
+
 
     const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
 
@@ -18,6 +19,7 @@ export const EventTracking = (props: any) => {
     const featureLayer = useRef<FeatureLayer | null>(null);
     const layer = useRef<any>(null);
     const view = useRef<MapView>(new MapView);
+    const eventFeatureLayer = useRef<FeatureLayer | null>(null);
 
      useEffect(() => {
         if (ref.current) {
@@ -28,7 +30,7 @@ export const EventTracking = (props: any) => {
             view.current = new MapView({
                 container: ref.current,
                 map: map.current,
-                zoom: 3,
+                zoom: 2,
                 center: [-40.9465, 0.775],
                 constraints: {
                     minZoom: 2,
@@ -90,6 +92,44 @@ export const EventTracking = (props: any) => {
 
         map.current.add(layer.current);
     }, [realtimeExposure])
+
+    useEffect(() => {
+
+        if (!map.current) return;
+
+        if (eventFeatureLayer.current) {
+            map.current.remove(eventFeatureLayer.current);
+            eventFeatureLayer.current.destroy();
+        }
+
+        function toTimestamp(date: any) {
+            return date.toISOString().replace("T", " ").split(".")[0];
+        }
+ 
+
+        eventFeatureLayer.current = new FeatureLayer({
+            url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/gdacs_events/FeatureServer",
+            outFields: ["*"],
+            maxRecordCountFactor: 5,
+            // renderer: {
+            //     type: "simple",
+            //     symbol: { type: "simple-marker", size: 20, color: [50,25,100,1] }
+            // },
+            definitionExpression: `fromdate >= timestamp '${toTimestamp(new Date(props.startDate))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.endDate))}'
+            OR
+            todate >= timestamp '${toTimestamp(new Date(props.startDate))}' AND todate <= timestamp '${toTimestamp(new Date(props.endDate))}'
+            OR
+            fromdate <= timestamp '${toTimestamp(new Date(props.startDate))}' AND todate >= timestamp '${toTimestamp(new Date(props.endDate))}'
+            `
+        });
+
+        console.log("props: ", props.startDate, "propsToIsoString: ", new Date(props.startDate).toISOString());
+        console.log(eventFeatureLayer.current);
+        
+
+        map.current.add(eventFeatureLayer.current);
+
+    }, [props.startDate, props.endDate])
 
     const tempExposuresArray: any = [
         {
@@ -158,7 +198,7 @@ export const EventTracking = (props: any) => {
             <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
              <div className="absolute z-50 top-50 h-full w-[300px] flex flex-col justify-start items-start pointer-events-none">
                     {tempExposuresArray.map((e: any) =>
-                        <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto" onClick={() => setRealtimeExposure(e.name)}>
+                        <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                             <div className="">
                                 <div className="flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] bg-black text-white">
                                     <div className="rounded-full flex items-center justify-center bg-black border-[1.37px] border-solid border-[#0084FF] h-[37px] w-[37px] mr-[10px]">{e.icon}</div>

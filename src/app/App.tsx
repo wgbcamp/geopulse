@@ -26,6 +26,9 @@ function App() {
   const [currentExposure, setExposure] = useState<string>("Population");
   const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "CF_PW_EXP" });
   const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp0005" });
+  const today = new Date;
+  const [startDate, setStartDate] = useState<Date | undefined>(new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()));
+  const [endDate, setEndDate] = useState<Date | undefined>(new Date);
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
 
@@ -53,7 +56,11 @@ function App() {
         setExposure,
         currentMeasure,
         setMeasure,
-        setThreshold
+        setThreshold,
+        startDate,
+        setStartDate,
+        endDate,
+        setEndDate
       }} />
 
       {currentView == "Grid"
@@ -93,7 +100,12 @@ function App() {
           }
       {currentView == "Event tracking"
         ?
-          <EventTracking />
+          <EventTracking props={{
+            startDate: startDate,
+            setStartDate: setStartDate,
+            endDate: endDate,
+            setEndDate: setEndDate
+          }} />
         :
         <div></div>
       }
