@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 import Map from "@arcgis/core/Map.js";
@@ -8,18 +8,108 @@ import MapView from "@arcgis/core/views/MapView.js";
 
 import { realtimeObject } from '@/config/datasets';
 
-export const EventTracking = ({props}: any) => {
+// --- Pulse color helper ---
+function getEventColor(attrs: any) {
+    const t = attrs.eventtype;
+    switch (t) {
+        case "EQ":
+            return "#5BE3A0";
+        case "TC":
+            return "#FF6B6B";
+        case "DR":
+            return "#C77DFF";
+        case "FL":
+            return "#5BC8FF";
+        case "VO":
+            return "#FFD45E";
+        case "WF":
+            return "#FF9F5B";
+        default:
+            return "#d9d9d9";
+
+    }
+}
+
+export const EventTracking = ({ props }: any) => {
 
 
     const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
-
+    const [events, setEvents] = useState<any>(null);
+    const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const ref = useRef(null);
+    const eventRef = useRef<HTMLDivElement | null>(null);
+    const pulseContainerRef = useRef<HTMLDivElement>(null);
     let map = useRef<Map | null>(null);
-    const imageryTileLayer = useRef<ImageryTileLayer | null>(null);
-    const featureLayer = useRef<FeatureLayer | null>(null);
     const layer = useRef<any>(null);
     const view = useRef<MapView>(new MapView);
     const eventFeatureLayer = useRef<FeatureLayer | null>(null);
+    const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
+
+        // --- Sync pulse positions to screen coords ---
+    const syncPulses = useCallback(() => {
+        if (!view.current) return;
+        pulseEls.current.forEach((p) => {
+            const sp = view.current.toScreen(p.geometry);
+            if (sp) {
+                p.el.style.left = sp.x + "px";
+                p.el.style.top = sp.y + "px";
+            }
+        });
+    }, []);
+
+    // --- Clear all pulse DOM elements ---
+    const clearPulses = useCallback(() => {
+        pulseEls.current.forEach(p => p.el.remove());
+        pulseEls.current = [];
+    }, []);
+
+    // --- Build pulse overlays from queried features ---
+    const queryEvents = useCallback(() => {
+        if (!eventFeatureLayer.current || !view.current || !pulseContainerRef.current) return;
+
+        clearPulses();
+
+        const query = eventFeatureLayer.current!.createQuery();
+        query.returnGeometry = true;
+        query.outFields = ["*"];
+        query.outSpatialReference = view.current.spatialReference;
+        query.maxRecordCountFactor = 5;
+            // No need to set outFields here — it inherits from the layer config above
+
+            eventFeatureLayer.current!.queryFeatures(query).then((result) => {
+                result.features.forEach((f: any) => {
+                    if (!f.geometry) return;
+                    const color = getEventColor(f.attributes);
+                    const phase = Math.random();
+                    const w = document.createElement("div");
+                    w.className = "pw";
+
+                    // Three staggered rings
+                    const classes = ["pr", "pr pr2", "pr pr3"];
+                    const delays = [0, -1.8, -3.2];
+                    classes.forEach((cls, i) => {
+                        const r = document.createElement("div");
+                        r.className = cls;
+                        r.style.borderColor = color;
+                        r.style.animationDelay = `${-(phase * 3.6) + delays[i]}s`;
+                        w.appendChild(r)
+                    })
+
+                    // Center dot
+                    const d = document.createElement("div");
+                    d. className = "pd";
+                    d.style.background = color;
+                    w.appendChild(d);
+
+                    pulseContainerRef.current!.appendChild(w);
+                    pulseEls.current.push({ el: w, geometry: f.geometry });
+                });
+                console.log(result.features.map(f => f.attributes));
+                setEvents(result.features.map((f: any) => f.attributes));
+                syncPulses();
+            });
+            
+    }, [clearPulses, syncPulses]);
 
      useEffect(() => {
         if (ref.current) {
@@ -44,22 +134,16 @@ export const EventTracking = ({props}: any) => {
 
             view.current.ui.components = [];
 
-            // reactiveUtils.watch(() =>
-            //     [view.current.interacting, view.current.viewpoint],
-            //     ([interacting, viewpoint]) => {
-            //         if (interacting) {
-            //         }
-            //         if (viewpoint) {
-            //             setPosition(viewpoint);
-            //         }
-            //     }
-            // )
-
+            // Wire up pulse sync to map interactions
+            view.current.watch("center", syncPulses);
+            view.current.watch("zoom", syncPulses);
+            view.current.watch("scale", syncPulses);
+            view.current.on("drag", syncPulses);
+            view.current.on("mouse-wheel", syncPulses);
+            view.current.watch("stationary", (v) => { if (v) syncPulses(); });
         }
-        // return () => {
-        //     view.current.destroy();
-        // }
-    }, []);
+   
+    }, [syncPulses]);
 
        useEffect(() => {
 
@@ -110,11 +194,10 @@ export const EventTracking = ({props}: any) => {
         eventFeatureLayer.current = new FeatureLayer({
             url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/gdacs_events/FeatureServer",
             outFields: ["*"],
-            maxRecordCountFactor: 5,
-            // renderer: {
-            //     type: "simple",
-            //     symbol: { type: "simple-marker", size: 20, color: [50,25,100,1] }
-            // },
+            renderer: {
+                type: "simple",
+                symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
+            },
             definitionExpression: `fromdate >= timestamp '${toTimestamp(new Date(props.startDate))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.endDate))}'
             OR
             todate >= timestamp '${toTimestamp(new Date(props.startDate))}' AND todate <= timestamp '${toTimestamp(new Date(props.endDate))}'
@@ -123,13 +206,32 @@ export const EventTracking = ({props}: any) => {
             `
         });
 
+        eventFeatureLayer.current.when(() => {
+            queryEvents();
+        });
+
         console.log("props: ", props.startDate, "propsToIsoString: ", new Date(props.startDate).toISOString());
-        console.log(eventFeatureLayer.current);
         
 
         map.current.add(eventFeatureLayer.current);
 
-    }, [props.startDate, props.endDate])
+    }, [props.startDate, props.endDate, clearPulses, queryEvents])
+
+    useEffect(() => {
+        const ec = eventRef.current;
+        if (!ec) return;
+
+        const children = Array.from(ec.children) as HTMLElement[];
+        let runningHeight = 0;
+        let hidden = 0;
+
+        for (const child of children) {
+            runningHeight += child.offsetHeight;
+            if (runningHeight > ec.clientHeight) hidden++;
+        }
+
+        setHiddenEvents(hidden);
+    }, [events]);
 
     const tempExposuresArray: any = [
         {
@@ -194,9 +296,13 @@ export const EventTracking = ({props}: any) => {
     ]
 
     return (
-        <div className="w-full h-full" >
-            <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
-             <div className="absolute z-50 top-50 h-full w-[300px] flex flex-col justify-start items-start pointer-events-none">
+        <div className="w-full h-full">
+            <div className='w-full h-full relative'>
+                <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
+                <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
+                </div>
+            </div>
+             <div className="absolute z-50 top-40 h-full w-[300px] flex flex-col justify-start items-start pointer-events-none">
                     {tempExposuresArray.map((e: any) =>
                         <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                             <div className="">
@@ -207,6 +313,29 @@ export const EventTracking = ({props}: any) => {
                             </div>
                         </div>
                     )}
+                </div>
+                <div className="absolute top-40 right-0 h-70/100 w-[300px] flex flex-col bg-white">
+                    <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
+                        <b className="ml-5">{events?.length || 0} Events in Data Range</b>
+                    </div>
+                <div className="h-full overflow-hidden flex flex-col justify-start" ref={eventRef}>
+                    {events?.map((event: any) => (
+                        <div key={event.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
+                            <h3 className="font-bold text-[var(--evenlighterblue)]">{event.country.toUpperCase()}</h3>
+                            <h3 className="font-bold">{event.description}</h3>
+                            <p>{new Date(event.fromdate).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric"
+                            })} - {event.todate == Date.now() ? "Present" : new Date(event.todate).toLocaleDateString("en-US", {
+                                month: "long",
+                                day: "numeric",
+                                year: "numeric"
+                            }) }</p>
+                            </div>
+                        ))}
+                    </div>
+                    <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
                 </div>
         </div>
     )

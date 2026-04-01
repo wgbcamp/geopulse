@@ -15,10 +15,54 @@ html {
   --darkblue: #1F3764;
   --lightblue: #2C4F92;
   --evenlighterblue: #4982F2;
+  --darkblue: rgb(30, 75, 146);
   --gray: #dadada;
 }
 
 .esri-view .esri-view-surface--touch-none:focus::after {
   outline: none !important;
+}
+
+.pw {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.pd {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.pr {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    border-width: 1px;
+    border-style: solid;
+    animation: slowRing 3.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+}
+
+.pr2 {
+    animation-delay: -1.8s !important;
+}
+
+.pr3 {
+    animation-delay: -3.2s !important;
+    border-width: 0.5px;
+}
+
+@keyframes slowRing {
+    0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
+    60%  { opacity: 0.25; }
+    100% { transform: translate(-50%, -50%) scale(6.5); opacity: 0; }
 }
 
