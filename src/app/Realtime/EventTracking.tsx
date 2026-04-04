@@ -387,7 +387,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
             </div>
-            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300`}>
+            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PLACEHOLDER</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
@@ -429,7 +429,7 @@ export const EventTracking = ({ props }: any) => {
                         )}
                     </div>                
                 </div>
-                <div className="pt-[24px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
+                <div className="pt-[24px] pb-5 text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
         </div>
     )
