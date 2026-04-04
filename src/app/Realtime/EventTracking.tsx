@@ -105,7 +105,17 @@ export const EventTracking = ({ props }: any) => {
                     pulseEls.current.push({ el: w, geometry: f.geometry });
                 });
                 console.log(result.features.map(f => f.attributes));
-                setEvents(result.features.map((f: any) => f.attributes));
+                console.log();
+                
+                var x = result.features.map((feature) => {
+                    return {
+                        attributes: feature.attributes,
+                        geometry: feature.geometry 
+                    }
+                })
+                setEvents(x);
+                console.log(result);
+                // setEvents(result.features.map((f: any) => f.attributes));
                 syncPulses();
             });
             
@@ -126,6 +136,7 @@ export const EventTracking = ({ props }: any) => {
                     minZoom: 2,
                     maxZoom: 10,
                 },
+                popupEnabled: false,
                 spatialReference: {
                     wkid: 3857,
                 },
@@ -144,6 +155,35 @@ export const EventTracking = ({ props }: any) => {
         }
    
     }, [syncPulses]);
+
+    useEffect(() => {
+        if (!view.current) return;
+
+        //clickable feature layer elements
+        const handleClick = (event: any) => {
+            view.current.hitTest(event).then((res: any) => {
+                if (res.results.length > 0) {
+                    const graphic = res.results.filter((value: any) => {
+                        return value.graphic.layer === eventFeatureLayer.current;
+                    })[0].graphic;
+                    events.forEach((x: {geometry: {longitude: number, latitude: number}}) => {
+                        if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
+                            focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude });
+                        }
+                    });
+                }
+            })
+        }
+
+        const handle = view.current.on("click", handleClick);
+        return () => {
+            handle.remove(); 
+        };
+    }, [events])
+
+
+
+
 
        useEffect(() => {
 
@@ -211,8 +251,6 @@ export const EventTracking = ({ props }: any) => {
         });
 
         console.log("props: ", props.startDate, "propsToIsoString: ", new Date(props.startDate).toISOString());
-        
-
         map.current.add(eventFeatureLayer.current);
 
     }, [props.startDate, props.endDate, clearPulses, queryEvents])
@@ -232,6 +270,16 @@ export const EventTracking = ({ props }: any) => {
 
         setHiddenEvents(hidden);
     }, [events]);
+
+    const focusOnEvent = (coors: any) => {
+        console.log(coors);
+        view.current.goTo({
+            center: [coors.longitude, coors.latitude],
+            zoom: 5
+        });
+
+
+    }
 
     const tempExposuresArray: any = [
         {
@@ -306,9 +354,9 @@ export const EventTracking = ({ props }: any) => {
                     {tempExposuresArray.map((e: any) =>
                         <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                             <div className="">
-                                <div className="flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] bg-black text-white">
+                                <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
                                     <div className="rounded-full flex items-center justify-center bg-black border-[1.37px] border-solid border-[#0084FF] h-[37px] w-[37px] mr-[10px]">{e.icon}</div>
-                                    {e.name}
+                                    <div>{e.name}</div>
                                 </div>
                             </div>
                         </div>
@@ -316,23 +364,26 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="absolute top-40 right-0 h-70/100 w-[300px] flex flex-col bg-white">
                     <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
-                        <b className="ml-5">{events?.length || 0} Events in Data Range</b>
+                        <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                     </div>
                 <div className="h-full overflow-hidden flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
-                        <div key={event.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
-                            <h3 className="font-bold text-[var(--evenlighterblue)]">{event.country.toUpperCase()}</h3>
-                            <h3 className="font-bold">{event.description}</h3>
-                            <p>{new Date(event.fromdate).toLocaleDateString("en-US", {
+                        <div key={event.attributes.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
+                            <h3 className="font-bold text-[14px] text-[var(--evenlighterblue)]">{event.attributes.country.toUpperCase()}</h3>
+                            <h3 className="font-bold text-[16px]">{event.attributes.description}</h3>
+                            <p className="text-[14px]">{new Date(event.attributes.fromdate).toLocaleDateString("en-US", {
                                 month: "long",
                                 day: "numeric",
                                 year: "numeric"
-                            })} - {event.todate == Date.now() ? "Present" : new Date(event.todate).toLocaleDateString("en-US", {
+                            })} - {event.attributes.todate == Date.now() ? "Present" : new Date(event.attributes.todate).toLocaleDateString("en-US", {
                                 month: "long",
                                 day: "numeric",
                                 year: "numeric"
-                            }) }</p>
+                            })}</p>
+                            <div className="flex h-[25px] items-center justify-center font-bold cursor-pointer text-[var(--evenlighterblue)] border-solid border border-gray-400 rounded-sm px-[5px] mb-[6px] mt-[9px] text-[11px]" onClick={() => focusOnEvent(event.geometry)}>
+                                DETAILS
                             </div>
+                        </div>
                         ))}
                     </div>
                     <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
