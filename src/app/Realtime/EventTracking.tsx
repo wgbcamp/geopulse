@@ -6,6 +6,8 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
 
+import { Slider } from "@/components/ui/slider"
+
 import { realtimeObject } from '@/config/datasets';
 
 // --- Pulse color helper ---
@@ -36,6 +38,8 @@ export const EventTracking = ({ props }: any) => {
     const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
     const [events, setEvents] = useState<any>(null);
     const [hiddenEvents, setHiddenEvents] = useState<number>(0);
+    const [focusedEvent, setFocusedEvent] = useState<any>("");
+    const [eventPopup, setEventPopup] = useState<string>("all events");
     const ref = useRef(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
@@ -115,7 +119,6 @@ export const EventTracking = ({ props }: any) => {
                 })
                 setEvents(x);
                 console.log(result);
-                // setEvents(result.features.map((f: any) => f.attributes));
                 syncPulses();
             });
             
@@ -166,9 +169,9 @@ export const EventTracking = ({ props }: any) => {
                     const graphic = res.results.filter((value: any) => {
                         return value.graphic.layer === eventFeatureLayer.current;
                     })[0].graphic;
-                    events.forEach((x: {geometry: {longitude: number, latitude: number}}) => {
+                    events.forEach((x: { geometry: { longitude: number, latitude: number }, attributes: { description: string } }) => {
                         if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
-                            focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude });
+                            focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);
                         }
                     });
                 }
@@ -180,10 +183,6 @@ export const EventTracking = ({ props }: any) => {
             handle.remove(); 
         };
     }, [events])
-
-
-
-
 
        useEffect(() => {
 
@@ -271,12 +270,14 @@ export const EventTracking = ({ props }: any) => {
         setHiddenEvents(hidden);
     }, [events]);
 
-    const focusOnEvent = (coors: any) => {
+    const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes: any) => {
         console.log(coors);
         view.current.goTo({
             center: [coors.longitude, coors.latitude],
             zoom: 5
         });
+        setFocusedEvent(attributes);
+        setEventPopup("focused event")
 
 
     }
@@ -362,10 +363,10 @@ export const EventTracking = ({ props }: any) => {
                         </div>
                     )}
                 </div>
-                <div className="absolute top-40 right-0 h-70/100 w-[300px] flex flex-col bg-white">
-                    <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
-                        <b className="ml-2">{events?.length || 0} Events in Data Range</b>
-                    </div>
+            <div className={`absolute top-40 ${eventPopup == "all events" ? "right-0" : "-right-300"} h-70/100 w-[300px] flex flex-col bg-white cursor-default`}>
+                <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
+                    <b className="ml-2">{events?.length || 0} Events in Data Range</b>
+                </div>
                 <div className="h-full overflow-hidden flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
                         <div key={event.attributes.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
@@ -380,14 +381,58 @@ export const EventTracking = ({ props }: any) => {
                                 day: "numeric",
                                 year: "numeric"
                             })}</p>
-                            <div className="flex h-[25px] items-center justify-center font-bold cursor-pointer text-[var(--evenlighterblue)] border-solid border border-gray-400 rounded-sm px-[5px] mb-[6px] mt-[9px] text-[11px]" onClick={() => focusOnEvent(event.geometry)}>
+                            <div className="flex h-[25px] items-center justify-center font-bold cursor-pointer text-[var(--evenlighterblue)] border-solid border border-gray-400 rounded-sm px-[5px] mb-[6px] mt-[9px] text-[11px]" onClick={() => focusOnEvent(event.geometry, event.attributes)}>
                                 DETAILS
                             </div>
                         </div>
-                        ))}
-                    </div>
-                    <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
+                    ))}
                 </div>
+                <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
+            </div>
+            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default`}>
+                <div className="h-[37px] w-full flex items-center justify-between pl-4">
+                    <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PLACEHOLDER</b>
+                    <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
+                </div>
+                <div className="text-[20px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description}</div>
+                <div className="pt-[24px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline / Days</div>
+                <div className="flex flex-row w-full pb-[36px] pl-4">
+                    <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">?</div>
+                    <Slider className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer'/>
+                </div>
+                <div className="text-[14px] pl-4">{
+                    new Date(focusedEvent.fromdate).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric"
+                    }) + " "}
+                    -
+                    {focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
+                        month: "long",
+                        day: "numeric",
+                        year: "numeric"
+                    })}
+                </div>
+                <div className="pt-5 font-bold text-[14px] pl-4">Severity:</div>
+                <div className='text-[14px] pl-4'>Level {focusedEvent.alertscore}</div>
+                <div className="pt-5 font-bold text-[14px] pl-4">Main economies affected:</div>
+                <div className='text-left text-[14px] pb-8 pl-4'>PLACEHOLDER | <u className='cursor-pointer'>Download PLACEHOLDER</u></div>
+                <div className="pt-5 flex flex-row w-full text-[12px] font-bold justify-around border-t-1 px-4">
+                    <div className='flex flex-col w-full items-between text-left'>
+                        <div className='pb-2 border-solid border-b-1'>EXPOSURE</div>
+                        {tempExposuresArray.map((e: any) => 
+                            <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center '>{e.name}</div>
+                        )}
+                    </div>
+                    <div className='w-full text-left'>
+                        <div className='pb-2 border-solid border-b-1 pl-3'>IMPACT</div>
+                        {tempExposuresArray.map((e: any) => 
+                            <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center border-l-1 pl-3'>PLACEHOLDER</div>
+                        )}
+                    </div>                
+                </div>
+                <div className="pt-[24px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
+            </div>
         </div>
     )
 }
