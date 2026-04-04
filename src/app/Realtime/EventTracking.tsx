@@ -392,7 +392,7 @@ export const EventTracking = ({ props }: any) => {
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PLACEHOLDER</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
                 </div>
-                <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4 overflow-hidden">{focusedEvent.description.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
+                <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4 overflow-hidden">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline / Days</div>
                 <div className="flex flex-row w-full pb-[36px] pl-4">
                     <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">?</div>
