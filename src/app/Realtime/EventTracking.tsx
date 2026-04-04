@@ -277,9 +277,7 @@ export const EventTracking = ({ props }: any) => {
             zoom: 5
         });
         setFocusedEvent(attributes);
-        setEventPopup("focused event")
-
-
+        setEventPopup("focused event");
     }
 
     const tempExposuresArray: any = [
@@ -355,7 +353,7 @@ export const EventTracking = ({ props }: any) => {
                     {tempExposuresArray.map((e: any) =>
                         <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                             <div className="">
-                                <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
+                                <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] transition-all duration-300 ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
                                     <div className="rounded-full flex items-center justify-center bg-black border-[1.37px] border-solid border-[#0084FF] h-[37px] w-[37px] mr-[10px]">{e.icon}</div>
                                     <div>{e.name}</div>
                                 </div>
@@ -363,7 +361,7 @@ export const EventTracking = ({ props }: any) => {
                         </div>
                     )}
                 </div>
-            <div className={`absolute top-40 ${eventPopup == "all events" ? "right-0" : "-right-300"} h-70/100 w-[300px] flex flex-col bg-white cursor-default`}>
+            <div className={`absolute top-40 ${eventPopup == "all events" ? "right-0" : "-right-300"} h-70/100 w-[300px] flex flex-col bg-white cursor-default transition-all duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
@@ -389,13 +387,13 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
             </div>
-            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default`}>
+            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PLACEHOLDER</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
                 </div>
-                <div className="text-[20px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description}</div>
-                <div className="pt-[24px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline / Days</div>
+                <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4 overflow-hidden">{focusedEvent.description.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
+                <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline / Days</div>
                 <div className="flex flex-row w-full pb-[36px] pl-4">
                     <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">?</div>
                     <Slider className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer'/>
