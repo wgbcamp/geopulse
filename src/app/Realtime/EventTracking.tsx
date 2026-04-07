@@ -3,8 +3,10 @@ import { useState, useRef, useEffect, useCallback } from 'react'
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 import Map from "@arcgis/core/Map.js";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
+import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
+import Renderer from "@arcgis/core/renderers/Renderer.js";
 
 import { Slider } from "@/components/ui/slider"
 
@@ -202,7 +204,8 @@ export const EventTracking = ({ props }: any) => {
             case "Urban GDP":
             case "Cropland":
                 layer.current = new ImageryTileLayer({
-                    url: realtimeObject[realtimeExposure].url
+                    url: realtimeObject[realtimeExposure].url,
+                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme })
                 })
                 break;
             case "Airports":
@@ -274,7 +277,7 @@ export const EventTracking = ({ props }: any) => {
         console.log(coors);
         view.current.goTo({
             center: [coors.longitude, coors.latitude],
-            zoom: 5
+            zoom: 8
         });
         setFocusedEvent(attributes);
         setEventPopup("focused event");
@@ -392,7 +395,7 @@ export const EventTracking = ({ props }: any) => {
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PLACEHOLDER</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
                 </div>
-                <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4 overflow-hidden">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
+                <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline / Days</div>
                 <div className="flex flex-row w-full pb-[36px] pl-4">
                     <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">?</div>

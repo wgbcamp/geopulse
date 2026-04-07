@@ -319,43 +319,229 @@ const thresholdToTitle: Record<string, string> = {
 
 export const URL_RTBASE = "https://tiledimageservices9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
 
-export const realtimeObject: Record<string, { url: string }> = {
+export const realtimeObject: Record<string, { url: string, colorScheme: Array<Record<string, any>> }> = {
 
     "Population": 
     {
-        url: `${URL_RTBASE}/worldpop_population/ImageServer`
+        url: `${URL_RTBASE}/worldpop_population/ImageServer`,
+        colorScheme: [
+        {
+            'minValue': 0,
+            'maxValue': 0.89,
+            'symbol': { 'type': 'simple-fill', 'color': [59, 15, 112, 1] },
+            'label': 'p25 – p50 ($-1 – $-0)'
+        },
+        {
+            'minValue': 0.89,
+            'maxValue': 8.13,
+            'symbol': { 'type': 'simple-fill', 'color': [140, 41, 129, 1] },
+            'label': 'p50 – p75 ($-0 – $1)'
+        },
+        {
+            'minValue': 8.13,
+            'maxValue': 59.1,
+            'symbol': { 'type': 'simple-fill', 'color': [222, 73, 104, 1] },
+            'label': 'p75 – p100 ($1 – $2)'
+        },
+        {
+            'minValue': 59.1,
+            'maxValue': 284.41,
+            'symbol': { 'type': 'simple-fill', 'color': [26, 158, 143, 1] },
+            'label': 'p100 – p125 ($2 – $2)'
+        },
+        {
+            'minValue': 284.41,
+            'maxValue': 2695.66,
+            'symbol': { 'type': 'simple-fill', 'color': [144, 215, 67, 1] },
+            'label': 'p125 – p150 ($2 – $3)'
+        },
+        {
+            'minValue': 2695.66,
+            'maxValue': 107608.73,
+            'symbol': { 'type': 'simple-fill', 'color': [253, 231, 37, 1] },
+            'label': 'Top 1% ($3 – $5)'
+        }]
     },
     "Vulnerable People":
     {
-        url: `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer`
+        url: `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer`,
+        colorScheme: [
+        {
+            'minValue': 0,
+            'maxValue': 0.89,
+            'symbol': { 'type': 'simple-fill', 'color': [59, 15, 112, 1] },
+            'label': 'p25 – p50 ($-1 – $-0)'
+        },
+        {
+            'minValue': 0.89,
+            'maxValue': 8.13,
+            'symbol': { 'type': 'simple-fill', 'color': [140, 41, 129, 1] },
+            'label': 'p50 – p75 ($-0 – $1)'
+        },
+        {
+            'minValue': 8.13,
+            'maxValue': 59.1,
+            'symbol': { 'type': 'simple-fill', 'color': [222, 73, 104, 1] },
+            'label': 'p75 – p100 ($1 – $2)'
+        },
+        {
+            'minValue': 59.1,
+            'maxValue': 284.41,
+            'symbol': { 'type': 'simple-fill', 'color': [26, 158, 143, 1] },
+            'label': 'p100 – p125 ($2 – $2)'
+        },
+        {
+            'minValue': 284.41,
+            'maxValue': 2695.66,
+            'symbol': { 'type': 'simple-fill', 'color': [144, 215, 67, 1] },
+            'label': 'p125 – p150 ($2 – $3)'
+        },
+        {
+            'minValue': 2695.66,
+            'maxValue': 107608.73,
+            'symbol': { 'type': 'simple-fill', 'color': [253, 231, 37, 1] },
+            'label': 'Top 1% ($3 – $5)'
+        }]
     },
     "Buildings":
     {
-       url: `${URL_RTBASE}/gba_buildings_count/ImageServer`
+       url: `${URL_RTBASE}/gba_buildings_count/ImageServer`,
+       colorScheme: [
+        
+       ]
     },
     "Nightlights":
     {
-      url: `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer`
+      url: `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer`,
+        colorScheme: [
+        {
+            'minValue': 7,
+            'maxValue': 10,
+            'symbol': { 'type': 'simple-fill', 'color': [0, 0, 0, 1] },
+            'label': 'Bottom 10% ($7 – $10)'
+        },
+        {
+            'minValue': 10,
+            'maxValue': 15,
+            'symbol': { 'type': 'simple-fill', 'color': [13, 27, 75, 1] },
+            'label': 'p25 – p50 ($10 – $15)'
+        },
+        {
+            'minValue': 15,
+            'maxValue': 25,
+            'symbol': { 'type': 'simple-fill', 'color': [45, 75, 142, 1] },
+            'label': 'p50 – p75 ($15 – $25)'
+        },
+        {
+            'minValue': 25,
+            'maxValue': 40,
+            'symbol': { 'type': 'simple-fill', 'color': [245, 196, 0, 1] },
+            'label': 'p75 – p100 ($25 – $40)'
+        },
+        {
+            'minValue': 40,
+            'maxValue': 63,
+            'symbol': { 'type': 'simple-fill', 'color': [255, 255, 255, 1] },
+            'label': 'Top 1% ($40 – $63)'
+        }]
     },
       "GDP": 
     {
-        url: `${URL_RTBASE}/murakami_gdp/ImageServer`
+        url: `${URL_RTBASE}/murakami_gdp/ImageServer`,
+        colorScheme: [
+            {
+                'minValue': 4.38,
+                'maxValue': 6096.49,
+                'symbol': { 'type': 'simple-fill', 'color': [255, 255, 204, 1] },
+                'label': 'Bottom 10% ($1 – $4)'
+            },
+            {
+                'minValue': 6096.49,
+                'maxValue': 104909.98,
+                'symbol': { 'type': 'simple-fill', 'color': [254, 217, 118, 1] },
+                'label': 'p25 – p50 ($4 – $5)'
+            },
+            {
+                'minValue': 104909.98,
+                'maxValue': 627994.7,
+                'symbol': { 'type': 'simple-fill', 'color': [253, 141, 60, 1] },
+                'label': 'p50 – p75 ($5 – $6)'
+            },
+            {
+                'minValue': 627994.7,
+                'maxValue': 13321385.0,
+                'symbol': { 'type': 'simple-fill', 'color': [227, 26, 28, 1] },
+                'label': 'p75 – p100 ($6 – $7)'
+            },
+            {
+                'minValue': 13321385.0,
+                'maxValue': 4346624500.0,
+                'symbol': { 'type': 'simple-fill', 'color': [103, 0, 13, 1] },
+                'label': 'Top 1% ($7 – $10)'
+            }
+        ]
     },
     "Urban GDP":
     {
-        url: `${URL_RTBASE}/murakami_urbangdp/ImageServer`
+        url: `${URL_RTBASE}/murakami_urbangdp/ImageServer`,
+        colorScheme: [
+            {
+                'minValue': 4.38,
+                'maxValue': 6096.49,
+                'symbol': { 'type': 'simple-fill', 'color': [255, 255, 204, 1] },
+                'label': 'Bottom 10% ($1 – $4)'
+            },
+            {
+                'minValue': 6096.49,
+                'maxValue': 104909.98,
+                'symbol': { 'type': 'simple-fill', 'color': [254, 217, 118, 1] },
+                'label': 'p25 – p50 ($4 – $5)'
+            },
+            {
+                'minValue': 104909.98,
+                'maxValue': 627994.7,
+                'symbol': { 'type': 'simple-fill', 'color': [253, 141, 60, 1] },
+                'label': 'p50 – p75 ($5 – $6)'
+            },
+            {
+                'minValue': 627994.7,
+                'maxValue': 13321385.0,
+                'symbol': { 'type': 'simple-fill', 'color': [227, 26, 28, 1] },
+                'label': 'p75 – p100 ($6 – $7)'
+            },
+            {
+                'minValue': 13321385.0,
+                'maxValue': 4346624500.0,
+                'symbol': { 'type': 'simple-fill', 'color': [103, 0, 13, 1] },
+                'label': 'Top 1% ($7 – $10)'
+            }
+        ]
     },
     "Cropland":
     {
-       url: `${URL_RTBASE}/esri_cropland/ImageServer`
+        url: `${URL_RTBASE}/esri_cropland/ImageServer`,
+        colorScheme: [
+            {
+                'minValue': 0.5,
+                'maxValue': 1.0,
+                'symbol': { 'type': 'simple-fill', 'color': [168, 198, 108, 1] },
+                'label': 'Cropland'
+            }
+        ]
     },
     "Airports":
     {
-      url: `${URL_BASE}/airports_latest/FeatureServer`
+        url: `${URL_BASE}/airports_latest/FeatureServer`,
+        colorScheme: [
+
+        ]
     },
     "Ports":
     {
-        url: `${URL_BASE}/PortWatch_ports_database/FeatureServer`
+        url: `${URL_BASE}/PortWatch_ports_database/FeatureServer`,
+        colorScheme: [
+
+        ]
     }
 }
 
