@@ -325,197 +325,297 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     {
         url: `${URL_RTBASE}/worldpop_population/ImageServer`,
         colorScheme: [
-        {
-            'minValue': 0,
-            'maxValue': 0.89,
-            'symbol': { 'type': 'simple-fill', 'color': [59, 15, 112, 1] },
-            'label': 'p25 – p50 ($-1 – $-0)'
-        },
-        {
-            'minValue': 0.89,
-            'maxValue': 8.13,
-            'symbol': { 'type': 'simple-fill', 'color': [140, 41, 129, 1] },
-            'label': 'p50 – p75 ($-0 – $1)'
-        },
-        {
-            'minValue': 8.13,
-            'maxValue': 59.1,
-            'symbol': { 'type': 'simple-fill', 'color': [222, 73, 104, 1] },
-            'label': 'p75 – p100 ($1 – $2)'
-        },
-        {
-            'minValue': 59.1,
-            'maxValue': 284.41,
-            'symbol': { 'type': 'simple-fill', 'color': [26, 158, 143, 1] },
-            'label': 'p100 – p125 ($2 – $2)'
-        },
-        {
-            'minValue': 284.41,
-            'maxValue': 2695.66,
-            'symbol': { 'type': 'simple-fill', 'color': [144, 215, 67, 1] },
-            'label': 'p125 – p150 ($2 – $3)'
-        },
-        {
-            'minValue': 2695.66,
-            'maxValue': 107608.73,
-            'symbol': { 'type': 'simple-fill', 'color': [253, 231, 37, 1] },
-            'label': 'Top 1% ($3 – $5)'
-        }]
+            {
+                "minValue": 0.0,
+                "maxValue": 2.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [0, 0, 4, 1.0]
+                },
+                "label": "< 2"
+            },
+            {
+                "minValue": 2.0,
+                "maxValue": 8.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [10, 58, 74, 1.0]
+                },
+                "label": "8"
+            },
+            {
+                "minValue": 8.0,
+                "maxValue": 59.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [27, 138, 138, 1.0]
+                },
+                "label": "59"
+            },
+            {
+                "minValue": 59.0,
+                "maxValue": 284.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [94, 201, 98, 1.0]
+                },
+                "label": "284"
+            },
+            {
+                "minValue": 284.0,
+                "maxValue": 107609.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [212, 255, 80, 1.0]
+                },
+                "label": "> 284"
+            }
+        ]
+
     },
     "Vulnerable People":
     {
         url: `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer`,
         colorScheme: [
-        {
-            'minValue': 0,
-            'maxValue': 0.89,
-            'symbol': { 'type': 'simple-fill', 'color': [59, 15, 112, 1] },
-            'label': 'p25 – p50 ($-1 – $-0)'
-        },
-        {
-            'minValue': 0.89,
-            'maxValue': 8.13,
-            'symbol': { 'type': 'simple-fill', 'color': [140, 41, 129, 1] },
-            'label': 'p50 – p75 ($-0 – $1)'
-        },
-        {
-            'minValue': 8.13,
-            'maxValue': 59.1,
-            'symbol': { 'type': 'simple-fill', 'color': [222, 73, 104, 1] },
-            'label': 'p75 – p100 ($1 – $2)'
-        },
-        {
-            'minValue': 59.1,
-            'maxValue': 284.41,
-            'symbol': { 'type': 'simple-fill', 'color': [26, 158, 143, 1] },
-            'label': 'p100 – p125 ($2 – $2)'
-        },
-        {
-            'minValue': 284.41,
-            'maxValue': 2695.66,
-            'symbol': { 'type': 'simple-fill', 'color': [144, 215, 67, 1] },
-            'label': 'p125 – p150 ($2 – $3)'
-        },
-        {
-            'minValue': 2695.66,
-            'maxValue': 107608.73,
-            'symbol': { 'type': 'simple-fill', 'color': [253, 231, 37, 1] },
-            'label': 'Top 1% ($3 – $5)'
-        }]
+            {
+                "minValue": 0.0,
+                "maxValue": 2.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [0, 0, 4, 1.0]
+                },
+                "label": "< 2"
+            },
+            {
+                "minValue": 2.0,
+                "maxValue": 8.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [10, 58, 74, 1.0]
+                },
+                "label": "8"
+            },
+            {
+                "minValue": 8.0,
+                "maxValue": 59.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [27, 138, 138, 1.0]
+                },
+                "label": "59"
+            },
+            {
+                "minValue": 59.0,
+                "maxValue": 284.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [94, 201, 98, 1.0]
+                },
+                "label": "284"
+            },
+            {
+                "minValue": 284.0,
+                "maxValue": 107609.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [212, 255, 80, 1.0]
+                },
+                "label": "> 284"
+            }
+        ]
+
     },
     "Buildings":
     {
        url: `${URL_RTBASE}/gba_buildings_count/ImageServer`,
-       colorScheme: [
-        
-       ]
+        colorScheme: [
+            {
+                "minValue": 0.0,
+                "maxValue": 1.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [0, 0, 139, 1.0]
+                },
+                "label": "< 1"
+            },
+            {
+                "minValue": 1.0,
+                "maxValue": 5.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [0, 153, 204, 1.0]
+                },
+                "label": "5"
+            },
+            {
+                "minValue": 5.0,
+                "maxValue": 18.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [0, 204, 136, 1.0]
+                },
+                "label": "18"
+            },
+            {
+                "minValue": 18.0,
+                "maxValue": 81.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [204, 204, 0, 1.0]
+                },
+                "label": "81"
+            },
+            {
+                "minValue": 81.0,
+                "maxValue": 30203.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [255, 0, 0, 1.0]
+                },
+                "label": "> 81"
+            }
+        ]
+ 
     },
     "Nightlights":
     {
-      url: `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer`,
+        url: `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer`,
         colorScheme: [
-        {
-            'minValue': 7,
-            'maxValue': 10,
-            'symbol': { 'type': 'simple-fill', 'color': [0, 0, 0, 1] },
-            'label': 'Bottom 10% ($7 – $10)'
-        },
-        {
-            'minValue': 10,
-            'maxValue': 15,
-            'symbol': { 'type': 'simple-fill', 'color': [13, 27, 75, 1] },
-            'label': 'p25 – p50 ($10 – $15)'
-        },
-        {
-            'minValue': 15,
-            'maxValue': 25,
-            'symbol': { 'type': 'simple-fill', 'color': [45, 75, 142, 1] },
-            'label': 'p50 – p75 ($15 – $25)'
-        },
-        {
-            'minValue': 25,
-            'maxValue': 40,
-            'symbol': { 'type': 'simple-fill', 'color': [245, 196, 0, 1] },
-            'label': 'p75 – p100 ($25 – $40)'
-        },
-        {
-            'minValue': 40,
-            'maxValue': 63,
-            'symbol': { 'type': 'simple-fill', 'color': [255, 255, 255, 1] },
-            'label': 'Top 1% ($40 – $63)'
-        }]
+            {
+                'minValue': 7,
+                'maxValue': 10,
+                'symbol': { 'type': 'simple-fill', 'color': [45, 48, 64, 1.0] },
+                'label': '< 10'
+            },
+            {
+                'minValue': 10,
+                'maxValue': 15,
+                'symbol': { 'type': 'simple-fill', 'color': [74, 80, 104, 1.0] },
+                'label': '15'
+            },
+            {
+                'minValue': 15,
+                'maxValue': 25,
+                'symbol': { 'type': 'simple-fill', 'color': [120, 136, 168, 1.0] },
+                'label': '25'
+            },
+            {
+                'minValue': 25,
+                'maxValue': 40,
+                'symbol': { 'type': 'simple-fill', 'color': [255, 200, 100, 1.0] },
+                'label': '40'
+            },
+            {
+                'minValue': 40,
+                'maxValue': 63,
+                'symbol': { 'type': 'simple-fill', 'color': [255, 255, 255, 1.0] },
+                'label': '> 40'
+            }
+        ]
     },
-      "GDP": 
+    "GDP":
     {
         url: `${URL_RTBASE}/murakami_gdp/ImageServer`,
         colorScheme: [
             {
-                'minValue': 4.38,
-                'maxValue': 6096.49,
-                'symbol': { 'type': 'simple-fill', 'color': [255, 255, 204, 1] },
-                'label': 'Bottom 10% ($1 – $4)'
+                "minValue": 4.0,
+                "maxValue": 6096.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [50, 48, 50, 1.0]
+                },
+                "label": "< $6.1K"
             },
             {
-                'minValue': 6096.49,
-                'maxValue': 104909.98,
-                'symbol': { 'type': 'simple-fill', 'color': [254, 217, 118, 1] },
-                'label': 'p25 – p50 ($4 – $5)'
+                "minValue": 6096.0,
+                "maxValue": 104910.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [90, 55, 65, 1.0]
+                },
+                "label": "$104.9K"
             },
             {
-                'minValue': 104909.98,
-                'maxValue': 627994.7,
-                'symbol': { 'type': 'simple-fill', 'color': [253, 141, 60, 1] },
-                'label': 'p50 – p75 ($5 – $6)'
+                "minValue": 104910.0,
+                "maxValue": 627995.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [160, 70, 100, 1.0]
+                },
+                "label": "$628.0K"
             },
             {
-                'minValue': 627994.7,
-                'maxValue': 13321385.0,
-                'symbol': { 'type': 'simple-fill', 'color': [227, 26, 28, 1] },
-                'label': 'p75 – p100 ($6 – $7)'
+                "minValue": 627995.0,
+                "maxValue": 13321377.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [210, 130, 60, 1.0]
+                },
+                "label": "$13.3M"
             },
             {
-                'minValue': 13321385.0,
-                'maxValue': 4346624500.0,
-                'symbol': { 'type': 'simple-fill', 'color': [103, 0, 13, 1] },
-                'label': 'Top 1% ($7 – $10)'
+                "minValue": 13321377.0,
+                "maxValue": 4346626560.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [240, 249, 33, 1.0]
+                },
+                "label": "> $13.3M"
             }
         ]
+
     },
     "Urban GDP":
     {
         url: `${URL_RTBASE}/murakami_urbangdp/ImageServer`,
         colorScheme: [
             {
-                'minValue': 4.38,
-                'maxValue': 6096.49,
-                'symbol': { 'type': 'simple-fill', 'color': [255, 255, 204, 1] },
-                'label': 'Bottom 10% ($1 – $4)'
+                "minValue": 4.0,
+                "maxValue": 6096.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [50, 48, 50, 1.0]
+                },
+                "label": "< $6.1K"
             },
             {
-                'minValue': 6096.49,
-                'maxValue': 104909.98,
-                'symbol': { 'type': 'simple-fill', 'color': [254, 217, 118, 1] },
-                'label': 'p25 – p50 ($4 – $5)'
+                "minValue": 6096.0,
+                "maxValue": 104910.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [90, 55, 65, 1.0]
+                },
+                "label": "$104.9K"
             },
             {
-                'minValue': 104909.98,
-                'maxValue': 627994.7,
-                'symbol': { 'type': 'simple-fill', 'color': [253, 141, 60, 1] },
-                'label': 'p50 – p75 ($5 – $6)'
+                "minValue": 104910.0,
+                "maxValue": 627995.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [160, 70, 100, 1.0]
+                },
+                "label": "$628.0K"
             },
             {
-                'minValue': 627994.7,
-                'maxValue': 13321385.0,
-                'symbol': { 'type': 'simple-fill', 'color': [227, 26, 28, 1] },
-                'label': 'p75 – p100 ($6 – $7)'
+                "minValue": 627995.0,
+                "maxValue": 13321377.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [210, 130, 60, 1.0]
+                },
+                "label": "$13.3M"
             },
             {
-                'minValue': 13321385.0,
-                'maxValue': 4346624500.0,
-                'symbol': { 'type': 'simple-fill', 'color': [103, 0, 13, 1] },
-                'label': 'Top 1% ($7 – $10)'
+                "minValue": 13321377.0,
+                "maxValue": 4346626560.0,
+                "symbol": {
+                    "type": "simple-fill",
+                    "color": [240, 249, 33, 1.0]
+                },
+                "label": "> $13.3M"
             }
         ]
+ 
     },
     "Cropland":
     {

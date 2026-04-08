@@ -11,12 +11,18 @@ html {
   --unselectedview: #c7dff7;
 
   color-scheme: dark;
-  --orange: #FF8200;
   --darkblue: #1F3764;
   --lightblue: #2C4F92;
   --evenlighterblue: #4982F2;
   --darkblue: rgb(30, 75, 146);
   --gray: #dadada;
+
+  --green: #658D1B;
+  --yellow: #F2A900;
+  --orange: #FF8200;
+  --red: #DA291C;
+  --purple: #8031A7;
+  --cyan: #00B0B9;
 }
 
 .esri-view .esri-view-surface--touch-none:focus::after {

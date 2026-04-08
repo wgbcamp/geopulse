@@ -7,6 +7,10 @@ import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
 import Renderer from "@arcgis/core/renderers/Renderer.js";
+import Basemap from "@arcgis/core/Basemap.js";
+import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
+import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
+import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 
 import { Slider } from "@/components/ui/slider"
 
@@ -17,17 +21,17 @@ function getEventColor(attrs: any) {
     const t = attrs.eventtype;
     switch (t) {
         case "EQ":
-            return "#5BE3A0";
+            return "var(--green)";
         case "TC":
-            return "#FF6B6B";
+            return "var(--red)";
         case "DR":
-            return "#C77DFF";
+            return "var(--purple)";
         case "FL":
-            return "#5BC8FF";
+            return "var(--cyan)";
         case "VO":
-            return "#FFD45E";
+            return "var(--yellow)";
         case "WF":
-            return "#FF9F5B";
+            return "var(--orange)";
         default:
             return "#d9d9d9";
 
@@ -36,7 +40,7 @@ function getEventColor(attrs: any) {
 
 export const EventTracking = ({ props }: any) => {
 
-    const [realtimeExposure, setRealtimeExposure] = useState<string>("Urban GDP");
+    const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
     const [events, setEvents] = useState<any>(null);
     const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const [focusedEvent, setFocusedEvent] = useState<any>("");
@@ -104,6 +108,7 @@ export const EventTracking = ({ props }: any) => {
                     const d = document.createElement("div");
                     d. className = "pd";
                     d.style.background = color;
+                    // d.style.boxShadow = "0 0 20px rgba(0, 255, 255, 0.7), 0 0 40px rgba(0, 255, 255, 0.4)";
                     w.appendChild(d);
 
                     pulseContainerRef.current!.appendChild(w);
@@ -128,8 +133,22 @@ export const EventTracking = ({ props }: any) => {
      useEffect(() => {
         if (ref.current) {
 
+            const baseLayer = new VectorTileLayer({
+                style: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
+            });
+
+            const referenceLayer = new VectorTileLayer({
+                style: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
+                opacity: 0.25
+            });
+
+            const customBasemap = new Basemap({
+                baseLayers: [baseLayer],
+                referenceLayers: [referenceLayer]
+            });
+
             map.current = new Map({
-                basemap: 'dark-gray'
+                basemap: customBasemap
             })
             view.current = new MapView({
                 container: ref.current,
@@ -210,9 +229,21 @@ export const EventTracking = ({ props }: any) => {
             case "Airports":
             case "Ports":
                 layer.current = new FeatureLayer({
-                    url: realtimeObject[realtimeExposure].url
+                    url: realtimeObject[realtimeExposure].url,
+                    effect: "bloom(1.8, 0.85px, 0.4)",
+                    renderer: new SimpleRenderer({
+                        symbol: new SimpleMarkerSymbol({
+                            size: 3,  
+                            color: [255, 200, 0], 
+                            outline: "null"
+                        })
+                    })
                 })
                 break;
+            // default:
+            //     layer.current = new FeatureLayer({
+
+            //     })
             }
 
         map.current.add(layer.current);
@@ -345,12 +376,12 @@ export const EventTracking = ({ props }: any) => {
     ]
 
     const hazardsArray = [
-        { type: "Earthquake", color: "#5BE3A0" },
-        { type: "Tropical Cyclone", color: "#FF6B6B" },
-        { type: "Drought", color: "#C77DFF" },
-        { type: "Flooding", color: "#5BC8FF" },
-        { type: "Volcanic Activity", color: "#FFD45E" },
-        { type: "Wildfire", color: "#FF9F5B" }
+        { type: "Earthquake", color: "var(--green)" },
+        { type: "Tropical Cyclone", color: "var(--red)" },
+        { type: "Drought", color: "var(--purple)" },
+        { type: "Flooding", color: "var(--cyan)" },
+        { type: "Volcano", color: "var(--yellow)" },
+        { type: "Wildfire", color: "var(--orange)" }
     ];
 
     return (
@@ -442,32 +473,37 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="pt-[24px] pb-5 text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
-            <div className="absolute ml-[44px] bottom-0 h-[350px] w-[200px] bg-[rgba(0,0,0,0.5)] flex flex-col items-center justify-around"> 
+            <div className="absolute bottom-0 h-[175px] w-[350px] bg-[rgba(0,0,0,0.5)] flex flex-col items-center justify-around"> 
                 <div className="w-8/10 h-5/10 flex flex-col items-center">
-                    <div className="flex text-white w-full font-extrabold pb-[10px]">
-                        <div>Hazards</div>
+                    <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
+                        <div>EVENT TYPES</div>
                     </div>
                     <div className='h-full w-full text-white flex flex-col'>
-                        {hazardsArray.map((h, i) => 
-                        <div className='flex'>
-                            <div className='flex items-center justify-center'>
-                                <div className="rounded-4xl w-[10px] h-[10px]" style={{ background: h.color }}></div>
-                            </div>
-                            <div className="ml-[10px]">{h.type}</div>
+                        <div className="grid grid-cols-2 grid-rows-3 gap-2">
+                            {hazardsArray.map((h, i) =>
+                                <div className='flex'>
+                                    <div className='flex items-center justify-center'>
+                                        <div className="rounded-4xl w-[7px] h-[7px]" style={{ background: h.color }}></div>
+                                    </div>
+                                    <div className="mx-[10px] text-[10px] tracking-wide">{h.type.toUpperCase()}</div>
+                                </div>
+                            )}
                         </div>
-                        )}
+                      
                     </div>
                 </div>
-                <div className='h-3/10 w-8/10 flex flex-col items-center'>
-                    <div className="flex text-white w-full font-extrabold pb-[10px]">
-                        <div>Exposure Value</div>
+                <div className='h-3/10 w-8/10 flex flex-col items-center justify-end'>
+                    <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
+                        <div>{realtimeExposure.toUpperCase()}</div>
                     </div>
-                    <div className="h-3/10 w-full" style={{ background: `linear-gradient(to right, ${realtimeObject[realtimeExposure].colorScheme.map((e, i) => 'rgba(' + e.symbol.color.join(",") + ') ' + (i / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "%," + ' rgba(' + e.symbol.color.join(",") + ') ' + ((i + 1) / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "% ").join(",")})` }}></div>
-                    <div className="h-5/10 w-full flex justify-between">
+                    <div className="h-1/10 w-full" style={{ background: `linear-gradient(to right, ${realtimeObject[realtimeExposure].colorScheme.map((e, i) => 'rgba(' + e.symbol.color.join(",") + ') ' + (i / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "%," + ' rgba(' + e.symbol.color.join(",") + ') ' + ((i + 1) / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "% ").join(",")})` }}></div>
+                    <div className="h-[20px] w-full flex justify-between">
                         {realtimeObject[realtimeExposure].colorScheme.map((e, i) =>
-                            <div className="flex flex-col h-full">
-                                <div style={{ justifyContent: 'center' }} className='flex items-center w-[20px] h-full'>
-                                    <div className='text-white'>{i}</div>
+                            <div className="flex flex-col w-full h-[full]">
+                                <div style={{ justifyContent: 'center' }} className='flex items-start w-full h-[20px]'>
+                                    <div className="flex justify-end items-start w-full gap-0">
+                                        <div className='text-white text-[12px]'>{e.label}</div>
+                                    </div>
                                 </div>
                             </div>
                         )}
