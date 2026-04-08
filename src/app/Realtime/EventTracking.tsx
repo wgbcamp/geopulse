@@ -36,8 +36,7 @@ function getEventColor(attrs: any) {
 
 export const EventTracking = ({ props }: any) => {
 
-
-    const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
+    const [realtimeExposure, setRealtimeExposure] = useState<string>("Urban GDP");
     const [events, setEvents] = useState<any>(null);
     const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const [focusedEvent, setFocusedEvent] = useState<any>("");
@@ -345,6 +344,15 @@ export const EventTracking = ({ props }: any) => {
         }
     ]
 
+    const hazardsArray = [
+        { type: "Earthquake", color: "#5BE3A0" },
+        { type: "Tropical Cyclone", color: "#FF6B6B" },
+        { type: "Drought", color: "#C77DFF" },
+        { type: "Flooding", color: "#5BC8FF" },
+        { type: "Volcanic Activity", color: "#FFD45E" },
+        { type: "Wildfire", color: "#FF9F5B" }
+    ];
+
     return (
         <div className="w-full h-full">
             <div className='w-full h-full relative'>
@@ -434,6 +442,40 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="pt-[24px] pb-5 text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
+            <div className="absolute ml-[44px] bottom-0 h-[350px] w-[200px] bg-[rgba(0,0,0,0.5)] flex flex-col items-center justify-around"> 
+                <div className="w-8/10 h-5/10 flex flex-col items-center">
+                    <div className="flex text-white w-full font-extrabold pb-[10px]">
+                        <div>Hazards</div>
+                    </div>
+                    <div className='h-full w-full text-white flex flex-col'>
+                        {hazardsArray.map((h, i) => 
+                        <div className='flex'>
+                            <div className='flex items-center justify-center'>
+                                <div className="rounded-4xl w-[10px] h-[10px]" style={{ background: h.color }}></div>
+                            </div>
+                            <div className="ml-[10px]">{h.type}</div>
+                        </div>
+                        )}
+                    </div>
+                </div>
+                <div className='h-3/10 w-8/10 flex flex-col items-center'>
+                    <div className="flex text-white w-full font-extrabold pb-[10px]">
+                        <div>Exposure Value</div>
+                    </div>
+                    <div className="h-3/10 w-full" style={{ background: `linear-gradient(to right, ${realtimeObject[realtimeExposure].colorScheme.map((e, i) => 'rgba(' + e.symbol.color.join(",") + ') ' + (i / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "%," + ' rgba(' + e.symbol.color.join(",") + ') ' + ((i + 1) / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "% ").join(",")})` }}></div>
+                    <div className="h-5/10 w-full flex justify-between">
+                        {realtimeObject[realtimeExposure].colorScheme.map((e, i) =>
+                            <div className="flex flex-col h-full">
+                                <div style={{ justifyContent: 'center' }} className='flex items-center w-[20px] h-full'>
+                                    <div className='text-white'>{i}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+                         
+
         </div>
     )
 }
