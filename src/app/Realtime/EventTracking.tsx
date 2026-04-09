@@ -1,16 +1,19 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 
-import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 import Map from "@arcgis/core/Map.js";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
-import Renderer from "@arcgis/core/renderers/Renderer.js";
 import Basemap from "@arcgis/core/Basemap.js";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
+import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
+import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
+
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlay } from "@fortawesome/free-solid-svg-icons";
 
 import { Slider } from "@/components/ui/slider"
 
@@ -52,7 +55,11 @@ export const EventTracking = ({ props }: any) => {
     const layer = useRef<any>(null);
     const view = useRef<MapView>(new MapView);
     const eventFeatureLayer = useRef<FeatureLayer | null>(null);
+    const gLayer = useRef<GraphicsLayer>(null);
     const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
+
+    //placeholder
+    const ticks:any = ["00:00", "06:00", "12:00", "18:00", "24:00"];
 
         // --- Sync pulse positions to screen coords ---
     const syncPulses = useCallback(() => {
@@ -309,6 +316,31 @@ export const EventTracking = ({ props }: any) => {
             center: [coors.longitude, coors.latitude],
             zoom: 8
         });
+
+        if (!map.current) return;
+
+        if (gLayer.current) {
+            map.current.remove(gLayer.current);
+            gLayer.current.destroy();
+        }
+
+        const detailedEvent = new FeatureLayer({
+            url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer",
+            outFields: ["*"],
+            renderer: new SimpleRenderer({
+                symbol: new SimpleFillSymbol({
+                    color: "#FAD0C6",
+                    outline: {
+                        color: "#520B02",
+                        width: "2px",
+                    },
+                }),
+            }),
+            effect: "brightness(600%)",
+            blendMode: "overlay"
+        });
+        map.current.add(detailedEvent);
+        map.current.reorder(detailedEvent, map.current.layers.length - 1);
         setFocusedEvent(attributes);
         setEventPopup("focused event");
     }
@@ -435,39 +467,60 @@ export const EventTracking = ({ props }: any) => {
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
-                <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline / Days</div>
-                <div className="flex flex-row w-full pb-[36px] pl-4">
-                    <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">?</div>
-                    <Slider className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer'/>
+                <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
+                <div className="flex flex-row justify-center items-start w-full pb-[36px]">
+                    <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">
+                        <FontAwesomeIcon icon={faPlay} size="2xs" color="white" />
+                    </div>
+                    <div className="flex flex-col h-full w-7/10">
+                        <Slider className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer '/>
+                        <div className="relative h-6"
+                            style={{ width: "calc(100%)" }}
+                        >
+                            {ticks.map((tick: any, index: any) => {
+                                const percent = (index / (ticks.length - 1)) * 100;
+                                return (
+                                    <div
+                                        key={tick}
+                                        className="absolute flex flex-col items-center -translate-x-1/2"
+                                        style={{ left: `${percent}%` }}
+                                    >
+                                        <div className="w-px h-2 bg-muted-foreground/50"></div>
+                                        <span className={`text-xs w-10 mt-3`}>
+                                            {index == 0 ? new Date(focusedEvent.fromdate).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric"
+                                            }) + " " : index == ticks.length - 1 ? focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
+                                                month: "short",
+                                                day: "numeric",
+                                                year: "numeric"
+                                            }) : ""}
+                                        </span>
+                                    </div>
+                                )
+                            })
+                            }
+                        </div>
+                    </div>
                 </div>
-                <div className="text-[14px] pl-4">{
-                    new Date(focusedEvent.fromdate).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric"
-                    }) + " "}
-                    -
-                    {focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
-                        month: "long",
-                        day: "numeric",
-                        year: "numeric"
-                    })}
-                </div>
-                <div className="pt-5 font-bold text-[14px] pl-4">Severity:</div>
-                <div className='text-[14px] pl-4'>Level {focusedEvent.alertscore}</div>
+                <div className="pt-5 font-bold text-[14px] pl-4">Event Severity:</div>
+                <div className={`text-[14px] px-2 ml-4 rounded-md text-white font-extrabold`} style={{ backgroundColor: `var(--${focusedEvent.alertlevel?.toLowerCase()})` }}
+                >Level {focusedEvent.alertscore}</div>
+                  
                 <div className="pt-5 font-bold text-[14px] pl-4">Main economies affected:</div>
-                <div className='text-left text-[14px] pb-8 pl-4'>PLACEHOLDER | <u className='cursor-pointer'>Download PLACEHOLDER</u></div>
+                <div className='text-left text-[14px] pb-4 pl-4'>{focusedEvent.country} | <u className='cursor-pointer'>Download</u></div>
                 <div className="pt-5 flex flex-row w-full text-[12px] font-bold justify-around border-t-1 px-4">
                     <div className='flex flex-col w-full items-between text-left'>
-                        <div className='pb-2 border-solid border-b-1'>EXPOSURE</div>
-                        {tempExposuresArray.map((e: any) => 
+                        <div className='pb-2 border-solid border-b-1'>LAYER</div>
+                        {tempExposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) => 
                             <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center '>{e.name}</div>
                         )}
                     </div>
                     <div className='w-full text-left'>
-                        <div className='pb-2 border-solid border-b-1 pl-3'>IMPACT</div>
-                        {tempExposuresArray.map((e: any) => 
-                            <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center border-l-1 pl-3'>PLACEHOLDER</div>
+                        <div className='pb-2 border-solid border-b-1 pl-3'>EXPOSURE</div>
+                        {tempExposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) => 
+                            <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center border-l-1 pl-3'>{focusedEvent.exposures ? JSON.parse(focusedEvent.exposures)[e.name] : "N/A"}</div>
                         )}
                     </div>                
                 </div>
