@@ -1,5 +1,10 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 
+import TileLayer from "@arcgis/core/layers/TileLayer.js";
+import Graphic from "@arcgis/core/Graphic.js";
+import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
+import GroupLayer from "@arcgis/core/layers/GroupLayer.js";
+
 import Map from "@arcgis/core/Map.js";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
@@ -10,7 +15,6 @@ import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
-import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
@@ -144,6 +148,7 @@ export const EventTracking = ({ props }: any) => {
                 style: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
             });
 
+
             const referenceLayer = new VectorTileLayer({
                 style: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
                 opacity: 0.25
@@ -154,8 +159,24 @@ export const EventTracking = ({ props }: any) => {
                 referenceLayers: [referenceLayer]
             });
 
+            // set up graphics layer
+            const graphicsLayer = new GraphicsLayer({
+                blendMode: "destination-in",
+                title: "layer",
+            });
+
+            const groupLayer = new GroupLayer({
+                layers: [
+
+                    // world imagery layer will show where it overlaps with the graphicslayer
+                    graphicsLayer,
+                ],
+                opacity: 0, // initially this layer will be transparent
+            });
+
             map.current = new Map({
-                basemap: customBasemap
+                basemap: customBasemap,
+                layers: [ groupLayer]
             })
             view.current = new MapView({
                 container: ref.current,
@@ -164,7 +185,7 @@ export const EventTracking = ({ props }: any) => {
                 center: [-40.9465, 0.775],
                 constraints: {
                     minZoom: 2,
-                    maxZoom: 10,
+                    maxZoom: 11,
                 },
                 popupEnabled: false,
                 spatialReference: {
@@ -230,7 +251,8 @@ export const EventTracking = ({ props }: any) => {
             case "Cropland":
                 layer.current = new ImageryTileLayer({
                     url: realtimeObject[realtimeExposure].url,
-                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme })
+                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
+                    // effect: "brightness(40%)"
                 })
                 break;
             case "Airports":
@@ -254,6 +276,8 @@ export const EventTracking = ({ props }: any) => {
             }
 
         map.current.add(layer.current);
+        map.current.reorder(layer.current, 0);
+
     }, [realtimeExposure])
 
     useEffect(() => {
@@ -314,7 +338,7 @@ export const EventTracking = ({ props }: any) => {
         console.log(coors);
         view.current.goTo({
             center: [coors.longitude, coors.latitude],
-            zoom: 8
+            zoom: 11
         });
 
         if (!map.current) return;
@@ -339,8 +363,13 @@ export const EventTracking = ({ props }: any) => {
             effect: "brightness(600%)",
             blendMode: "overlay"
         });
+        map.current.allLayers.items.forEach(element => {
+            if (element.type === "vector-ti") {
+                element.effect = "brightness(40%)";
+            }
+        });
         map.current.add(detailedEvent);
-        map.current.reorder(detailedEvent, map.current.layers.length - 1);
+        console.log(map.current);
         setFocusedEvent(attributes);
         setEventPopup("focused event");
     }
@@ -463,8 +492,8 @@ export const EventTracking = ({ props }: any) => {
             </div>
             <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
-                    <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PLACEHOLDER</b>
-                    <div className='text-[14px] mr-2 text-(--evenlighterblue) cursor-pointer' onClick={() => setEventPopup("all events")}>PLACEHOLDER [X]</div>
+                    <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
+                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => setEventPopup("all events")}> Close details [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
