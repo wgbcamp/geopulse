@@ -22,6 +22,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { Slider } from "@/components/ui/slider"
 
 import { realtimeObject } from '@/config/datasets';
+import { set } from 'date-fns';
 
 // --- Pulse color helper ---
 function getEventColor(attrs: any) {
@@ -52,6 +53,7 @@ export const EventTracking = ({ props }: any) => {
     const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const [focusedEvent, setFocusedEvent] = useState<any>("");
     const [eventPopup, setEventPopup] = useState<string>("all events");
+    const [focusedFeatures, setFocusedFeatures] = useState<any>(null);
     const ref = useRef(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
@@ -60,11 +62,14 @@ export const EventTracking = ({ props }: any) => {
     const view = useRef<MapView>(new MapView);
     const eventFeatureLayer = useRef<FeatureLayer | null>(null);
     const gLayer = useRef<GraphicsLayer>(null);
+    const groupLayer = useRef<GroupLayer>(null);
+    const baseLayer = useRef<VectorTileLayer | null>(null);
     const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
 
     //placeholder
-    const ticks:any = ["00:00", "06:00", "12:00", "18:00", "24:00"];
-
+    const detailedEvent = new FeatureLayer({
+        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer"
+    });
         // --- Sync pulse positions to screen coords ---
     const syncPulses = useCallback(() => {
         if (!view.current) return;
@@ -144,40 +149,66 @@ export const EventTracking = ({ props }: any) => {
      useEffect(() => {
         if (ref.current) {
 
-            const baseLayer = new VectorTileLayer({
-                style: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
+            if (baseLayer.current) {
+                // map.current.remove(baseLayer.current);
+                baseLayer.current.destroy();
+            }
+
+            // base layer
+            baseLayer.current = new VectorTileLayer({
+                url: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
             });
 
+            if (gLayer.current) {
+                // map.current.remove(gLayer.current);
+                gLayer.current.destroy();
+            }
 
-            const referenceLayer = new VectorTileLayer({
-                style: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
-                opacity: 0.25
-            });
-
-            const customBasemap = new Basemap({
-                baseLayers: [baseLayer],
-                referenceLayers: [referenceLayer]
-            });
-
-            // set up graphics layer
-            const graphicsLayer = new GraphicsLayer({
+            // country holding focused event will be added to this graphics layer
+            gLayer.current = new GraphicsLayer({
                 blendMode: "destination-in",
                 title: "layer",
             });
 
-            const groupLayer = new GroupLayer({
-                layers: [
+            // bottom layer in the group layer
+            const secondaryTileLayer = new VectorTileLayer({
+                style: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
+            });
 
-                    // world imagery layer will show where it overlaps with the graphicslayer
-                    graphicsLayer,
+            // // reference layer for country borders
+            // const referenceLayer = new VectorTileLayer({
+            //     style: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
+            //     opacity: 0.25
+            // });
+
+            if (groupLayer.current) {
+                // map.current.remove(groupLayer.current);
+                groupLayer.current.destroy();
+            }
+
+            // group layer
+            groupLayer.current = new GroupLayer({
+                layers: [
+                    secondaryTileLayer,
+                    gLayer.current,
                 ],
                 opacity: 0, // initially this layer will be transparent
             });
 
+            // const customBasemap = new Basemap({
+            //     baseLayers: [baseLayer.current],
+            //     referenceLayers: [referenceLayer]
+            // });
+
             map.current = new Map({
-                basemap: customBasemap,
-                layers: [ groupLayer]
-            })
+                layers: [baseLayer.current, groupLayer.current]
+            });
+
+            //  map.current = new Map({
+            //     basemap: customBasemap,
+            //     layers: [groupLayer]
+            // });
+
             view.current = new MapView({
                 container: ref.current,
                 map: map.current,
@@ -187,10 +218,7 @@ export const EventTracking = ({ props }: any) => {
                     minZoom: 2,
                     maxZoom: 11,
                 },
-                popupEnabled: false,
-                spatialReference: {
-                    wkid: 3857,
-                },
+                popupEnabled: false
                 // viewpoint: position
             });
 
@@ -203,6 +231,69 @@ export const EventTracking = ({ props }: any) => {
             view.current.on("drag", syncPulses);
             view.current.on("mouse-wheel", syncPulses);
             view.current.watch("stationary", (v) => { if (v) syncPulses(); });
+
+            // view.current.when(() => {
+            //     const query = {
+            //         geometry: view.current.center,
+            //         returnGeometry: true,
+            //         outFields: ["*"],
+            //     };
+            //     highlightCountry(query, view.current.center);
+            // });
+
+            // view.current.on("click", async (event: any) => {
+            //     const query = {
+            //         geometry: view.current.toMap(event),
+            //         returnGeometry: true,
+            //         outFields: ["*"]
+            //     };
+            //     highlightCountry(query, query.geometry);
+            // });
+
+            // async function highlightCountry(query: any, zoomGeometry: any) {
+            //     // country symbol - when user clicks on a country
+            //     // we will query the country from the countries featurelayer
+            //     // add the country feature to the graphics layer.
+            //     const symbol = {
+            //         type: "simple-fill",
+            //         color: "rgba(255, 255, 255, 1)",
+            //         outline: null,
+            //     };
+
+            //     console.log("query: ", query);
+            //     console.log("query geometry: ", zoomGeometry);
+            //     // query the countries layer for a country that intersects the clicked point
+            //     const {
+            //         features: [feature],
+            //     } = await referenceLayer.queryFeatures(query);
+            //     // user clicked on a country and the feature is returned
+            //     if (feature) {
+            //         gLayer.graphics.removeAll();
+            //         feature.symbol = symbol;
+            //         // add the country to the graphics layer
+            //         gLayer.graphics.add(feature);
+            //         // zoom to the highlighted country
+            //         view.current.goTo(
+            //             {
+            //                 target: zoomGeometry,
+            //                 extent: feature.geometry.clone(),
+            //             },
+            //             { duration: 1000 },
+            //         );
+            //         // blur the world imagery basemap so that the clicked country can be highlighted
+            //         baseLayer.current.effect = "blur(8px) brightness(1.2) grayscale(0.8)";
+            //         // set the group layer transparency to 1.
+            //         // also increase the layer brightness and add drop-shadow to make the clicked country stand out.
+            //         groupLayer.effect = "brightness(1.5) drop-shadow(0, 0px, 12px)";
+            //         groupLayer.opacity = 1;
+            //     }
+            //     // did not click on a country. remove effects
+            //     else {
+            //         baseLayer.effect = null;
+            //         groupLayer.effect = null;
+            //     }
+            // }
+
         }
    
     }, [syncPulses]);
@@ -220,6 +311,7 @@ export const EventTracking = ({ props }: any) => {
                     events.forEach((x: { geometry: { longitude: number, latitude: number }, attributes: { description: string } }) => {
                         if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
                             focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);
+                            
                         }
                     });
                 }
@@ -241,42 +333,41 @@ export const EventTracking = ({ props }: any) => {
             layer.current.destroy();
         }
 
-        switch (realtimeExposure) {
-            case "Population":
-            case "Vulnerable People":
-            case "Buildings":
-            case "Nightlights":
-            case "GDP":
-            case "Urban GDP":
-            case "Cropland":
-                layer.current = new ImageryTileLayer({
-                    url: realtimeObject[realtimeExposure].url,
-                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
-                    // effect: "brightness(40%)"
-                })
-                break;
-            case "Airports":
-            case "Ports":
-                layer.current = new FeatureLayer({
-                    url: realtimeObject[realtimeExposure].url,
-                    effect: "bloom(1.8, 0.85px, 0.4)",
-                    renderer: new SimpleRenderer({
-                        symbol: new SimpleMarkerSymbol({
-                            size: 3,  
-                            color: [255, 200, 0], 
-                            outline: "null"
-                        })
-                    })
-                })
-                break;
-            // default:
-            //     layer.current = new FeatureLayer({
+        // switch (realtimeExposure) {
+        //     case "Population":
+        //     case "Vulnerable People":
+        //     case "Buildings":
+        //     case "Nightlights":
+        //     case "GDP":
+        //     case "Urban GDP":
+        //     case "Cropland":
+        //         layer.current = new ImageryTileLayer({
+        //             url: realtimeObject[realtimeExposure].url,
+        //             renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
+        //             // effect: "brightness(40%)"
+        //         })
+        //         break;
+        //     case "Airports":
+        //     case "Ports":
+        //         layer.current = new FeatureLayer({
+        //             url: realtimeObject[realtimeExposure].url,
+        //             effect: "bloom(1.8, 0.85px, 0.4)",
+        //             renderer: new SimpleRenderer({
+        //                 symbol: new SimpleMarkerSymbol({
+        //                     size: 3,  
+        //                     color: [255, 200, 0], 
+        //                     outline: "null"
+        //                 })
+        //             })
+        //         })
+        //         break;
+        //     // default:
+        //     //     layer.current = new FeatureLayer({
 
-            //     })
-            }
+        //     //     })
+        //     }
 
-        map.current.add(layer.current);
-        map.current.reorder(layer.current, 0);
+        // map.current.add(layer.current);
 
     }, [realtimeExposure])
 
@@ -334,41 +425,49 @@ export const EventTracking = ({ props }: any) => {
         setHiddenEvents(hidden);
     }, [events]);
 
-    const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes: any) => {
+    async function highlightCountry(event: any, index?: number) {
+
+        const symbol: any = {
+            type: "simple-fill",
+            color: "rgba(2, 255, 255, 1)",
+            outline: null,
+        };
+
+        const newQuery = event.createQuery();
+        newQuery.returnGeometry = true;
+        newQuery.outFields = ["*"];
+
+        const result = await event.queryFeatures(newQuery);
+        const feature = result.features[index || 0];
+        console.log("feature ", result.features);
+        setFocusedFeatures(result.features); // Store the features in state
+
+        if (feature && gLayer.current && baseLayer.current && groupLayer.current) {
+            gLayer.current.graphics.removeAll();
+            feature.symbol = symbol;
+            gLayer.current.graphics.add(feature);
+
+            baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
+            groupLayer.current.effect = "brightness(2) drop-shadow(0, 0px, 12px)";
+            groupLayer.current.opacity = 1;
+        }
+
+    }
+
+    const focusOnEvent = (coors?: { longitude: number, latitude: number }, attributes?: any, index?: number[]) => {
         console.log(coors);
         view.current.goTo({
-            center: [coors.longitude, coors.latitude],
+            // center: [coors.longitude, coors.latitude],
+            center: [-118.5, 34.05],
+            // zoom: 11
             zoom: 11
         });
 
         if (!map.current) return;
 
-        if (gLayer.current) {
-            map.current.remove(gLayer.current);
-            gLayer.current.destroy();
-        }
+        // view.current.center
+        highlightCountry(detailedEvent);
 
-        const detailedEvent = new FeatureLayer({
-            url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer",
-            outFields: ["*"],
-            renderer: new SimpleRenderer({
-                symbol: new SimpleFillSymbol({
-                    color: "#FAD0C6",
-                    outline: {
-                        color: "#520B02",
-                        width: "2px",
-                    },
-                }),
-            }),
-            effect: "brightness(600%)",
-            blendMode: "overlay"
-        });
-        map.current.allLayers.items.forEach(element => {
-            if (element.type === "vector-ti") {
-                element.effect = "brightness(40%)";
-            }
-        });
-        map.current.add(detailedEvent);
         console.log(map.current);
         setFocusedEvent(attributes);
         setEventPopup("focused event");
@@ -502,15 +601,24 @@ export const EventTracking = ({ props }: any) => {
                         <FontAwesomeIcon icon={faPlay} size="2xs" color="white" />
                     </div>
                     <div className="flex flex-col h-full w-7/10">
-                        <Slider className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer '/>
+                        <Slider 
+                        className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer ' 
+                            step={1}
+                            min={0}
+                            max={focusedFeatures?.length - 1}
+                            defaultValue={[0]}
+                            onValueChange={(value) => {
+                                highlightCountry(detailedEvent, value[0]);
+                            }}
+                        />
                         <div className="relative h-6"
                             style={{ width: "calc(100%)" }}
                         >
-                            {ticks.map((tick: any, index: any) => {
-                                const percent = (index / (ticks.length - 1)) * 100;
+                            {focusedFeatures?.map((feature: any, index: any) => {
+                                const percent = (index / (focusedFeatures.length - 1)) * 100;
                                 return (
                                     <div
-                                        key={tick}
+                                        key={index}
                                         className="absolute flex flex-col items-center -translate-x-1/2"
                                         style={{ left: `${percent}%` }}
                                     >
@@ -520,7 +628,7 @@ export const EventTracking = ({ props }: any) => {
                                                 month: "short",
                                                 day: "numeric",
                                                 year: "numeric"
-                                            }) + " " : index == ticks.length - 1 ? focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
+                                            }) + " " : index == focusedFeatures.length - 1 ? focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
                                                 month: "short",
                                                 day: "numeric",
                                                 year: "numeric"
