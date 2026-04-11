@@ -1,7 +1,5 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { useState, useRef, useEffect, useCallback, use } from 'react'
 
-import TileLayer from "@arcgis/core/layers/TileLayer.js";
-import Graphic from "@arcgis/core/Graphic.js";
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import GroupLayer from "@arcgis/core/layers/GroupLayer.js";
 
@@ -57,19 +55,26 @@ export const EventTracking = ({ props }: any) => {
     const ref = useRef(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
+
     let map = useRef<Map | null>(null);
-    const layer = useRef<any>(null);
     const view = useRef<MapView>(new MapView);
-    const eventFeatureLayer = useRef<FeatureLayer | null>(null);
-    const gLayer = useRef<GraphicsLayer>(null);
-    const groupLayer = useRef<GroupLayer>(null);
+
     const baseLayer = useRef<VectorTileLayer | null>(null);
+    const boundariesLayer = useRef<VectorTileLayer | null>(null);
+    const exposureLayer = useRef<any>(null);
+    const eventFeatureLayer = useRef<FeatureLayer | null>(null);
     const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
+
+    const exposureLayerForGroup = useRef<any>(null);
+    const graphicsLayer = useRef<GraphicsLayer>(null);
+    const outlineLayer = useRef<GraphicsLayer>(null);
+    const groupLayer = useRef<GroupLayer>(null);
 
     //placeholder
     const detailedEvent = new FeatureLayer({
-        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer"
+        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer",
     });
+
         // --- Sync pulse positions to screen coords ---
     const syncPulses = useCallback(() => {
         if (!view.current) return;
@@ -150,64 +155,60 @@ export const EventTracking = ({ props }: any) => {
         if (ref.current) {
 
             if (baseLayer.current) {
-                // map.current.remove(baseLayer.current);
                 baseLayer.current.destroy();
+            }
+
+            if (boundariesLayer.current) {   
+                boundariesLayer.current.destroy();
+            }
+
+            if (graphicsLayer.current) {
+                graphicsLayer.current.destroy();
+            }
+
+            if (outlineLayer.current) {
+                outlineLayer.current.destroy();
+            }
+
+            if (groupLayer.current) {
+                groupLayer.current.destroy();
             }
 
             // base layer
             baseLayer.current = new VectorTileLayer({
-                url: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
+                url: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json",
+                title: "base"
             });
-
-            if (gLayer.current) {
-                // map.current.remove(gLayer.current);
-                gLayer.current.destroy();
-            }
 
             // country holding focused event will be added to this graphics layer
-            gLayer.current = new GraphicsLayer({
+            graphicsLayer.current = new GraphicsLayer({
                 blendMode: "destination-in",
-                title: "layer",
+                title: "graphics",
             });
 
-            // bottom layer in the group layer
-            const secondaryTileLayer = new VectorTileLayer({
-                style: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json"
+            outlineLayer.current = new GraphicsLayer({
+                blendMode: "normal",
+                title: "outline",
             });
 
-            // // reference layer for country borders
-            // const referenceLayer = new VectorTileLayer({
-            //     style: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
-            //     opacity: 0.25
-            // });
-
-            if (groupLayer.current) {
-                // map.current.remove(groupLayer.current);
-                groupLayer.current.destroy();
-            }
+            // reference layer for country borders
+            boundariesLayer.current = new VectorTileLayer({
+                url: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
+                title: "boundaries",
+                opacity: 0.25
+            });
 
             // group layer
             groupLayer.current = new GroupLayer({
                 layers: [
-                    secondaryTileLayer,
-                    gLayer.current,
-                ],
-                opacity: 0, // initially this layer will be transparent
+                    graphicsLayer.current,
+                    outlineLayer.current
+                ]
             });
-
-            // const customBasemap = new Basemap({
-            //     baseLayers: [baseLayer.current],
-            //     referenceLayers: [referenceLayer]
-            // });
 
             map.current = new Map({
-                layers: [baseLayer.current, groupLayer.current]
+                layers: [baseLayer.current, boundariesLayer.current, groupLayer.current]
             });
-
-            //  map.current = new Map({
-            //     basemap: customBasemap,
-            //     layers: [groupLayer]
-            // });
 
             view.current = new MapView({
                 container: ref.current,
@@ -219,7 +220,6 @@ export const EventTracking = ({ props }: any) => {
                     maxZoom: 11,
                 },
                 popupEnabled: false
-                // viewpoint: position
             });
 
             view.current.ui.components = [];
@@ -231,68 +231,6 @@ export const EventTracking = ({ props }: any) => {
             view.current.on("drag", syncPulses);
             view.current.on("mouse-wheel", syncPulses);
             view.current.watch("stationary", (v) => { if (v) syncPulses(); });
-
-            // view.current.when(() => {
-            //     const query = {
-            //         geometry: view.current.center,
-            //         returnGeometry: true,
-            //         outFields: ["*"],
-            //     };
-            //     highlightCountry(query, view.current.center);
-            // });
-
-            // view.current.on("click", async (event: any) => {
-            //     const query = {
-            //         geometry: view.current.toMap(event),
-            //         returnGeometry: true,
-            //         outFields: ["*"]
-            //     };
-            //     highlightCountry(query, query.geometry);
-            // });
-
-            // async function highlightCountry(query: any, zoomGeometry: any) {
-            //     // country symbol - when user clicks on a country
-            //     // we will query the country from the countries featurelayer
-            //     // add the country feature to the graphics layer.
-            //     const symbol = {
-            //         type: "simple-fill",
-            //         color: "rgba(255, 255, 255, 1)",
-            //         outline: null,
-            //     };
-
-            //     console.log("query: ", query);
-            //     console.log("query geometry: ", zoomGeometry);
-            //     // query the countries layer for a country that intersects the clicked point
-            //     const {
-            //         features: [feature],
-            //     } = await referenceLayer.queryFeatures(query);
-            //     // user clicked on a country and the feature is returned
-            //     if (feature) {
-            //         gLayer.graphics.removeAll();
-            //         feature.symbol = symbol;
-            //         // add the country to the graphics layer
-            //         gLayer.graphics.add(feature);
-            //         // zoom to the highlighted country
-            //         view.current.goTo(
-            //             {
-            //                 target: zoomGeometry,
-            //                 extent: feature.geometry.clone(),
-            //             },
-            //             { duration: 1000 },
-            //         );
-            //         // blur the world imagery basemap so that the clicked country can be highlighted
-            //         baseLayer.current.effect = "blur(8px) brightness(1.2) grayscale(0.8)";
-            //         // set the group layer transparency to 1.
-            //         // also increase the layer brightness and add drop-shadow to make the clicked country stand out.
-            //         groupLayer.effect = "brightness(1.5) drop-shadow(0, 0px, 12px)";
-            //         groupLayer.opacity = 1;
-            //     }
-            //     // did not click on a country. remove effects
-            //     else {
-            //         baseLayer.effect = null;
-            //         groupLayer.effect = null;
-            //     }
-            // }
 
         }
    
@@ -326,51 +264,90 @@ export const EventTracking = ({ props }: any) => {
 
        useEffect(() => {
 
-        if (!map.current) return;
+        if (!map.current || !groupLayer.current) return;
 
-        if (layer.current) {
-            map.current.remove(layer.current);
-            layer.current.destroy();
+        // Remove existing exposure layer if it exists
+        if (exposureLayer.current) {
+            map.current.remove(exposureLayer.current);
+            exposureLayer.current.destroy();
         }
 
-        // switch (realtimeExposure) {
-        //     case "Population":
-        //     case "Vulnerable People":
-        //     case "Buildings":
-        //     case "Nightlights":
-        //     case "GDP":
-        //     case "Urban GDP":
-        //     case "Cropland":
-        //         layer.current = new ImageryTileLayer({
-        //             url: realtimeObject[realtimeExposure].url,
-        //             renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
-        //             // effect: "brightness(40%)"
-        //         })
-        //         break;
-        //     case "Airports":
-        //     case "Ports":
-        //         layer.current = new FeatureLayer({
-        //             url: realtimeObject[realtimeExposure].url,
-        //             effect: "bloom(1.8, 0.85px, 0.4)",
-        //             renderer: new SimpleRenderer({
-        //                 symbol: new SimpleMarkerSymbol({
-        //                     size: 3,  
-        //                     color: [255, 200, 0], 
-        //                     outline: "null"
-        //                 })
-        //             })
-        //         })
-        //         break;
-        //     // default:
-        //     //     layer.current = new FeatureLayer({
+        if (exposureLayerForGroup.current) {
+            groupLayer.current.remove(exposureLayerForGroup.current);
+            exposureLayerForGroup.current.destroy();
+        }
 
-        //     //     })
-        //     }
+        
 
-        // map.current.add(layer.current);
+        switch (realtimeExposure) {
+            case "Population":
+            case "Vulnerable People":
+            case "Buildings":
+            case "Nightlights":
+            case "GDP":
+            case "Urban GDP":
+            case "Cropland":
+                exposureLayer.current = new ImageryTileLayer({
+                    url: realtimeObject[realtimeExposure].url,
+                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
+                    title: "exposure"
+                });
+                exposureLayerForGroup.current = new ImageryTileLayer({
+                    url: realtimeObject[realtimeExposure].url,
+                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
+                    title: "exposure"
+                });
+                break;
+            case "Airports":
+            case "Ports":
+                exposureLayer.current = new FeatureLayer({
+                    url: realtimeObject[realtimeExposure].url,
+                    effect: "bloom(1.8, 0.85px, 0.4)",
+                    renderer: new SimpleRenderer({
+                        symbol: new SimpleMarkerSymbol({
+                            size: 3,  
+                            color: [255, 200, 0], 
+                            outline: "null"
+                        })
+                    }),
+                    title: "exposure"
+                });
+                exposureLayerForGroup.current = new FeatureLayer({
+                    url: realtimeObject[realtimeExposure].url,
+                    effect: "bloom(1.8, 0.85px, 0.4)",
+                    renderer: new SimpleRenderer({
+                        symbol: new SimpleMarkerSymbol({
+                            size: 3,  
+                            color: [255, 200, 0], 
+                            outline: "null"
+                        })
+                    }),
+                    title: "exposure"
+                });
+                break;
+            }
 
+           if (groupLayer.current && exposureLayer.current && exposureLayerForGroup.current && graphicsLayer.current && baseLayer.current) {
+               map.current.layers.add(exposureLayer.current);
+               map.current.reorder(exposureLayer.current, 2);
+               groupLayer.current.add(exposureLayerForGroup.current);
+               groupLayer.current.layers.reorder(graphicsLayer.current, 2);
+
+               if (focusedEvent !== "") {
+                   baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
+                   exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
+               }
+           }
     }, [realtimeExposure])
 
+    const removeBlur = () => {
+        if (baseLayer.current && exposureLayer.current && graphicsLayer.current && outlineLayer.current) {
+            baseLayer.current.effect = "";
+            exposureLayer.current.effect = "";
+            graphicsLayer.current.graphics.removeAll();
+            outlineLayer.current.graphics.removeAll();
+        }
+    }
     useEffect(() => {
 
         if (!map.current) return;
@@ -427,12 +404,6 @@ export const EventTracking = ({ props }: any) => {
 
     async function highlightCountry(event: any, index?: number) {
 
-        const symbol: any = {
-            type: "simple-fill",
-            color: "rgba(2, 255, 255, 1)",
-            outline: null,
-        };
-
         const newQuery = event.createQuery();
         newQuery.returnGeometry = true;
         newQuery.outFields = ["*"];
@@ -442,14 +413,35 @@ export const EventTracking = ({ props }: any) => {
         console.log("feature ", result.features);
         setFocusedFeatures(result.features); // Store the features in state
 
-        if (feature && gLayer.current && baseLayer.current && groupLayer.current) {
-            gLayer.current.graphics.removeAll();
-            feature.symbol = symbol;
-            gLayer.current.graphics.add(feature);
+        if (feature && graphicsLayer.current && baseLayer.current && groupLayer.current && outlineLayer.current) {
+            graphicsLayer.current.graphics.removeAll();
+            const maskFeature = feature.clone();
+            maskFeature.symbol = {
+                type: "simple-fill",
+                color: "rgba(255, 255, 255, 1)",
+                outline: {
+                    color: "#7E0063",
+                    width: "2px"
+                },
+            };
+            graphicsLayer.current.graphics.add(maskFeature);
+
+            outlineLayer.current.graphics.removeAll();
+            const outlineFeature = feature.clone();
+            outlineFeature.symbol = {
+                type: "simple-fill",
+                color: "rgba(0, 0, 0, 0.3)",
+                outline: {
+                    color: "#7E0063",
+                    width: "2px"
+                },
+            };
+            outlineLayer.current.graphics.add(outlineFeature);
+
 
             baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
-            groupLayer.current.effect = "brightness(2) drop-shadow(0, 0px, 12px)";
-            groupLayer.current.opacity = 1;
+            exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
+            groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)";
         }
 
     }
@@ -563,7 +555,7 @@ export const EventTracking = ({ props }: any) => {
                         </div>
                     )}
                 </div>
-            <div className={`absolute top-40 ${eventPopup == "all events" ? "right-0" : "-right-300"} h-70/100 w-[300px] flex flex-col bg-white cursor-default transition-all duration-300`}>
+            <div className={`absolute top-40 ${eventPopup == "all events" ? "right-0" : "-right-300"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
@@ -589,10 +581,10 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
             </div>
-            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300 overflow-y-auto`}>
+            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
-                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => setEventPopup("all events")}> Close details [X]</div>
+                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur();}}> Close details [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
@@ -663,7 +655,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="pt-[24px] pb-5 text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
-            <div className="absolute bottom-0 h-[175px] w-[350px] bg-[rgba(0,0,0,0.5)] flex flex-col items-center justify-around"> 
+            <div className="absolute bottom-0 h-[175px] w-[350px] bg-[rgba(0,0,0,0.85)] flex flex-col items-center justify-around"> 
                 <div className="w-8/10 h-5/10 flex flex-col items-center">
                     <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
                         <div>EVENT TYPES</div>
