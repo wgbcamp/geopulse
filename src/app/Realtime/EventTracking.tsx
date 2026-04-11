@@ -18,6 +18,7 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { Slider } from "@/components/ui/slider"
 
 import { realtimeObject } from '@/config/datasets';
+import { set } from 'date-fns';
 
 export const EventTracking = ({ props }: any) => {
 
@@ -27,6 +28,7 @@ export const EventTracking = ({ props }: any) => {
     const [focusedEvent, setFocusedEvent] = useState<any>("");
     const [eventPopup, setEventPopup] = useState<string>("all events");
     const [focusedFeatures, setFocusedFeatures] = useState<any>(null);
+    const [focusedSliderValue, setFocusedSliderValue] = useState<number[]>([0]);
     const ref = useRef(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
@@ -444,6 +446,8 @@ export const EventTracking = ({ props }: any) => {
 
     // focuses view on the event selected
     const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes: any) => {
+
+        setFocusedSliderValue([0]); // reset slider value to 0 when focusing on a new event
         console.log(coors);
         view.current.goTo({
             center: [coors.longitude, coors.latitude],
@@ -597,7 +601,9 @@ export const EventTracking = ({ props }: any) => {
                             min={0}
                             max={focusedFeatures?.length - 1 }
                             defaultValue={[0]}
+                            value={focusedSliderValue}
                             onValueChange={(value) => {
+                                setFocusedSliderValue(value);
                                 // only run highlightCountry function when matching pasadena fire event for demonstrative purposes
                                 if (focusedEvent.htmldescription == "Orange Forest fires in United States from: 07 Jan 2025 to: 12 Jan 2025.") {
                                     highlightCountry(detailedEvent, value[0]);

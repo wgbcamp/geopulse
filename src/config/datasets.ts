@@ -625,7 +625,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 'minValue': 0.5,
                 'maxValue': 1.0,
                 'symbol': { 'type': 'simple-fill', 'color': [168, 198, 108, 1] },
-                'label': 'Cropland'
+                'label': ''
             }
         ]
     },
@@ -633,14 +633,24 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     {
         url: `${URL_BASE}/airports_latest/FeatureServer`,
         colorScheme: [
-
+            {
+                'minValue': 0.5,
+                'maxValue': 1.0,
+                'symbol': { 'type': 'simple-fill', 'color': [255, 200, 0, 1] },
+                'label': ''
+            }
         ]
     },
     "Ports":
     {
         url: `${URL_BASE}/PortWatch_ports_database/FeatureServer`,
         colorScheme: [
-
+            {
+                'minValue': 0.5,
+                'maxValue': 1.0,
+                'symbol': { 'type': 'simple-fill', 'color': [255, 200, 0, 1] },
+                'label': ''
+            }
         ]
     }
 }

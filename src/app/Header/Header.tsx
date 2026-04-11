@@ -82,7 +82,9 @@ export const NewHeader = ({ props }: any) => {
                                 disabled={(date) => date < new Date("2019-01-01")}
                                 startMonth={new Date("2019-01-07")}
                                 selected={value.date}
-                                onSelect={value.setDate}
+                                onSelect={(date) => {
+                                    if (date) value.setDate(date)
+                                }}
                                 defaultMonth={value.date}
                                 captionLayout='dropdown'
                             />
