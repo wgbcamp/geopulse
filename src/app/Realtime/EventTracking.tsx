@@ -8,10 +8,8 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
-import Basemap from "@arcgis/core/Basemap.js";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
-import SimpleFillSymbol from "@arcgis/core/symbols/SimpleFillSymbol.js";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -20,29 +18,6 @@ import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { Slider } from "@/components/ui/slider"
 
 import { realtimeObject } from '@/config/datasets';
-import { set } from 'date-fns';
-
-// --- Pulse color helper ---
-function getEventColor(attrs: any) {
-    const t = attrs.eventtype;
-    switch (t) {
-        case "EQ":
-            return "var(--green)";
-        case "TC":
-            return "var(--red)";
-        case "DR":
-            return "var(--purple)";
-        case "FL":
-            return "var(--cyan)";
-        case "VO":
-            return "var(--yellow)";
-        case "WF":
-            return "var(--orange)";
-        default:
-            return "#d9d9d9";
-
-    }
-}
 
 export const EventTracking = ({ props }: any) => {
 
@@ -70,10 +45,27 @@ export const EventTracking = ({ props }: any) => {
     const outlineLayer = useRef<GraphicsLayer>(null);
     const groupLayer = useRef<GroupLayer>(null);
 
-    //placeholder
-    const detailedEvent = new FeatureLayer({
-        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer",
-    });
+    // --- Pulse color helper ---
+    function getEventColor(attrs: any) {
+        const t = attrs.eventtype;
+        switch (t) {
+            case "EQ":
+                return "var(--green)";
+            case "TC":
+                return "var(--red)";
+            case "DR":
+                return "var(--purple)";
+            case "FL":
+                return "var(--cyan)";
+            case "VO":
+                return "var(--yellow)";
+            case "WF":
+                return "var(--orange)";
+            default:
+                return "#d9d9d9";
+
+        }
+    }
 
         // --- Sync pulse positions to screen coords ---
     const syncPulses = useCallback(() => {
@@ -97,7 +89,7 @@ export const EventTracking = ({ props }: any) => {
     const queryEvents = useCallback(() => {
         if (!eventFeatureLayer.current || !view.current || !pulseContainerRef.current) return;
 
-        clearPulses();
+        clearPulses(); // remove all pulses when input changes
 
         const query = eventFeatureLayer.current!.createQuery();
         query.returnGeometry = true;
@@ -151,54 +143,40 @@ export const EventTracking = ({ props }: any) => {
             
     }, [clearPulses, syncPulses]);
 
+    //pasadena fire feature layer
+    const detailedEvent = new FeatureLayer({
+        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer",
+    });
+
      useEffect(() => {
         if (ref.current) {
 
-            if (baseLayer.current) {
-                baseLayer.current.destroy();
-            }
-
-            if (boundariesLayer.current) {   
-                boundariesLayer.current.destroy();
-            }
-
-            if (graphicsLayer.current) {
-                graphicsLayer.current.destroy();
-            }
-
-            if (outlineLayer.current) {
-                outlineLayer.current.destroy();
-            }
-
-            if (groupLayer.current) {
-                groupLayer.current.destroy();
-            }
-
-            // base layer
+            // base layer displaying the regions of the world
             baseLayer.current = new VectorTileLayer({
                 url: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json",
                 title: "base"
             });
 
-            // country holding focused event will be added to this graphics layer
+            // graphics layer displaying the polygon of the focused event, only drawn when overlapping with the top layer
             graphicsLayer.current = new GraphicsLayer({
                 blendMode: "destination-in",
                 title: "graphics",
             });
 
+            // graphics layer displaying the outline of the event
             outlineLayer.current = new GraphicsLayer({
                 blendMode: "normal",
                 title: "outline",
             });
 
-            // reference layer for country borders
+            // vector tile layer displaying country boundaries
             boundariesLayer.current = new VectorTileLayer({
                 url: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
                 title: "boundaries",
                 opacity: 0.25
             });
 
-            // group layer
+            // group layer that will only be shown when an event is in focus
             groupLayer.current = new GroupLayer({
                 layers: [
                     graphicsLayer.current,
@@ -206,10 +184,12 @@ export const EventTracking = ({ props }: any) => {
                 ]
             });
 
+            // stack three layers by default
             map.current = new Map({
                 layers: [baseLayer.current, boundariesLayer.current, groupLayer.current]
             });
 
+            // default map properties
             view.current = new MapView({
                 container: ref.current,
                 map: map.current,
@@ -222,6 +202,7 @@ export const EventTracking = ({ props }: any) => {
                 popupEnabled: false
             });
 
+            // remove all arcgis default ui components
             view.current.ui.components = [];
 
             // Wire up pulse sync to map interactions
@@ -231,15 +212,24 @@ export const EventTracking = ({ props }: any) => {
             view.current.on("drag", syncPulses);
             view.current.on("mouse-wheel", syncPulses);
             view.current.watch("stationary", (v) => { if (v) syncPulses(); });
-
         }
+
+        // clean up
+         return () => {
+             view.current.destroy();
+             baseLayer.current?.destroy();
+             boundariesLayer.current?.destroy();
+             graphicsLayer.current?.destroy();
+             outlineLayer.current?.destroy();
+             groupLayer.current?.destroy();
+         }
    
     }, [syncPulses]);
 
     useEffect(() => {
         if (!view.current) return;
 
-        //clickable feature layer elements
+        // handle clicks on event feature layer to focus on matching events
         const handleClick = (event: any) => {
             view.current.hitTest(event).then((res: any) => {
                 if (res.results.length > 0) {
@@ -266,7 +256,7 @@ export const EventTracking = ({ props }: any) => {
 
         if (!map.current || !groupLayer.current) return;
 
-        // Remove existing exposure layer if it exists
+        // Remove existing exposure layers if they exist
         if (exposureLayer.current) {
             map.current.remove(exposureLayer.current);
             exposureLayer.current.destroy();
@@ -278,7 +268,7 @@ export const EventTracking = ({ props }: any) => {
         }
 
         
-
+        // assign exposure layer values based on realtime exposure value 
         switch (realtimeExposure) {
             case "Population":
             case "Vulnerable People":
@@ -327,12 +317,14 @@ export const EventTracking = ({ props }: any) => {
                 break;
             }
 
+           // add and reorder exposure layers
            if (groupLayer.current && exposureLayer.current && exposureLayerForGroup.current && graphicsLayer.current && baseLayer.current) {
                map.current.layers.add(exposureLayer.current);
                map.current.reorder(exposureLayer.current, 2);
                groupLayer.current.add(exposureLayerForGroup.current);
                groupLayer.current.layers.reorder(graphicsLayer.current, 2);
 
+               // if an event is focused, apply blur, darken, and greyscale to layers outside of the group layer
                if (focusedEvent !== "") {
                    baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
                    exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
@@ -342,9 +334,9 @@ export const EventTracking = ({ props }: any) => {
 
     const removeBlur = () => {
         if (baseLayer.current && exposureLayer.current && graphicsLayer.current && outlineLayer.current) {
-            baseLayer.current.effect = "";
+            baseLayer.current.effect = ""; // remove css filters from layers if no event is focused
             exposureLayer.current.effect = "";
-            graphicsLayer.current.graphics.removeAll();
+            graphicsLayer.current.graphics.removeAll(); // remove graphics from graphics layers
             outlineLayer.current.graphics.removeAll();
         }
     }
@@ -352,16 +344,18 @@ export const EventTracking = ({ props }: any) => {
 
         if (!map.current) return;
 
+        // clean up
         if (eventFeatureLayer.current) {
             map.current.remove(eventFeatureLayer.current);
             eventFeatureLayer.current.destroy();
         }
 
+        // convert unix time values
         function toTimestamp(date: any) {
             return date.toISOString().replace("T", " ").split(".")[0];
         }
- 
 
+        // assign query properties for the feature layer to retrieve world events within the date range
         eventFeatureLayer.current = new FeatureLayer({
             url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/gdacs_events/FeatureServer",
             outFields: ["*"],
@@ -377,15 +371,17 @@ export const EventTracking = ({ props }: any) => {
             `
         });
 
+        // run query on feature layer
         eventFeatureLayer.current.when(() => {
             queryEvents();
         });
 
         console.log("props: ", props.startDate, "propsToIsoString: ", new Date(props.startDate).toISOString());
-        map.current.add(eventFeatureLayer.current);
+        map.current.add(eventFeatureLayer.current); // add events feature layer to map
 
     }, [props.startDate, props.endDate, clearPulses, queryEvents])
 
+    // set the number of events in the date range that are not visible based on the popup container height
     useEffect(() => {
         const ec = eventRef.current;
         if (!ec) return;
@@ -402,6 +398,7 @@ export const EventTracking = ({ props }: any) => {
         setHiddenEvents(hidden);
     }, [events]);
 
+    // query feature layer 
     async function highlightCountry(event: any, index?: number) {
 
         const newQuery = event.createQuery();
@@ -415,7 +412,7 @@ export const EventTracking = ({ props }: any) => {
 
         if (feature && graphicsLayer.current && baseLayer.current && groupLayer.current && outlineLayer.current) {
             graphicsLayer.current.graphics.removeAll();
-            const maskFeature = feature.clone();
+            const maskFeature = feature.clone(); // clone the feature and add styling
             maskFeature.symbol = {
                 type: "simple-fill",
                 color: "rgba(255, 255, 255, 1)",
@@ -424,10 +421,10 @@ export const EventTracking = ({ props }: any) => {
                     width: "2px"
                 },
             };
-            graphicsLayer.current.graphics.add(maskFeature);
+            graphicsLayer.current.graphics.add(maskFeature); // add graphic to the graphics layer
 
             outlineLayer.current.graphics.removeAll();
-            const outlineFeature = feature.clone();
+            const outlineFeature = feature.clone(); // clone the feature and add styling
             outlineFeature.symbol = {
                 type: "simple-fill",
                 color: "rgba(0, 0, 0, 0.3)",
@@ -436,28 +433,27 @@ export const EventTracking = ({ props }: any) => {
                     width: "2px"
                 },
             };
-            outlineLayer.current.graphics.add(outlineFeature);
+            outlineLayer.current.graphics.add(outlineFeature); // add outline graphic to the outline graphics layer
 
-
-            baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
-            exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
-            groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)";
+            
+            baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
+            exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
+            groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)"; // brighten and add drop shadow to the group layer
         }
 
     }
 
-    const focusOnEvent = (coors?: { longitude: number, latitude: number }, attributes?: any, index?: number[]) => {
+    // focuses view on the event selected
+    const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes?: any) => {
         console.log(coors);
         view.current.goTo({
-            // center: [coors.longitude, coors.latitude],
-            center: [-118.5, 34.05],
-            // zoom: 11
+            center: [coors.longitude, coors.latitude],
             zoom: 11
         });
 
         if (!map.current) return;
 
-        // view.current.center
+        // reveal group layer for focused event and blur other layers
         highlightCountry(detailedEvent);
 
         console.log(map.current);
@@ -465,7 +461,7 @@ export const EventTracking = ({ props }: any) => {
         setEventPopup("focused event");
     }
 
-    const tempExposuresArray: any = [
+    const exposuresArray: any = [
         {
             name: "Population",
             icon: <svg width="17" height="17" viewBox="0 0 17 17" fill="white" xmlns="http://www.w3.org/2000/svg">
@@ -544,7 +540,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
             </div>
              <div className="absolute z-50 top-40 h-full w-[300px] flex flex-col justify-start items-start pointer-events-none">
-                    {tempExposuresArray.map((e: any) =>
+                    {exposuresArray.map((e: any) =>
                         <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                             <div className="">
                                 <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] transition-all duration-300 ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
@@ -642,13 +638,13 @@ export const EventTracking = ({ props }: any) => {
                 <div className="pt-5 flex flex-row w-full text-[12px] font-bold justify-around border-t-1 px-4">
                     <div className='flex flex-col w-full items-between text-left'>
                         <div className='pb-2 border-solid border-b-1'>LAYER</div>
-                        {tempExposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) => 
+                        {exposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) => 
                             <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center '>{e.name}</div>
                         )}
                     </div>
                     <div className='w-full text-left'>
                         <div className='pb-2 border-solid border-b-1 pl-3'>EXPOSURE</div>
-                        {tempExposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) => 
+                        {exposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) => 
                             <div className='h-[45px] text-[16px] font-medium border-solid border-b-1 flex items-center border-l-1 pl-3'>{focusedEvent.exposures ? JSON.parse(focusedEvent.exposures)[e.name] : "N/A"}</div>
                         )}
                     </div>                
