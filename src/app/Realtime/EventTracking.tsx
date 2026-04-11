@@ -238,8 +238,7 @@ export const EventTracking = ({ props }: any) => {
                     })[0].graphic;
                     events.forEach((x: { geometry: { longitude: number, latitude: number }, attributes: { description: string } }) => {
                         if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
-                            focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);
-                            
+                            focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);                            
                         }
                     });
                 }
@@ -350,7 +349,7 @@ export const EventTracking = ({ props }: any) => {
             eventFeatureLayer.current.destroy();
         }
 
-        // convert unix time values
+        // convert time values to unix time for query
         function toTimestamp(date: any) {
             return date.toISOString().replace("T", " ").split(".")[0];
         }
@@ -444,7 +443,7 @@ export const EventTracking = ({ props }: any) => {
     }
 
     // focuses view on the event selected
-    const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes?: any) => {
+    const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes: any) => {
         console.log(coors);
         view.current.goTo({
             center: [coors.longitude, coors.latitude],
@@ -453,8 +452,11 @@ export const EventTracking = ({ props }: any) => {
 
         if (!map.current) return;
 
-        // reveal group layer for focused event and blur other layers
-        highlightCountry(detailedEvent);
+        // only show the group layer with the event polygon when matching pasadena fire event for demonstrative purposes
+        if (attributes.htmldescription == "Orange Forest fires in United States from: 07 Jan 2025 to: 12 Jan 2025.") {
+            // reveal group layer for focused event and blur other layers
+            highlightCountry(detailedEvent);
+        }
 
         console.log(map.current);
         setFocusedEvent(attributes);
@@ -593,10 +595,13 @@ export const EventTracking = ({ props }: any) => {
                         className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer ' 
                             step={1}
                             min={0}
-                            max={focusedFeatures?.length - 1}
+                            max={focusedFeatures?.length - 1 }
                             defaultValue={[0]}
                             onValueChange={(value) => {
-                                highlightCountry(detailedEvent, value[0]);
+                                // only run highlightCountry function when matching pasadena fire event for demonstrative purposes
+                                if (focusedEvent.htmldescription == "Orange Forest fires in United States from: 07 Jan 2025 to: 12 Jan 2025.") {
+                                    highlightCountry(detailedEvent, value[0]);
+                                }
                             }}
                         />
                         <div className="relative h-6"
