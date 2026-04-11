@@ -325,8 +325,8 @@ export const EventTracking = ({ props }: any) => {
                groupLayer.current.add(exposureLayerForGroup.current);
                groupLayer.current.layers.reorder(graphicsLayer.current, 2);
 
-               // if an event is focused, apply blur, darken, and greyscale to layers outside of the group layer
-               if (focusedEvent !== "") {
+               // if an event is focused and focusedFeatures exists, apply blur, darken, and greyscale to layers outside of the group layer
+               if (focusedFeatures?.length > 0) {
                    baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
                    exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
                }
@@ -339,6 +339,8 @@ export const EventTracking = ({ props }: any) => {
             exposureLayer.current.effect = "";
             graphicsLayer.current.graphics.removeAll(); // remove graphics from graphics layers
             outlineLayer.current.graphics.removeAll();
+            setFocusedFeatures(null); // reset focused features in state
+            setFocusedSliderValue([0]); // reset focused slider value
         }
     }
     useEffect(() => {
@@ -446,7 +448,7 @@ export const EventTracking = ({ props }: any) => {
 
     // focuses view on the event selected
     const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes: any) => {
-
+        removeBlur(); // remove blur from previous event if it exists
         setFocusedSliderValue([0]); // reset slider value to 0 when focusing on a new event
         console.log(coors);
         view.current.goTo({
@@ -599,7 +601,8 @@ export const EventTracking = ({ props }: any) => {
                         className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer ' 
                             step={1}
                             min={0}
-                            max={focusedFeatures?.length - 1 }
+                            // if there are no features, set max to 10 for demonstrative purposes
+                            max={focusedFeatures?.length - 1 || 10 }
                             defaultValue={[0]}
                             value={focusedSliderValue}
                             onValueChange={(value) => {
