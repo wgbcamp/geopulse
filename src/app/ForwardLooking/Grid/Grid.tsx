@@ -103,7 +103,7 @@ export const GridView = ({ currentTime }: MapProps) => {
 
     return (
         <div className="h-full">
-        <div className='w-full h-350 bg-[#1D2224] pt-[152px]' ref={ref}></div>
+        <div className='w-full h-full bg-[#1D2224] pt-[152px]' ref={ref}></div>
             {/* <div id="viewControlsContainer" className="bg-amber-900 absolute top-174 left-33 flex flex-col items-center justify-center z-100 gap-10 ">
                 <div className="h-90 w-40 flex items-center justify-center flex-col bg-amber-200 rounded-[10px]">
                     <div id=""

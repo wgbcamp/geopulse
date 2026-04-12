@@ -30,7 +30,7 @@ function App() {
   const [startDate, setStartDate] = useState<Date | undefined>(new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()));
   const [endDate, setEndDate] = useState<Date | undefined>(new Date);
 
-  let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null)
+  let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null);
 
   useEffect(() => {
     const getGeoJson = async () => {

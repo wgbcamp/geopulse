@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback, use } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import GroupLayer from "@arcgis/core/layers/GroupLayer.js";
@@ -329,8 +329,8 @@ export const EventTracking = ({ props }: any) => {
 
                // if an event is focused and focusedFeatures exists, apply blur, darken, and greyscale to layers outside of the group layer
                if (focusedFeatures?.length > 0) {
-                   baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
-                   exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)";
+                   baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)";
+                   exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)";
                }
            }
     }, [realtimeExposure])
@@ -443,8 +443,8 @@ export const EventTracking = ({ props }: any) => {
             };
             outlineLayer.current.graphics.add(outlineFeature); // add outline graphic to the outline graphics layer
 
-            baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
-            exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
+            baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
+            exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
             groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)"; // brighten and add drop shadow to the group layer
         }
     }
@@ -579,25 +579,25 @@ export const EventTracking = ({ props }: any) => {
     ];
 
     return (
-        <div className="w-full h-full">
-            <div className='w-full h-full relative'>
+        <div className="w-full h-full relative overflow-hidden">
+            <div className='w-full h-full'>
                 <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
                 </div>
             </div>
-             <div className="absolute z-50 top-40 h-full w-[300px] flex flex-col justify-start items-start pointer-events-none">
-                    {exposuresArray.map((e: any) =>
-                        <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
-                            <div className="">
-                                <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] transition-all duration-300 ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
-                                    <div className="rounded-full flex items-center justify-center bg-black border-[1.37px] border-solid border-[#0084FF] h-[37px] w-[37px] mr-[10px]">{e.icon}</div>
-                                    <div>{e.name}</div>
-                                </div>
+            <div className="absolute z-50 top-40 w-[300px] flex flex-col justify-start items-start pointer-events-none">
+                {exposuresArray.map((e: any) =>
+                    <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
+                        <div className="">
+                            <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] transition-all duration-300 ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
+                                <div className="rounded-full flex items-center justify-center bg-black border-[1.37px] border-solid border-[#0084FF] h-[37px] w-[37px] mr-[10px]">{e.icon}</div>
+                                <div>{e.name}</div>
                             </div>
                         </div>
-                    )}
-                </div>
-            <div className={`absolute top-40 ${eventPopup == "all events" ? "right-0" : "-right-300"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all duration-300`}>
+                    </div>
+                )}
+            </div>
+            <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
@@ -623,7 +623,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
             </div>
-            <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300 overflow-y-auto`}>
+            <div className={`absolute top-40 ${eventPopup == "focused event" ? "translate-x-[calc(100vw-325px)]" : "translate-x-[100vw]"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur(); pauseSlider();}}> Close details [X]</div>
