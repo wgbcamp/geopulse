@@ -14,11 +14,11 @@ import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlay } from "@fortawesome/free-solid-svg-icons";
+import { faPause } from "@fortawesome/free-solid-svg-icons";
 
 import { Slider } from "@/components/ui/slider"
 
 import { realtimeObject } from '@/config/datasets';
-import { set } from 'date-fns';
 
 export const EventTracking = ({ props }: any) => {
 
@@ -29,9 +29,11 @@ export const EventTracking = ({ props }: any) => {
     const [eventPopup, setEventPopup] = useState<string>("all events");
     const [focusedFeatures, setFocusedFeatures] = useState<any>(null);
     const [focusedSliderValue, setFocusedSliderValue] = useState<number[]>([0]);
+    const [focusedSliderPlaying, setFocusedSliderPlaying] = useState<boolean>(false);   
     const ref = useRef(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
     let map = useRef<Map | null>(null);
     const view = useRef<MapView>(new MapView);
@@ -412,7 +414,10 @@ export const EventTracking = ({ props }: any) => {
         const feature = result.features[index || 0];
         console.log("feature ", result.features);
         setFocusedFeatures(result.features); // Store the features in state
+        applyPolygon(feature); // Apply the polygon styling from the first feature (or the specified index)
+    }
 
+    const applyPolygon = (feature: any) => {
         if (feature && graphicsLayer.current && baseLayer.current && groupLayer.current && outlineLayer.current) {
             graphicsLayer.current.graphics.removeAll();
             const maskFeature = feature.clone(); // clone the feature and add styling
@@ -438,16 +443,15 @@ export const EventTracking = ({ props }: any) => {
             };
             outlineLayer.current.graphics.add(outlineFeature); // add outline graphic to the outline graphics layer
 
-            
             baseLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
             exposureLayer.current.effect = "blur(8px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
             groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)"; // brighten and add drop shadow to the group layer
         }
-
     }
 
     // focuses view on the event selected
     const focusOnEvent = (coors: { longitude: number, latitude: number }, attributes: any) => {
+        pauseSlider();        
         removeBlur(); // remove blur from previous event if it exists
         setFocusedSliderValue([0]); // reset slider value to 0 when focusing on a new event
         console.log(coors);
@@ -467,6 +471,40 @@ export const EventTracking = ({ props }: any) => {
         console.log(map.current);
         setFocusedEvent(attributes);
         setEventPopup("focused event");
+    }
+
+    // play through the event by incrementing the slider value which updates the position
+    const playEvent = (status: string) => {
+        const blocker = focusedEvent;
+        let i = focusedSliderValue[0];
+
+        switch (status) {
+            case "play":
+                setFocusedSliderPlaying(true);
+                intervalRef.current = setInterval(() => {
+                    if ( blocker !== focusedEvent || i >= focusedFeatures.length - 1 ) {
+                        pauseSlider();
+                        return;
+                    } else {
+                    applyPolygon(focusedFeatures[i]);
+                    i += 1;
+                    setFocusedSliderValue([i]);
+                    }
+                }, 2000);
+                break;
+            case "pause":
+                pauseSlider();
+                break;
+        }
+    };
+
+    const pauseSlider = () => {
+        // clear any existing intervals and reset slider when focusing on a new event
+        if (intervalRef.current) {
+            clearInterval(intervalRef.current);
+            intervalRef.current = null;
+            setFocusedSliderPlaying(false); // reset playing state of slider when focusing on a new event
+        }
     }
 
     const exposuresArray: any = [
@@ -588,13 +626,13 @@ export const EventTracking = ({ props }: any) => {
             <div className={`absolute top-40 ${eventPopup == "focused event" ? "right-0" : "-right-325"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
-                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur();}}> Close details [X]</div>
+                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur(); pauseSlider();}}> Close details [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
                 <div className="flex flex-row justify-center items-start w-full pb-[36px]">
                     <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">
-                        <FontAwesomeIcon icon={faPlay} size="2xs" color="white" />
+                        {focusedSliderPlaying ? <FontAwesomeIcon icon={faPause} size="2xs" color="white" onClick={() => playEvent("pause")}/> : <FontAwesomeIcon icon={faPlay} size="2xs" color="white" onClick={() => playEvent("play")}/>}
                     </div>
                     <div className="flex flex-col h-full w-7/10">
                         <Slider 
@@ -607,9 +645,10 @@ export const EventTracking = ({ props }: any) => {
                             value={focusedSliderValue}
                             onValueChange={(value) => {
                                 setFocusedSliderValue(value);
-                                // only run highlightCountry function when matching pasadena fire event for demonstrative purposes
-                                if (focusedEvent.htmldescription == "Orange Forest fires in United States from: 07 Jan 2025 to: 12 Jan 2025.") {
-                                    highlightCountry(detailedEvent, value[0]);
+                                // apply polygon based on slider value, if features exist
+                                if (focusedFeatures) {
+                                    applyPolygon(focusedFeatures[value[0]]);
+                                    pauseSlider();
                                 }
                             }}
                         />
