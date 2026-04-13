@@ -104,7 +104,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
 
 
       vtlayer.current = new ImageryTileLayer({
-        url: gridObject[currentHazard]?.[currentExposure]?.[currentScenario][currentTime],
+        url: gridObject[currentHazard]?.[currentExposure]?.[currentScenario]?.[currentTime],
         renderer: new UniqueValueRenderer({
           field: "Value", uniqueValueInfos: [
             {
