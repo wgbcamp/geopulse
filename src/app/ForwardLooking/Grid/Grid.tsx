@@ -6,22 +6,29 @@ import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
 import SceneView from "@arcgis/core/views/SceneView.js";
 import Polygon from "@arcgis/core/geometry/Polygon.js";
+import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer.js";
 
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
+import { gridObject } from '@/config/datasets';
+import ImageryTileLayer from '@arcgis/core/layers/ImageryTileLayer';
+
 type MapProps = {
-    currentTime: number
+    currentTime: number,
+    currentHazard: string,
+    currentScenario: string,
+    currentExposure: string
 }
 
-export const GridView = ({ currentTime }: MapProps) => {
+export const GridView = ({ currentTime, currentHazard, currentScenario, currentExposure }: MapProps) => {
 
     const [position, setPosition] = useState({});
     const [currentDimension, setDimension] = useState("2D");
 
     const ref = useRef(null);
     let map = useRef<Map | null>(null);
-    const vtlayer = useRef<VectorTileLayer | null>(null);
+    const vtlayer = useRef<ImageryTileLayer | null>(null);
     var view = useRef<MapView | SceneView>(new MapView);
 
 
@@ -94,29 +101,83 @@ export const GridView = ({ currentTime }: MapProps) => {
             vtlayer.current.destroy();
         }
 
-        let urlValue = "";
 
-        switch (currentTime) {
-          case 1980: 
-            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer";
-            break;
-          case 2030: 
-            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2030/VectorTileServer";
-            break;
-          case 2050: 
-            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2050/VectorTileServer"
-            break;
-          case 2080:
-            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2080/VectorTileServer"
-            break;
-        } 
 
-        vtlayer.current = new VectorTileLayer({
-            url: urlValue
-        });
+      vtlayer.current = new ImageryTileLayer({
+        url: gridObject[currentHazard]?.[currentExposure]?.[currentScenario][currentTime],
+        renderer: new UniqueValueRenderer({
+          field: "Value", uniqueValueInfos: [
+            {
+              value: 1,
+              symbol: {
+                type: "simple-fill", 
+                color: "#f3e0f7", 
+              },
+            },
+            {
+              value: 2,
+              symbol: {
+                type: "simple-fill",
+                color: "#d3b8e6",
+              },
+            },
+            {
+              value: 3,
+              symbol: {
+                type: "simple-fill",
+                color: "#b0d5f1",
+              },
+            },
+            {
+              value: 4,
+              symbol: {
+                type: "simple-fill",
+                color: "#e4acac",
+              },
+            },
+            {
+              value: 5,
+              symbol: {
+                type: "simple-fill",
+                color: "#b8b8d8",
+              },
+            },
+            {
+              value: 6,
+              symbol: {
+                type: "simple-fill",
+                color: "#8dc8e8",
+              },
+            },
+            {
+              value: 7,
+              symbol: {
+                type: "simple-fill",
+                color: "#c85a89",
+              },
+            },
+            {
+              value: 8,
+              symbol: {
+                type: "simple-fill",
+                color: "#9972af",
+              },
+            },
+             {
+              value: 9,
+              symbol: {
+                type: "simple-fill",
+                color: "#3b8bc4",
+              },
+            },
+          ],
+        })
+      });
+
+        
 
         map.current.add(vtlayer.current);
-    }, [currentTime, currentDimension])
+    }, [currentTime, currentHazard, currentExposure, currentScenario])
 
     return (
         <div className="h-full">
@@ -150,12 +211,12 @@ export const GridView = ({ currentTime }: MapProps) => {
           <rect width="260" height="175" fill="white" />
           <text id="color3Text" x="12" y="23" fill="#DE4FA6" style={{ font: "bold 12px Arial"}}>
             Population
-            <tspan x="12" dy="15">Count</tspan>
+            <tspan x="12" dy="15">(count)</tspan>
           </text>
           <text id="color7Text" x="250" y="23" fill="#4FADD0" text-anchor="end"
             style={{ font: "bold 12px Arial", textAlign: "right" }}>
-            Riverine
-            <tspan x="247" dy="15">Flood</tspan>
+            Flood Height
+            <tspan x="247" dy="15">(meters)</tspan>
           </text>
           <text x="143" y="23" fill="black" text-anchor="end" style={{ font: "bold 12px Arial", textAlign: "right" }}>
             High

@@ -65,7 +65,7 @@ function App() {
 
       {currentView == "Grid"
         ?
-        <GridView currentTime={currentTime} />
+        <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario}/>
         :
         <div></div>
       }

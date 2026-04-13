@@ -1,6 +1,43 @@
 import { countryByIso3 } from '@/config/isoCountries';
 
 export const URL_BASE = "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
+export const URL_RTBASE = "https://tiledimageservices9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
+export const URL_GRIDBASE = URL_RTBASE;
+
+export const gridObject: Record<string, Record<string, Record<string, Record<number, string>>>> = {
+    "Riverine Flooding": {
+        "Population": {
+            "rcp4p5": {
+                1980: `${URL_GRIDBASE}/riverine_population_historical_1980_rp1000/ImageServer`,
+                2030: `${URL_GRIDBASE}/riverine_population_rcp4p5_2030_rp1000/ImageServer`,
+                2050: `${URL_GRIDBASE}/riverine_population_rcp4p5_2050_rp1000/ImageServer`,
+                2080: `${URL_GRIDBASE}/riverine_population_rcp4p5_2080_rp1000/ImageServer`,
+            },
+            "rcp8p5": {
+                1980: `${URL_GRIDBASE}/riverine_population_historical_1980_rp1000/ImageServer`,
+                2030: `${URL_GRIDBASE}/riverine_population_rcp8p5_2030_rp1000/ImageServer`,
+                2050: `${URL_GRIDBASE}/riverine_population_rcp8p5_2050_rp1000/ImageServer`,
+                2080: `${URL_GRIDBASE}/riverine_population_rcp8p5_2080_rp1000/ImageServer`,
+            },
+        }
+    },
+    "Coastal Flooding": {
+        "Population": {
+            "rcp4p5": {
+                1980: `${URL_GRIDBASE}/coastal_population_historical_1980_rp1000/ImageServer`,
+                2030: `${URL_GRIDBASE}/coastal_population_rcp4p5_2030_rp1000/ImageServer`,
+                2050: `${URL_GRIDBASE}/coastal_population_rcp4p5_2050_rp1000/ImageServer`,
+                2080: `${URL_GRIDBASE}/coastal_population_rcp4p5_2080_rp1000/ImageServer`,
+            },
+            "rcp8p5": {
+                1980: `${URL_GRIDBASE}/coastal_population_historical_1980_rp1000/ImageServer`,
+                2030: `${URL_GRIDBASE}/coastal_population_rcp8p5_2030_rp1000/ImageServer`,
+                2050: `${URL_GRIDBASE}/coastal_population_rcp8p5_2050_rp1000/ImageServer`,
+                2080: `${URL_GRIDBASE}/coastal_population_rcp8p5_2080_rp1000/ImageServer`,
+            },
+        }
+    }
+};
 
 export const urlObject: Record<string, Record<string, { url: string, measure: string[], threshold?: {type: string; group: Record<string, string>}, thresholdToMeasure?: Record<string, string>, scenarios: string[], source: string, value: string }>> = {
     "Riverine Flooding":
@@ -31,7 +68,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "RF_PW_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: IMF Staff Calculations.",
         },
         "Buildings": {
             url: `${URL_BASE}/riverine_buildings_table/FeatureServer/0/query`,
@@ -317,7 +354,6 @@ const thresholdToTitle: Record<string, string> = {
     H_40: "Tmax > 40"
 }
 
-export const URL_RTBASE = "https://tiledimageservices9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services";
 
 export const realtimeObject: Record<string, { url: string, colorScheme: Array<Record<string, any>> }> = {
 
@@ -515,7 +551,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "GDP":
     {
-        url: `${URL_RTBASE}/murakami_gdp/ImageServer`,
+        url: `${URL_RTBASE}/imf_gdp_total_2021_logv3/ImageServer`,
         colorScheme: [
             {
                 "minValue": 4.0,
