@@ -549,13 +549,13 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
             }
         ]
     },
-    "GDP":
+   "GDP":
     {
         url: `${URL_RTBASE}/imf_gdp_total_2021_logv3/ImageServer`,
         colorScheme: [
             {
-                "minValue": 4.0,
-                "maxValue": 6096.0,
+                "minValue": 5.9,
+                "maxValue": 6.081,
                 "symbol": {
                     "type": "simple-fill",
                     "color": [50, 48, 50, 1.0]
@@ -563,8 +563,8 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 "label": "< $6.1K"
             },
             {
-                "minValue": 6096.0,
-                "maxValue": 104910.0,
+                "minValue": 6.081,
+                "maxValue": 7.031,
                 "symbol": {
                     "type": "simple-fill",
                     "color": [90, 55, 65, 1.0]
@@ -572,8 +572,8 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 "label": "$104.9K"
             },
             {
-                "minValue": 104910.0,
-                "maxValue": 627995.0,
+                "minValue": 7.031,
+                "maxValue": 7.413306,
                 "symbol": {
                     "type": "simple-fill",
                     "color": [160, 70, 100, 1.0]
@@ -581,8 +581,8 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 "label": "$628.0K"
             },
             {
-                "minValue": 627995.0,
-                "maxValue": 13321377.0,
+                "minValue": 7.413306,
+                "maxValue": 7.885,
                 "symbol": {
                     "type": "simple-fill",
                     "color": [210, 130, 60, 1.0]
@@ -590,8 +590,8 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 "label": "$13.3M"
             },
             {
-                "minValue": 13321377.0,
-                "maxValue": 4346626560.0,
+                "minValue": 7.885,
+                "maxValue": 10.153,
                 "symbol": {
                     "type": "simple-fill",
                     "color": [240, 249, 33, 1.0]
@@ -599,7 +599,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 "label": "> $13.3M"
             }
         ]
-
+ 
     },
     "Urban GDP":
     {

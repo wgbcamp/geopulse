@@ -490,7 +490,7 @@ export const EventTracking = ({ props }: any) => {
                     i += 1;
                     setFocusedSliderValue([i]);
                     }
-                }, 2000);
+                }, 1500);
                 break;
             case "pause":
                 pauseSlider();

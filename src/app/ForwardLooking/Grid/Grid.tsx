@@ -111,63 +111,63 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
               value: 1,
               symbol: {
                 type: "simple-fill", 
-                color: "#f3e0f7", 
+                color: "rgb(233,230,241)", 
               },
             },
             {
               value: 2,
               symbol: {
                 type: "simple-fill",
-                color: "#d3b8e6",
+                color: "rgb(166,201,223)",
               },
             },
             {
               value: 3,
               symbol: {
                 type: "simple-fill",
-                color: "#b0d5f1",
+                color: "rgb(104,171,205)",
               },
             },
             {
               value: 4,
               symbol: {
                 type: "simple-fill",
-                color: "#e4acac",
+                color: "rgb(142,129,189)",
               },
             },
             {
               value: 5,
               symbol: {
                 type: "simple-fill",
-                color: "#b8b8d8",
+                color: "rgb(217,158,202)",
               },
             },
             {
               value: 6,
               symbol: {
                 type: "simple-fill",
-                color: "#8dc8e8",
+                color: "rgb(70,99,168)",
               },
             },
             {
               value: 7,
               symbol: {
                 type: "simple-fill",
-                color: "#c85a89",
+                color: "rgb(206,89,163)",
               },
             },
             {
               value: 8,
               symbol: {
                 type: "simple-fill",
-                color: "#9972af",
+                color: "rgb(123,58,147)",
               },
             },
              {
               value: 9,
               symbol: {
                 type: "simple-fill",
-                color: "#3b8bc4",
+                color: "rgb(40,27,132)",
               },
             },
           ],
@@ -207,7 +207,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
                     </div>
                 </div>
             </div> */}
-        <svg id="legendContainer" className="w-[210px] md:w-[260px] border-solid border-b-1 absolute bottom-65 md:bottom-65 lg:bottom-0 z-1 pointer-events-none" width="260"  viewBox="0 0 260 175" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <svg id="legendContainer" className="w-[210px] md:w-[260px] border-solid border-b-1 absolute bottom-0 z-1 pointer-events-none" width="260"  viewBox="0 0 260 175" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="260" height="175" fill="white" />
           <text id="color3Text" x="12" y="23" fill="#DE4FA6" style={{ font: "bold 12px Arial"}}>
             Population
