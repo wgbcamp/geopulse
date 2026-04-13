@@ -94,8 +94,25 @@ export const GridView = ({ currentTime }: MapProps) => {
             vtlayer.current.destroy();
         }
 
+        let urlValue = "";
+
+        switch (currentTime) {
+          case 1980: 
+            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer";
+            break;
+          case 2030: 
+            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2030/VectorTileServer";
+            break;
+          case 2050: 
+            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2050/VectorTileServer"
+            break;
+          case 2080:
+            urlValue = "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2080/VectorTileServer"
+            break;
+        } 
+
         vtlayer.current = new VectorTileLayer({
-            url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer"
+            url: urlValue
         });
 
         map.current.add(vtlayer.current);
