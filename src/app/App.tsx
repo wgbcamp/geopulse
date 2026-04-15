@@ -36,6 +36,7 @@ function App() {
 
   useEffect(() => {
     const getGeoJson = async () => {
+      console.log(base);
       var getData = await fetch(`${base}/GADM_ADMIN1.json`);
       geoJson = await getData.json();
       setGeoJson(geoJson);
