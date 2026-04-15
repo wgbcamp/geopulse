@@ -16,6 +16,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
+    "types": ["node"],
     "jsx": "react-jsx", // added for jsx interface functionality
     "module": "ES2022", // added for arcgis
     "moduleResolution": "Bundler", // added for arcgis

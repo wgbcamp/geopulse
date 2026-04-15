@@ -19,6 +19,8 @@ type JsonShape = {
 
 function App() {
 
+  const base = import.meta.env.VITE_BASE;
+
   const [currentView, setView] = useState("Event tracking");
   const [currentTime, setTime] = useState<number>(1980);
   const [currentScenario, setScenario] = useState<string>("rcp4p5");
@@ -34,7 +36,7 @@ function App() {
 
   useEffect(() => {
     const getGeoJson = async () => {
-      var getData = await fetch('/geopulse-dev/GADM_ADMIN1.json');
+      var getData = await fetch(`${base}/GADM_ADMIN1.json`);
       geoJson = await getData.json();
       setGeoJson(geoJson);
     }

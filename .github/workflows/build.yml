@@ -3,7 +3,7 @@ name: build and deploy
 on:
   push:
     branches:
-      - v3
+      - ${{ vars.VITE_BRANCH }}
   workflow_dispatch: 
 
 
