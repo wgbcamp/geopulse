@@ -30,7 +30,9 @@ jobs:
 
       - name: Build site
         run: npm run build
-
+        env: 
+          VITE_BASE: ${{ vars.VITE_BASE }}
+          
       - name: Upload static files as artifact
         id: deployment
         uses: actions/upload-pages-artifact@v3
