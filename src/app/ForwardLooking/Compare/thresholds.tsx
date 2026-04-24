@@ -63,6 +63,12 @@ const labels = [
 
 export const Thresholds = ( { props }: any ) => {
  
+  const [thresholdSliderValue, setThresholdSliderValue] = useState<number[]>([0]);
+
+  useEffect(() => {    
+    handleValueChange([0]);
+  }, [props.currentHazard])
+
   const config = urlObject[props.currentHazard][props.currentExposure];
   const thresholdGroup = config?.threshold?.group ?? {};
 
@@ -76,7 +82,10 @@ export const Thresholds = ( { props }: any ) => {
 
     props.setThreshold({ name: measureName, threshold: thresholdKey });
     props.setMeasure({ name: measureName, id: measureId });
-};
+
+    //
+    setThresholdSliderValue(value);
+  };
   
   const handleDroughtTabChange = (value: string) => {
     console.log(value);
@@ -116,6 +125,7 @@ export const Thresholds = ( { props }: any ) => {
                   max={Object.values(thresholdGroup).length - 1}
                   step={1}
                   defaultValue={[0]}
+                  value={thresholdSliderValue}
                   onValueChange={handleValueChange}
                 />
                 <div className="relative h-6"
@@ -177,6 +187,7 @@ export const Thresholds = ( { props }: any ) => {
               max={Object.values(thresholdGroup).length - 1}
               step={1}
               defaultValue={[0]}
+              value={thresholdSliderValue}
               onValueChange={handleValueChange}
             />
             <div className="relative h-6"

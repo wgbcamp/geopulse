@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react';
 
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 import Map from "@arcgis/core/Map.js";

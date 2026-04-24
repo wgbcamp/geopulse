@@ -42,6 +42,23 @@ export const NewHeader = ({ props }: any) => {
         setRiskOpened(newOpenState);
     };
 
+    const swapTable = (hazard: string, exposure: string, threshold: object, measure: object ) => {
+        const findMatchingScenario = new Promise((resolve) => {
+            if (urlObject[hazard][exposure].scenarios.find((element) => scenarioMapper[element] == scenarioMapper[props.currentScenario])) {
+                resolve(true);
+            } else {
+                resolve(props.setScenario(urlObject[props.currentHazard][props.currentExposure].scenarios[0]));
+            }
+        });
+
+        findMatchingScenario.then(() => {
+            props.setHazard(hazard);
+            props.setExposure(exposure);
+            props.setThreshold(threshold);
+            props.setMeasure(measure);
+        });
+    }
+
     const calendarData: {name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>>}[] = [
         {
             name: "START",
@@ -197,7 +214,7 @@ export const NewHeader = ({ props }: any) => {
                                                     <ItemHeader className={`${riskState === key ? 'font-bold' : 'font-medium'} text-[16px]`}>{key}</ItemHeader>
                                                     <div className={`${riskState === key ? `h-[calc(80px*${value.length})]` : "h-0 hidden"}`}>
                                                         {Object.entries(value).map(([a, b]) =>
-                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${props.currentExposure == a && riskState == props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState(key); props.setHazard(key); props.setExposure(a); props.setThreshold({ name: "", threshold: Object.keys(b.threshold?.group || {})[0] }); props.setMeasure({ id: b.measure[0], name: measureMapper[b.measure[0]] }); }}>
+                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${props.currentExposure == a && riskState == props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState(key); swapTable(key, a, { name: "", threshold: Object.keys(b.threshold?.group || {})[0] }, { id: b.measure[0], name: measureMapper[b.measure[0]] }); }}>
                                                                 <ItemContent>
                                                                     <ItemHeader>{a}</ItemHeader>
                                                                 </ItemContent>

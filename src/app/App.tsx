@@ -85,7 +85,8 @@ function App() {
                   currentHazard,
                   currentMeasure,
                   currentThreshold,
-                  setScenario
+                  setScenario,
+                  setThreshold
                 }} />
               </div>
             </div>

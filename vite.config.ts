@@ -14,6 +14,16 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    base: env.VITE_BASE
+    base: env.VITE_BASE,
+    test: {
+      globals: true,
+      css: {
+        include: /\.css$/
+      },
+      deps: {
+        inline: ['@esri/calcite-components']
+      },
+      environment: 'jsdom'
+    }
   }
 })
