@@ -1,7 +1,7 @@
 import * as React from "react";
 
-export function ChevronDownIcon({
-  size = 18,
+export function ChevronCircleUp20RegularIcon({
+  size = 24,
   color = "currentColor",
   strokeWidth = 2,
   className,
@@ -25,7 +25,7 @@ export function ChevronDownIcon({
       className={className}
       {...props}
     >
-      <path d="m6 9l6 6l6-6"/>
+      <path d="M3 10a7 7 0 1 0 14 0a7 7 0 0 0-14 0m7 8a8 8 0 1 1 0-16a8 8 0 0 1 0 16m-3.146-6.146a.5.5 0 0 1-.708-.708l3.5-3.5a.5.5 0 0 1 .708 0l3.5 3.5a.5.5 0 0 1-.708.708L10 8.707z"/>
     </svg>
   );
 }

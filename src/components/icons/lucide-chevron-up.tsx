@@ -1,7 +1,7 @@
 import * as React from "react";
 
 export function ChevronUpIcon({
-  size = 24,
+  size = 18,
   color = "currentColor",
   strokeWidth = 2,
   className,

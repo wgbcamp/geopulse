@@ -19,7 +19,10 @@ import { Globe32LightIcon } from '../../components/icons/fluent-globe-32-light'
 import { Warning20RegularIcon } from '../../components/icons/fluent-warning-20-regular'
 import { Layer20RegularIcon } from '@/components/icons/fluent-layer-20-regular'
 import { ChevronCircleDown20RegularIcon } from '@/components/icons/fluent-chevron-circle-down-20-regular'
+import { ChevronCircleUp20RegularIcon } from '@/components/icons/fluent-chevron-circle-up-20-regular'
 import { Timer20RegularIcon } from '@/components/icons/fluent-timer-20-regular'
+import { ChevronUpIcon } from '@/components/icons/lucide-chevron-up'
+import { ChevronDownIcon } from '@/components/icons/lucide-chevron-down'
 import { Timeline } from './timeline'
 import {
   Popover,
@@ -35,6 +38,7 @@ export const NewHeader = ({ props }: any) => {
 
     const [riskState, setRiskState] = useState<string>("Riverine Flooding");
     const [riskOpened, setRiskOpened] = useState<boolean>(false);
+    const [scenarioOpened, setScenarioOpened] = useState<boolean>(false);
     const handleOpenChange = (newOpenState: boolean) => {
         if (newOpenState) {
             setRiskState(props.currentHazard)
@@ -192,7 +196,7 @@ export const NewHeader = ({ props }: any) => {
                 <div className="flex flex-row h-full">
                     <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
-                            <PopoverTrigger  >
+                            <PopoverTrigger>
                                 <div className="flex flex-row items-center justify-between w-[295px] px-5">
                                     <div className='flex items-center cursor-pointer'>
                                         <Warning20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
@@ -202,45 +206,47 @@ export const NewHeader = ({ props }: any) => {
                                             <div className="text-[16px] font-bold text-end flex items-center">{props.currentExposure}</div>
                                         </div>
                                     </div>
-                                    <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
+                                    {riskOpened ? <ChevronCircleUp20RegularIcon size={28} strokeWidth={1} className='pl-1' /> : <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />}
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[300px] p-0 py-[20px]">
-                                <div className="flex flex-row justify-center">
-                                    <ItemGroup>
-                                        {Object.entries(urlObject).map(([key, value]) => {
-                                            return <Item key={key} className={`cursor-pointer my-[4px] hover:bg-gray-200 ${riskState === key ? 'bg-gray-100 border-b-3 border-black' : ""} transition-all hover:duration-50 duration-200 ease-in`} onClick={() => setRiskState(key)}>
-                                                <ItemContent>
-                                                    <ItemHeader className={`${riskState === key ? 'font-bold' : 'font-medium'} text-[16px]`}>{key}</ItemHeader>
-                                                    <div className={`${riskState === key ? `h-[calc(80px*${value.length})]` : "h-0 hidden"}`}>
-                                                        {Object.entries(value).map(([a, b]) =>
-                                                            <Item key={a} className={`cursor-pointer my-[8px] py-[7px] hover:bg-gray-300 ${props.currentExposure == a && riskState == props.currentHazard ? "bg-gray-300 font-bold" : ""}`} onClick={() => { () => setRiskState(key); swapTable(key, a, { name: "", threshold: Object.keys(b.threshold?.group || {})[0] }, { id: b.measure[0], name: measureMapper[b.measure[0]] }); }}>
-                                                                <ItemContent>
-                                                                    <ItemHeader>{a}</ItemHeader>
-                                                                </ItemContent>
-                                                            </Item>
-                                                        )}
-                                                    </div>
-                                                </ItemContent>
-                                            </Item>
-                                        })}
-                                    </ItemGroup>
-                                </div>
-                            </PopoverContent>
+                                <PopoverContent className="w-[300px] p-0 py-[20px] my-[5px] rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)]">
+                                    <div className="flex flex-row justify-center">
+                                        <ItemGroup>
+                                            {Object.entries(urlObject).map(([key, value]) => {
+                                                return <Item key={key} className={`cursor-pointer my-[4px] items-start ${riskState === key ? ' ' : ""} transition-all hover:duration-50 duration-200 ease-in`} onClick={() => setRiskState(key)}>
+                                                    <ItemContent>
+                                                        <ItemHeader className={`${riskState === key ? 'font-bold' : 'font-medium'} text-[16px]`}>{key}</ItemHeader>
+                                                        <div className={`${riskState === key ? `h-[calc(80px*${value.length})]` : "h-0 hidden"}`}>
+                                                            {Object.entries(value).map(([a, b]) =>
+                                                                <Item key={a} className={`cursor-pointer my-[8px] py-[7px] pl-0 ${props.currentExposure == a && riskState == props.currentHazard ? "font-extrabold text-(--orange) underline underline-offset-5 decoration-2" : "font-medium"}`} onClick={() => { () => setRiskState(key); swapTable(key, a, { name: "", threshold: Object.keys(b.threshold?.group || {})[0] }, { id: b.measure[0], name: measureMapper[b.measure[0]] }); }}>
+                                                                    <ItemContent>
+                                                                        <ItemHeader>{a}</ItemHeader>
+                                                                    </ItemContent>
+                                                                </Item>
+                                                            )}
+                                                        </div>
+                                                    </ItemContent>
+                                                    {riskState == key ? <ChevronUpIcon/> : <ChevronDownIcon/>}
+                                                    
+                                                </Item>
+                                            })}
+                                        </ItemGroup>
+                                    </div>
+                                </PopoverContent>
                         </Popover>
                     </Card>
                     <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0">
-                        <Popover>
+                        <Popover open={scenarioOpened} onOpenChange={() => setScenarioOpened(!scenarioOpened)}>
                             <PopoverTrigger>
                                 <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
                                     <div className='flex items-center'>
                                         <Layer20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
                                         <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div>
                                     </div>
-                                    <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
+                                    {scenarioOpened ? <ChevronCircleUp20RegularIcon size={28} strokeWidth={1} className='pl-1' /> : <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />}
                                 </div>
                             </PopoverTrigger>
-                            <PopoverContent className="w-[225px] p-0">
+                            <PopoverContent className="w-[225px] p-0 my-[5px] rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)]">
                                 <div className={`flex flex-row justify-center py-[10px] h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
                                     <ItemGroup>
                                         {urlObject[props.currentHazard][props.currentExposure].scenarios.map((x) =>
