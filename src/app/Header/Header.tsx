@@ -63,58 +63,55 @@ export const NewHeader = ({ props }: any) => {
         });
     }
 
-    const calendarData: {name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>>}[] = [
-        {
-            name: "START",
-            style: {
-            },
-            date: props.startDate,
-            setDate: props.setStartDate
-        },
-        {
-            name: "END",
-            style: {
-            },
-            date: props.endDate,
-            setDate: props.setEndDate
-        }
-    ];
-
-
-
-    const calendarComponent = (value: { name: string, style: Record<string, string>, date: Date | undefined, setDate: React.Dispatch<React.SetStateAction<Date | undefined>> }) => {
-        return (
-            <Card className={`rounded-none w-[220px] p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
-                <div className='w-7/10 flex flex-col items-start'>
-                    <div className="font-extrabold text-[#707070] text-[11px]">{value.name}</div>
-                    <Popover>
-                        <PopoverTrigger asChild>
-                            <Button 
-                                variant="outline"
-                                data-empty={!value.date}
-                                className="w-[175px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+    const calendarComponent =
+        <Card className={`rounded-none w-[590px] p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
+            <div className='w-7/10 flex flex-col items-start'>
+                <Popover>
+                    <PopoverTrigger asChild>
+                        <div className="flex justify-between w-full">
+                            <div>
+                                <div className="font-extrabold text-[#707070] text-[11px] w-full">
+                                    <div className='flex'>START</div>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    data-empty={!props.dateRange.from}
+                                    className="w-[175px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
                                 >
-                                {value.date ? format(value.date, "PPP") : <span>Select a date</span>}
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                            <Calendar
-                                mode="single"
-                                disabled={(date) => date < new Date("2019-01-01")}
-                                startMonth={new Date("2019-01-07")}
-                                selected={value.date}
-                                onSelect={(date) => {
-                                    if (date) value.setDate(date)
-                                }}
-                                defaultMonth={value.date}
-                                captionLayout='dropdown'
-                            />
-                        </PopoverContent>
-                    </Popover>
-                </div>
-            </Card>
-        )
-    };
+                                    {props.dateRange.from ? format(props.dateRange.from, "PPP") : <span>Select a date</span>}
+                                </Button>
+                            </div>
+                            <div>
+                                <div className="font-extrabold text-[#707070] text-[11px]">
+                                    <div className='flex'>END</div>
+                                </div>
+                                <Button
+                                    variant="outline"
+                                    data-empty={!props.dateRange.to}
+                                    className="w-[175px] justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
+                                >
+                                    {props.dateRange.to ? format(props.dateRange.to, "PPP") : <span>Select a date</span>}
+                                </Button>
+                            </div>
+                        </div>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0 my-[10px] rounded-none flex flex-row" align="start">
+                        <Calendar
+                            mode="range"
+                            defaultMonth={props.dateRange.from}
+                            selected={props.dateRange}
+                            onSelect={(date) => {
+                                if (date) props.setDateRange(date)
+                            }}
+                            numberOfMonths={2}
+                            disabled={(date) => date < new Date("2019-01-01")}
+                            startMonth={new Date("2019-01-07")}
+                            captionLayout='dropdown'
+                        />
+                    </PopoverContent>
+                </Popover>
+            </div>
+        </Card>;
 
     return (
         <div className={`h-[69px] fixed top-0 z-50`}>
@@ -133,40 +130,7 @@ export const NewHeader = ({ props }: any) => {
                 </Card>
                 {props.currentView === "Event tracking" ?
                     <div className='flex '>
-                        {/* <Card className="rounded-none h-full p-0 flex flex-col items-center justify-center gap-0">
-                            <Popover>
-                                <PopoverTrigger>
-                                    <div className="flex flex-row items-center w-[225px] h-[50px] px-5 justify-between cursor-pointer">
-                                        <div className='flex items-center'>
-                                            <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div>
-                                            Events
-                                        </div>
-                                        <ChevronCircleDown20RegularIcon size={28} strokeWidth={1} className='pl-1' />
-                                    </div>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-[225px] p-0">
-                                    <div className={`flex flex-row justify-center py-[10px] h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
-                                        <ItemGroup>
-                                            {urlObject[props.currentHazard][props.currentExposure].scenarios.map((x) =>
-                                                <Item key={x} className={`cursor-pointer hover:bg-gray-100 my-[8px] ${scenarioMapper[props.currentScenario] === scenarioMapper[x] ? 'bg-gray-100 font-bold border-b-3 border-black' : ""} transition-all duration-200 ease-in`} onClick={() => props.setScenario(x)}>
-                                                    <ItemContent>
-                                                        <ItemHeader onClick={() => props.setScenario(x)}>{scenarioMapper[x]}</ItemHeader>
-                                                    </ItemContent>
-                                                </Item>
-                                            )}
-                                        </ItemGroup>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
-                        </Card> */}
-                        {calendarData.map((x) => calendarComponent(x))}
-                        {/* <div className='flex h-full items-end bg-white'>
-                            <div className="flex items-center justify-center h-[52.5px] w-[100px]">
-                                <Button className='bg-(--evenlighterblue) text-[11px] font-extrabold'>
-                                    UPDATE
-                                </Button>
-                            </div>
-                        </div> */}
+                        {calendarComponent}
                     </div>
                     : 
                     <div></div>}
@@ -250,7 +214,7 @@ export const NewHeader = ({ props }: any) => {
                                 <div className={`flex flex-row justify-center py-[10px] h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
                                     <ItemGroup>
                                         {urlObject[props.currentHazard][props.currentExposure].scenarios.map((x) =>
-                                            <Item key={x} className={`cursor-pointer hover:bg-gray-100 my-[8px] ${scenarioMapper[props.currentScenario] === scenarioMapper[x] ? 'bg-gray-100 font-bold border-b-3 border-black' : ""} transition-all duration-200 ease-in`} onClick={() => props.setScenario(x)}>
+                                            <Item key={x} className={`cursor-pointer my-[8px] ${scenarioMapper[props.currentScenario] === scenarioMapper[x] ? 'font-bold text-(--orange) underline underline-offset-5 decoration-2' : ""} transition-all duration-200 ease-in`} onClick={() => props.setScenario(x)}>
                                                 <ItemContent>
                                                     <ItemHeader onClick={() => props.setScenario(x)}>{scenarioMapper[x]}</ItemHeader>
                                                 </ItemContent>

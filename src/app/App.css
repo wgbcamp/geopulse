@@ -10,13 +10,14 @@ html {
     background-color: #1E1E1E;
   --unselectedview: #c7dff7;
   --orange: #FF8200;
+  --primaryblue: rgb(0,76,151);
   color-scheme: dark;
   --darkblue: #1F3764;
   --lightblue: #2C4F92;
   --evenlighterblue: #4982F2;
   --darkblue: rgb(30, 75, 146);
   --gray: #dadada;
-
+  --accentgreen: #78BE20;
   --green: #658D1B;
   --yellow: #F2A900;
   --red: #DA291C;

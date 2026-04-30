@@ -368,11 +368,11 @@ export const EventTracking = ({ props }: any) => {
                 type: "simple",
                 symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
             },
-            definitionExpression: `fromdate >= timestamp '${toTimestamp(new Date(props.startDate))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.endDate))}'
+            definitionExpression: `fromdate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
             OR
-            todate >= timestamp '${toTimestamp(new Date(props.startDate))}' AND todate <= timestamp '${toTimestamp(new Date(props.endDate))}'
+            todate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
             OR
-            fromdate <= timestamp '${toTimestamp(new Date(props.startDate))}' AND todate >= timestamp '${toTimestamp(new Date(props.endDate))}'
+            fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND todate >= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
             `
         });
 
@@ -381,10 +381,10 @@ export const EventTracking = ({ props }: any) => {
             queryEvents();
         });
 
-        console.log("props: ", props.startDate, "propsToIsoString: ", new Date(props.startDate).toISOString());
+        console.log("props: ", props.dateRange.from, "propsToIsoString: ", new Date(props.dateRange.from).toISOString());
         map.current.add(eventFeatureLayer.current); // add events feature layer to map
 
-    }, [props.startDate, props.endDate, clearPulses, queryEvents])
+    }, [props.dateRange.from, props.dateRange.to, clearPulses, queryEvents])
 
     // set the number of events in the date range that are not visible based on the popup container height
     useEffect(() => {

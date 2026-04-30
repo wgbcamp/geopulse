@@ -5,6 +5,7 @@ import { NewHeader } from './Header/Header';
 import { CompareView } from './ForwardLooking/Compare/Compare';
 import { Thresholds } from './ForwardLooking/Compare/thresholds';
 import { EventTracking } from './Realtime/EventTracking';
+import { type DateRange } from "react-day-picker"
 
 type JsonShape = {
   features: Array<{
@@ -29,8 +30,10 @@ function App() {
   const [currentMeasure, setMeasure] = useState<{ name: string, id: string }>({ name: "Flood Level", id: "CF_PW_EXP" });
   const [currentThreshold, setThreshold] = useState<{ name: string, threshold: any }>({ name: "", threshold: "rp0005" });
   const today = new Date;
-  const [startDate, setStartDate] = useState<Date | undefined>(new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()));
-  const [endDate, setEndDate] = useState<Date | undefined>(new Date);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+    from: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
+    to: (new Date)
+  })
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null);
 
@@ -60,10 +63,8 @@ function App() {
         currentMeasure,
         setMeasure,
         setThreshold,
-        startDate,
-        setStartDate,
-        endDate,
-        setEndDate
+        dateRange: dateRange,
+        setDateRange: setDateRange
       }} />
 
       {currentView == "Grid"
@@ -105,10 +106,8 @@ function App() {
       {currentView == "Event tracking"
         ?
           <EventTracking props={{
-            startDate: startDate,
-            setStartDate: setStartDate,
-            endDate: endDate,
-            setEndDate: setEndDate
+            dateRange: dateRange,
+            setDateRange: setDateRange
           }} />
         :
         <div></div>
