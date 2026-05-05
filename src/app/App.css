@@ -9,9 +9,11 @@ html {
   height: 100vh;
     background-color: #1E1E1E;
   --unselectedview: #c7dff7;
+  color-scheme: dark;
+
+  
   --orange: #FF8200;
   --primaryblue: rgb(0,76,151);
-  color-scheme: dark;
   --darkblue: #1F3764;
   --lightblue: #2C4F92;
   --evenlighterblue: #4982F2;

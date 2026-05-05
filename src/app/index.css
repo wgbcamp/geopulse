@@ -5,6 +5,211 @@
 
 @import "@arcgis/core/assets/esri/themes/light/main.css";
 
+@theme {
+
+  --fundblue: #004C97;
+
+  --primaryblue-100: #009CDE;
+  --primaryblue-90: #19A6E1;
+  --primaryblue-80: #33B0E5;
+  --primaryblue-70: #4CBAE8;
+  --primaryblue-60: #66C4EB;
+  --primaryblue-50: #80CDEE;
+  --primaryblue-40: #99D7F2;
+  --primaryblue-30: #B2E1F5;
+  --primaryblue-20: #CCEBF8;
+  --primaryblue-10: #E5F5FC;
+
+  --primarygray-100: #707372;
+  --primarygray-90: #7E8180;
+  --primarygray-80: #8D8F8E;
+  --primarygray-70: #9B9D9C;
+  --primarygray-60: #A9ABAA;
+  --primarygray-50: #B7B9B8;
+  --primarygray-40: #C6C7C7;
+  --primarygray-30: #D4D5D5;
+  --primarygray-20: #E2E3E3;
+  --primarygray-10: #F1F1F1;
+
+  --primaryblack-100: #231F20;
+  --primaryblack-90: #393536;
+  --primaryblack-80: #4F4C4D;
+  --primaryblack-70: #656263;
+  --primaryblack-60: #7B7979;
+  --primaryblack-50: #918F8F;
+  --primaryblack-40: #A7A5A6;
+  --primaryblack-30: #BDBCBC;
+  --primaryblack-20: #D3D2D2;
+  --primaryblack-10: #E9E9E9;
+
+  --primarywhite: #FFFFFF;
+
+  --accentlightgreen-100: #78BE20;
+  --accentlightgreen-90: #85C436;
+  --accentlightgreen-80: #93CB4D;
+  --accentlightgreen-70: #A0D163;
+  --accentlightgreen-60: #AED879;
+  --accentlightgreen-50: #BBDE8F;
+  --accentlightgreen-40: #C9E5A6;
+  --accentlightgreen-30: #D6EBBC;
+  --accentlightgreen-20: #E4F2D2;
+  --accentlightgreen-10: #F1F8E9;
+
+  --accentdarkgreen-100: #658D1B;
+  --accentdarkgreen-90: #749832;
+  --accentdarkgreen-80: #84A449;
+  --accentdarkgreen-70: #93AF5F;
+  --accentdarkgreen-60: #A3BB76;
+  --accentdarkgreen-50: #B2C68D;
+  --accentdarkgreen-40: #C1D1A4;
+  --accentdarkgreen-30: #D1DDBB;
+  --accentdarkgreen-20: #E0E8D1;
+  --accentdarkgreen-10: #F0F4E8;
+
+  --accentyellow-100: #F2A900;
+  --accentyellow-90: #F5BA33;
+  --accentyellow-80: #F6C34C;
+  --accentyellow-70: #F7CB66;
+  --accentyellow-60: #F8D480;
+  --accentyellow-50: #F8D480;
+  --accentyellow-40: #FADD99;
+  --accentyellow-30: #FBE5B2;
+  --accentyellow-20: #FCEECC;
+  --accentyellow-10: #FEF6E5;
+
+  --accentorange-100: #FF8200;
+  --accentorange-90: #FF8E19;
+  --accentorange-80: #FF9B33;
+  --accentorange-70: #FFA74C;
+  --accentorange-60: #FFB466;
+  --accentorange-50: #FFC080;
+  --accentorange-40: #FFCD99;
+  --accentorange-30: #FFD9B2;
+  --accentorange-20: #FFE6CC;
+  --accentorange-10: #FFF2E5;
+
+  --accentdarkorange-100: #E35205;
+  --accentdarkorange-90: #E6631E;
+  --accentdarkorange-80: #E97537;
+  --accentdarkorange-70: #EB8650;
+  --accentdarkorange-60: #EE9769;
+  --accentdarkorange-50: #F1A882;
+  --accentdarkorange-40: #F4BA9B;
+  --accentdarkorange-30: #F7CBB4;
+  --accentdarkorange-20: #F9DCCD;
+  --accentdarkorange-10: #FCEEE6;
+  
+  --accentred-100: #DA291C;
+  --accentred-90: #DE3E33;
+  --accentred-80: #E15449;
+  --accentred-70: #E56960;
+  --accentred-60: #E97F77;
+  --accentred-50: #EC948D;
+  --accentred-40: #F0A9A4;
+  --accentred-30: #F4BFBB;
+  --accentred-20: #F8D4D2;
+  --accentred-10: #FBEAE8;
+
+  --accentpurple-100: #8031A7;
+  --accentpurple-90: #8D46B0;
+  --accentpurple-80: #995AB9;
+  --accentpurple-70: #A66FC1;
+  --accentpurple-60: #B383CA;
+  --accentpurple-50: #BF98D3;
+  --accentpurple-40: #CCADDC;
+  --accentpurple-30: #D9C1E5;
+  --accentpurple-20: #E6D6ED;
+  --accentpurple-10: #F2EAF6;
+
+  --accentpurple-100: #8031A7;
+  --accentpurple-90: #8D46B0;
+  --accentpurple-80: #995AB9;
+  --accentpurple-70: #A66FC1;
+  --accentpurple-60: #B383CA;
+  --accentpurple-50: #BF98D3;
+  --accentpurple-40: #CCADDC;
+  --accentpurple-30: #D9C1E5;
+  --accentpurple-20: #E6D6ED;
+  --accentpurple-10: #F2EAF6;
+
+  --accentmagenta-100: #910048;
+  --accentmagenta-90: #9C195A;
+  --accentmagenta-80: #A7336D;
+  --accentmagenta-70: #B24C7F;
+  --accentmagenta-60: #BD6691;
+  --accentmagenta-50: #C880A3;
+  --accentmagenta-40: #D399B6;
+  --accentmagenta-30: #DEB2C8;
+  --accentmagenta-20: #E9CCDA;
+  --accentmagenta-10: #F4E5ED;
+
+  --accentcyan-100: #00B0B9;
+  --accentcyan-90: #19B8C0;
+  --accentcyan-80: #33C0C7;
+  --accentcyan-70: #4CC8CE;
+  --accentcyan-60: #66D0D5;
+  --accentcyan-50: #80D7DC;
+  --accentcyan-40: #99DFE3;
+  --accentcyan-30: #B2E7EA;
+  --accentcyan-20: #CCEFF1;
+  --accentcyan-10: #E5F7F8;
+
+  --accentdesaturatedblue-100: #5E8AB4;
+  --accentdesaturatedblue-90: #6E96BB;
+  --accentdesaturatedblue-80: #7EA1C3;
+  --accentdesaturatedblue-70: #8EADCA;
+  --accentdesaturatedblue-60: #9EB9D2;
+  --accentdesaturatedblue-50: #AEC4D9;
+  --accentdesaturatedblue-40: #BFD0E1;
+  --accentdesaturatedblue-30: #CFDCE8;
+  --accentdesaturatedblue-20: #DFE8F0;
+  --accentdesaturatedblue-10: #EFF3F7;
+
+  --accentblue-100: #407EC9;
+  --accentblue-90: #538BCE;
+  --accentblue-80: #6698D4;
+  --accentblue-70: #79A5D9;
+  --accentblue-60: #8CB2DF;
+  --accentblue-50: #9FBEE4;
+  --accentblue-40: #B3CBE9;
+  --accentblue-30: #C6D8EF;
+  --accentblue-20: #D9E5F4;
+  --accentblue-10: #ECF2FA;
+
+  --accentdarkblue-100: #001E60;
+  --accentdarkblue-90: #193470;
+  --accentdarkblue-80: #334B80;
+  --accentdarkblue-70: #4C6190;
+  --accentdarkblue-60: #6678A0;
+  --accentdarkblue-50: #808EAF;
+  --accentdarkblue-40: #99A5BF;
+  --accentdarkblue-30: #B2BBCF;
+  --accentdarkblue-20: #CCD2DF;
+  --accentdarkblue-10: #E5E8EF;
+
+  --accentwarmgray-100: #6E6259;
+  --accentwarmgray-90: #7C726A;
+  --accentwarmgray-80: #8B817A;
+  --accentwarmgray-70: #99918B;
+  --accentwarmgray-60: #A8A19B;
+  --accentwarmgray-50: #B6B0AC;
+  --accentwarmgray-40: #C5C0BD;
+  --accentwarmgray-30: #D3D0CD;
+  --accentwarmgray-20: #E2E0DE;
+  --accentwarmgray-10: #F0EFEE;
+
+  --accentcoolgray-100: #B1B3B3;
+  --accentcoolgray-90: #B9BBBB;
+  --accentcoolgray-80: #C1C2C2;
+  --accentcoolgray-70: #C8CACA;
+  --accentcoolgray-60: #D0D1D1;
+  --accentcoolgray-50: #D8D9D9;
+  --accentcoolgray-40: #E0E1E1;
+  --accentcoolgray-30: #E8E8E8;
+  --accentcoolgray-20: #EFF0F0;
+  --accentcoolgray-10: #F7F7F7;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

@@ -100,9 +100,9 @@ export const Thresholds = ( { props }: any ) => {
   }
 
   const tabComponent = 
-    <div className="absolute w-[500px] h-[30px] left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
+    <div className="absolute w-[370px] h-[30px] pt-3 left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
       <Tabs onValueChange={handleDroughtTabChange} value={props.currentMeasure.name} defaultValue="Dry Days">
-        <TabsList className='w-[300px]'>
+        <TabsList className='w-[300px] bg-[#1E1E1E]'>
           {urlObject[props.currentHazard][props.currentExposure].measure.map((id) => 
             <TabsTrigger key={id} value={measureMapper[id]}>{measureMapper[id]}</TabsTrigger>
           )}
@@ -111,16 +111,16 @@ export const Thresholds = ( { props }: any ) => {
     </div>;
   
   const temperatureSliderComponent = 
-          <div className="absolute w-[500px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
+          <div className="absolute w-[370px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
           style={{
             background:
               "linear-gradient(174.18deg, #0084FF 7.23%, rgba(92, 92, 92, 0) 95.52%)",
           }}>
           <div className="w-full h-full rounded-xl bg-[#1D1D1D]">
-            <Item className='w-100 py-0 px-2 -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2'>
+            <Item className='w-9/10 py-0 px-2 -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2'>
               <div className='w-full flex flex-col items-center'>
                 <Slider
-                  className='w-full z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[#004C97] [&_[data-slot=slider-track]]:via-[#FDBB33] [&_[data-slot=slider-track]]:to-[#FF0000]'
+                  className='w-75 z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[#004C97] [&_[data-slot=slider-track]]:via-[#FDBB33] [&_[data-slot=slider-track]]:to-[#FF0000]'
                   min={0}
                   max={Object.values(thresholdGroup).length - 1}
                   step={1}
@@ -129,7 +129,7 @@ export const Thresholds = ( { props }: any ) => {
                   onValueChange={handleValueChange}
                 />
                 <div className="relative h-6"
-                  style={{ width: "calc(100% )" }}
+                  style={{ width: "calc(100%*0.8)" }}
                 >
                   {Object.entries(thresholdGroup).map(([key, value], index: any) => {
                     const percent = (index / (Object.entries(thresholdGroup).length - 1)) * 100;
@@ -141,8 +141,8 @@ export const Thresholds = ( { props }: any ) => {
                       >
                         <div className="w-px h-2 bg-muted-foreground/50"></div>
                         <span className={`text-xs w-[42px] mt-0.5 ${value === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
-                          <div>{index >= 1 && index <= 3 ? 'Tmin' : 'Tmax'}</div>
-                          <div>{value}° C</div>
+                          <div className='font-bold'>{index >= 1 && index <= 3 ? 'Tmin' : 'Tmax'}</div>
+                          <div className='font-bold'>{value}° C</div>
                         </span>
                       </div>
                     )
@@ -172,17 +172,17 @@ export const Thresholds = ( { props }: any ) => {
         </div>;
 
   const floodingSliderComponent =
-    <div className="absolute w-[500px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
+    <div className="absolute w-[370px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
       style={{
         background:
           "linear-gradient(174.18deg, #0084FF 7.23%, rgba(92, 92, 92, 0) 95.52%)",
       }}>
       <div className="w-full h-full rounded-xl bg-[#1D1D1D]">
-        <Item className='w-100 py-0 px-2 -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2'>
+        <Item className='w-9/10 py-0 px-2 -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2'>
           <div className="text-lg w-full font-extrabold text-[var(--muted-foreground)] absolute top-[-35px]">ANNUAL PROBABILITY OF FLOODING</div>
           <div className='w-full flex flex-col items-center'>
             <Slider
-              className='w-full z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[rgb(16,48,80)] [&_[data-slot=slider-track]]:to-[rgb(116,221,208)]'
+              className='w-75 z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[rgb(16,48,80)] [&_[data-slot=slider-track]]:to-[rgb(116,221,208)]'
               min={0}
               max={Object.values(thresholdGroup).length - 1}
               step={1}
@@ -191,7 +191,7 @@ export const Thresholds = ( { props }: any ) => {
               onValueChange={handleValueChange}
             />
             <div className="relative h-6"
-              style={{ width: "calc(100% )" }}
+              style={{ width: "calc(100%*0.8)" }}
             >
               {Object.values(thresholdGroup).map((tick: any, index: any) => {
                 const percent = (index / (Object.values(thresholdGroup).length - 1)) * 100;
@@ -203,8 +203,8 @@ export const Thresholds = ( { props }: any ) => {
                   >
                     <div className="w-px h-2 bg-muted-foreground/50"></div>
                     <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
-                      <div>{tick}</div>
-                      <div>{index == 0 ? 'High' : index == Object.values(thresholdGroup).length - 1 ? "Low" : <br></br>}</div>
+                      <div className='font-bold'>{tick}</div>
+                      <div className='font-bold'>{index == 0 ? 'High' : index == Object.values(thresholdGroup).length - 1 ? "Low" : <br></br>}</div>
                     </span>
                   </div>
                 )
@@ -245,7 +245,7 @@ export const Thresholds = ( { props }: any ) => {
   } 
 
   return (
-    <div>
+    <div className='w-full h-full flex items-center justify-center'>
           {thresholdComponents[props.currentHazard][props.currentExposure]}
     </div>
   )

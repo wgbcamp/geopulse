@@ -62,8 +62,8 @@ export const Region = ( props: any ) => {
                 contextButton: {
                     symbol: 'download',
                     symbolSize: 20,      // default is 12, increase as needed
-                    symbolX: 22,         // adjust position to keep it centered
-                    symbolY: 22,
+                    symbolX: 30,         // adjust position to keep it centered
+                    symbolY: 42,
                     theme: {
                         fill: 'transparent',
                         stroke: 'none',
@@ -86,22 +86,22 @@ export const Region = ( props: any ) => {
     });
 
     Highcharts.SVGRenderer.prototype.symbols.download = function (x: number, y: number, w: number, h: number) {
-    const path = [
-        // Arrow stem
-        'M', x + w * 0.5, y,
-        'L', x + w * 0.5, y + h * 0.7,
-        // Arrow head
-        'M', x + w * 0.3, y + h * 0.5,
-        'L', x + w * 0.5, y + h * 0.7,
-        'L', x + w * 0.7, y + h * 0.5,
-        // Box
-        'M', x, y + h * 0.9,
-        'L', x, y + h,
-        'L', x + w, y + h,
-        'L', x + w, y + h * 0.9
-    ];
-    return path;
-};
+        const path = [
+            // Arrow stem
+            'M', x + w * 0.5, y,
+            'L', x + w * 0.5, y + h * 0.7,
+            // Arrow head
+            'M', x + w * 0.3, y + h * 0.5,
+            'L', x + w * 0.5, y + h * 0.7,
+            'L', x + w * 0.7, y + h * 0.5,
+            // Box
+            'M', x, y + h * 0.9,
+            'L', x, y + h,
+            'L', x + w, y + h,
+            'L', x + w, y + h * 0.9
+        ];
+        return path;
+    };
 
 
     const lineChartStyleMapper: Record<string, Record<string, string>> = {
@@ -338,269 +338,279 @@ export const Region = ( props: any ) => {
     }
 
     return (
-        <Card className="bg-[#1E1E1E] w-full h-9/10 dark flex items-center shadow-md">
+        <Card className="bg-[#1E1E1E] w-full h-9/10 pt-30 dark flex items-center justify-center shadow-md">
             <ComboBox iso3={iso3} setIso3={setIso3} />
             {chartData && mapChartData ?
-                <div className='flex flex-col'>
-                    <MapsChart
-                        options={{
-                            chart: {
-                                map: polygons,
-                                backgroundColor: 'RGBA(0,0,0,0)',
-                                animation: false,
-                                events: {
-                                }
-                            },
-                            caption: {
-                                text: `${urlObject[props.currentHazard][props.currentExposure].source}`,
-                                align: 'right',
-                                style: {
-                                    color: "#999999"
-                                }
-                            },
-                            mapView: {
-                                projection: {
-                                    name: 'WebMercator',
-                                    rotation: [-50, 0]
+                <div className='w-full'>
+                    <div className='flex flex-col w-full justify-center items-center'>
+                        <div className='w-8/10'>
+                        <MapsChart
+                            options={{
+                                chart: {
+                                    map: polygons,
+                                    backgroundColor: 'RGBA(0,0,0,0)',
+                                    animation: false,
+                                    events: {
+                                    },
+                                    height: 550
                                 },
-                                padding: 15,
-                            },
-                            series: [{
-                                type: 'map',
-                                data: mapChartData,
-                                joinBy: ['GID_1', 'GID_1'],
-                                keys: ['NAME_1', 'value'],
-                                nullColor: '#c9c9c9'
-                            }],
-                            colorAxis: { 
-                                min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
-                                max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
-                                endOnTick: false,
-                               
-                                  labels: {
+                                caption: {
+                                    text: `${urlObject[props.currentHazard][props.currentExposure].source}`,
+                                    align: 'right',
+                                    style: {
+                                        color: "#999999"
+                                    }
+                                },
+                                mapView: {
+                                    projection: {
+                                        name: 'WebMercator',
+                                        rotation: [-50, 0]
+                                    },
+                                    padding: 15,
+                                },
+                                series: [{
+                                    type: 'map',
+                                    data: mapChartData,
+                                    joinBy: ['GID_1', 'GID_1'],
+                                    keys: ['NAME_1', 'value'],
+                                    nullColor: '#c9c9c9'
+                                }],
+                                colorAxis: {
+                                    min: chartData.mapLegendValueRange[props.currentMeasure.id]?.minValue,
+                                    max: chartData.mapLegendValueRange[props.currentMeasure.id]?.maxValue,
+                                    endOnTick: false,
+
+                                    labels: {
                                         style: {
                                             color: "#999999",
                                             fontWeight: "bold",
                                             textOverflow: 'none'
                                         }
                                     },
-                                ...(props.currentMeasure.id == "SPEI_CROP_EXP" ? {
-                                    stops: [
-                                        [0.0, '#791F1F'], // Extremely dry
-                                        [0.2, '#BA7517'], // Severely dry
-                                        [0.3, '#FAC775'], // Moderately dry
-                                        [0.5, '#FFFFFF'], // Near normal
-                                        [0.7, '#85B7EB'], // Moderately wet
-                                        [0.8, '#378ADD'], // Very wet
-                                        [1.0, '#0C447C']  // Extremely wet
-                                    ],
-                                    tickPositions: [-2.5, -2, -1.5, -1, 0, 1, 1.5, 2, 2.5],
-                                } : {
-                                    stops: undefined,
-                                    tickPositions: undefined,
-                                    minColor: '#fcdba9',
-                                    maxColor: '#E35205',
-                                }),
-                                    
-                                width: '90%',
-                            },
+                                    ...(props.currentMeasure.id == "SPEI_CROP_EXP" ? {
+                                        stops: [
+                                            [0.0, '#791F1F'], // Extremely dry
+                                            [0.2, '#BA7517'], // Severely dry
+                                            [0.3, '#FAC775'], // Moderately dry
+                                            [0.5, '#FFFFFF'], // Near normal
+                                            [0.7, '#85B7EB'], // Moderately wet
+                                            [0.8, '#378ADD'], // Very wet
+                                            [1.0, '#0C447C']  // Extremely wet
+                                        ],
+                                        tickPositions: [-2.5, -2, -1.5, -1, 0, 1, 1.5, 2, 2.5],
+                                    } : {
+                                        stops: undefined,
+                                        tickPositions: undefined,
+                                        minColor: '#fcdba9',
+                                        maxColor: '#E35205',
+                                    }),
 
-                            legend: {
-                                title: {
-                                    text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).colorAxis,
+                                    width: '100%',
+                                },
+
+                                legend: {
+                                    title: {
+                                        text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).colorAxis,
+                                        style: {
+                                            color: "white",
+                                            fontWeight: "bold"
+                                        }
+                                    }
+                                },
+                                tooltip: {
+                                    formatter: function (this: any) {
+
+                                        var value = this.point.value;
+                                        if (props.currentMeasure.id !== "SPEI_CROP_EXP") {
+                                            value = Math.ceil(value).toString();
+                                        }
+                                        var counter = 0;
+
+                                        for (var i = value.length - 1; i > 0; i--) {
+                                            counter++;
+                                            if (counter % 3 === 0) {
+                                                value = value.slice(0, i) + "," + value.substring(i, value.length);
+                                            }
+                                        }
+                                        return `<b>${this.point.NAME_1}</b><br/>${value}`;
+                                    },
+                                    backgroundColor: "#212121",
                                     style: {
-                                        color: "white",
-                                        fontWeight: "bold"
-                                    }
-                                }
-                            },
-                            tooltip: {
-                                formatter: function (this: any) {
-
-                                    var value = this.point.value;
-                                    if (props.currentMeasure.id !== "SPEI_CROP_EXP") {
-                                        value = Math.ceil(value).toString();
-                                    }
-                                    var counter = 0;
-
-                                    for (var i = value.length - 1; i > 0; i--) {
-                                        counter++;
-                                        if (counter % 3 === 0) {
-                                            value = value.slice(0, i) + "," + value.substring(i, value.length);
-                                        }
-                                    }
-                                    return `<b>${this.point.NAME_1}</b><br/>${value}`;
+                                        color: "white"
+                                    },
                                 },
-                                backgroundColor: "#212121",
-                                style: {
-                                    color: "white"
+                                credits: {
+                                    enabled: false
                                 },
-                            },
-                            credits: {
-                                enabled: false
-                            },
-                            plotOptions: {
-                                series: {
-                                    point: {
+                                plotOptions: {
+                                    series: {
+                                        point: {
+                                            events: {
+                                                click: function (this: any) {
+                                                    if (this.point.NAME_1 == currentSubnational.refAreaName) {
+                                                        setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
+                                                        setSubnational({ refAreaName: null, refArea: null, iso3: null });
+                                                    } else {
+                                                        setSubnational({ refAreaName: this.point.NAME_1, refArea: this.GID_1, iso3: iso3 });
+                                                        setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]));
+                                                    }
+                                                },
+                                            }
+                                        },
+                                        allowPointSelect: false,
+                                        states: {
+                                            select: {
+
+                                            }
+                                        },
                                         events: {
-                                            click: function (this: any) {
-                                                if (this.point.NAME_1 == currentSubnational.refAreaName) {
-                                                    setLineChartData(lineChartDataPrep(chartData.adm0ChartData));
-                                                    setSubnational({refAreaName: null, refArea: null, iso3: null});
-                                                } else {
-                                                    setSubnational({refAreaName: this.point.NAME_1, refArea: this.GID_1, iso3: iso3});
-                                                    setLineChartData(lineChartDataPrep(chartData.adm1Data[this.GID_1]));
+
+                                        }
+
+                                    }
+                                }
+                            }}
+                        >
+                            <Exporting />
+                        </MapsChart>
+                        </div>
+                    </div>
+                    <div className='flex flex-col justify-center items-center w-full pt-10'>
+                        <div className='w-8/10'>
+                            <Chart
+                                options={{
+                                    chart: {
+                                        type: 'line',
+                                        height: 550,
+                                        marginTop: 130,
+                                        events: {
+                                        }
+                                    },
+                                    caption: {
+                                        text: `${urlObject[props.currentHazard][props.currentExposure].source}`,
+                                        align: 'right',
+                                        style: {
+                                            color: "#999999"
+                                        }
+                                    },
+                                    legend: {
+                                        itemStyle: {
+                                            color: '#ffffff',
+                                            fontWeight: "700",
+                                        },
+                                        itemHoverStyle: {
+                                            fontWeight: "900",
+                                            color: '#ffffff'
+                                        },
+                                        align: 'left',
+                                        verticalAlign: 'top',
+                                        x: 90,
+                                        y: 75,
+                                        floating: true,
+                                        layout: 'vertical',
+                                        symbolWidth: 1,
+                                        symbolPadding: 15,
+                                        itemMarginBottom: 3,
+                                    },
+                                    title: {
+                                        text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).chart
+                                            + (currentSubnational.refAreaName ? " (" + currentSubnational.refAreaName + ")" : ""),
+                                        align: 'left',
+                                        style: {
+                                            color: "white",
+                                            fontWeight: "bold",
+                                            fontSize: '16px',
+                                        },
+                                        useHTML: true,
+                                        x: 18,
+                                        y: 15,
+                                        minScale: 1
+                                    },
+                                    subtitle: {
+                                        text: "(Exposure quantity)",
+                                        x: 16,
+                                        style: {
+                                            color: "#999999",
+                                            fontSize: '13px'
+                                        }
+                                    },
+                                    tooltip: {
+                                        backgroundColor: "#212121",
+                                        style: {
+                                            color: "white"
+                                        },
+                                        valueDecimals: 0,
+                                        formatter: function (this: any) {
+
+                                            var value = Math.ceil(this.y).toString();
+                                            var counter = 0;
+
+                                            for (var i = value.length - 1; i > 0; i--) {
+                                                counter++;
+                                                if (counter % 3 === 0) {
+                                                    value = value.slice(0, i) + "," + value.substring(i, value.length);
                                                 }
-                                            },
+                                            }
+                                            return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value;
                                         }
                                     },
-                                    allowPointSelect: false,
-                                    states: {
-                                        select: {
-                                           
+                                    series: urlObject[props.currentHazard][props.currentExposure].scenarios.map((scenario: string) => ({
+                                        type: 'line',
+                                        name: scenarioMapper[scenario],
+                                        data: lineChartData[scenario],
+                                        color: lineChartStyleMapper[scenario].color,
+                                        marker: {
+                                            radius: 6,
+                                            lineWidth: 2,
+                                            symbol: lineChartStyleMapper[scenario].symbol
                                         }
-                                    },
-                                    events: {
-                       
-                                    }
-
-                                }
-                            }
-                        }}
-                    >
-                    <Exporting/>
-                    </MapsChart>
-                    <Chart
-                        options={{
-                            chart: {
-                                type: 'line',
-                                height: 500,
-                                marginTop: 130,
-                                events: {
-                                }
-                            },
-                            caption: {
-                                text: `${urlObject[props.currentHazard][props.currentExposure].source}`,
-                                align: 'right',
-                                style: {
-                                    color: "#999999"
-                                }
-                            },
-                            legend: {
-                                itemStyle: {
-                                    color: '#ffffff',
-                                    fontWeight: "700",
-                                },
-                                itemHoverStyle: {
-                                    fontWeight: "900",
-                                    color: '#ffffff'
-                                },
-                                align: 'left',
-                                verticalAlign: 'top',
-                                x: 90,
-                                y: 75,
-                                floating: true,
-                                layout: 'vertical',
-                                symbolWidth: 1,
-                                symbolPadding: 15,
-                                itemMarginBottom: 3,
-                            },
-                            title: {
-                                text: comparisonTitles(props.currentHazard, props.currentExposure, props.currentMeasure.id, props.currentThreshold.threshold, iso3).chart 
-                                + (currentSubnational.refAreaName ? " (" + currentSubnational.refAreaName + ")" : "") ,
-                                align: 'left',
-                                style: {
-                                    color: "white",
-                                    fontWeight: "bold",
-                                    fontSize: '16px',
-                                },
-                                useHTML: true,
-                                x: 18,
-                                y: 15,
-                            },
-                            subtitle: {
-                                text: "(Exposure quantity)",
-                                x: 16,
-                                style: {
-                                    color: "#999999",
-                                    fontSize: '13px'
-                                }
-                            },
-                            tooltip: {
-                                backgroundColor: "#212121",
-                                style: {
-                                    color: "white"
-                                },
-                                valueDecimals: 0,
-                                formatter: function (this: any) {
-
-                                    var value = Math.ceil(this.y).toString();
-                                    var counter = 0;
-
-                                    for (var i = value.length - 1; i > 0; i--) {
-                                        counter++;
-                                        if (counter % 3 === 0) {
-                                            value = value.slice(0, i) + "," + value.substring(i, value.length);
+                                    }))
+                                }}
+                            >
+                                <Credits enabled={false} />
+                                <XAxis
+                                    categories={lineChartXLabels}
+                                    tickmarkPlacement={'on'}
+                                    lineWidth={1}
+                                    lineColor={'#555555'}
+                                    startOnTick={false}
+                                    labels={{
+                                        style: {
+                                            color: '#ffffff',
+                                            fontSize: '14px'
+                                        } as Highcharts.CSSObject
+                                    }}
+                                />
+                                <YAxis
+                                    title={{ text: "" }}
+                                    lineWidth={1}
+                                    gridLineWidth={0}
+                                    tickWidth={1}
+                                    tickPosition={'inside'}
+                                    tickLength={5}
+                                    lineColor={'#555555'}
+                                    tickColor={'#555555'}
+                                    labels={{
+                                        reserveSpace: true,
+                                        style: {
+                                            color: '#ffffff',
+                                            fontSize: '14px'
+                                        } as Highcharts.CSSObject,
+                                        formatter: function (this: any) {
+                                            if (this.value >= 1000000) {
+                                                return this.value / 1000000 + 'M';
+                                            } else if (this.value < 1000000 && this.value >= 1000) {
+                                                return this.value / 1000 + 'k';
+                                            } else {
+                                                return this.value;
+                                            }
                                         }
-                                    }
-                                    return '<div>' + this.category + '</div><br></br>' + this.series.name + ': ' + value;
-                                }
-                            },
-                            series: urlObject[props.currentHazard][props.currentExposure].scenarios.map((scenario: string) => ({
-                                type: 'line',
-                                name: scenarioMapper[scenario],
-                                data: lineChartData[scenario],
-                                color: lineChartStyleMapper[scenario].color,
-                                marker: {
-                                    radius: 6,
-                                    lineWidth: 2,
-                                    symbol: lineChartStyleMapper[scenario].symbol
-                                }
-                            }))
-                        }}
-                    >
-                        <Credits enabled={false} />
-                        <XAxis
-                            categories={lineChartXLabels}
-                            tickmarkPlacement={'on'}
-                            lineWidth={1}
-                            lineColor={'#555555'}
-                            startOnTick={false}
-                            labels={{
-                                style: {
-                                    color: '#ffffff',
-                                    fontSize: '14px'
-                                } as Highcharts.CSSObject
-                            }}
-                        />
-                        <YAxis
-                            title={{ text: "" }}
-                            lineWidth={1}
-                            gridLineWidth={0}
-                            tickWidth={1}
-                            tickPosition={'inside'}
-                            tickLength={5}
-                            lineColor={'#555555'}
-                            tickColor={'#555555'}
-                            labels={{
-                                reserveSpace: true,
-                                style: {
-                                    color: '#ffffff',
-                                    fontSize: '14px'
-                                } as Highcharts.CSSObject,
-                                formatter: function (this: any) {
-                                    if (this.value >= 1000000) {
-                                        return this.value / 1000000 + 'M';
-                                    } else if (this.value < 1000000 && this.value >= 1000) {
-                                        return this.value / 1000 + 'k';
-                                    } else {
-                                        return this.value;
-                                    }
-                                }
-                            }}
-                        />
-                        <Exporting />
-                    </Chart>
+                                    }}
+                                />
+                                <Exporting />
+                            </Chart>
+                        </div>
+                    </div>
                 </div>
                 :
                 <Button disabled size="sm">

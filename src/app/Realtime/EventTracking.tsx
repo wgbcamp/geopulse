@@ -585,7 +585,7 @@ export const EventTracking = ({ props }: any) => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
                 </div>
             </div>
-            <div className="absolute z-50 top-40 w-[300px] flex flex-col justify-start items-start pointer-events-none">
+            <div className="absolute z-50 top-80 w-[300px] flex flex-col justify-start items-start pointer-events-none">
                 {exposuresArray.map((e: any) =>
                     <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                         <div className="">
@@ -597,7 +597,7 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 )}
             </div>
-            <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
+            <div className={`absolute top-80 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
