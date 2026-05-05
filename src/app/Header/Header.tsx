@@ -74,7 +74,7 @@ export const NewHeader = ({ props }: any) => {
                     <PopoverTrigger asChild>
                         <div className="flex justify-around w-full px-3">
                             <div>
-                                <div className="font-extrabold text-[#707070] text-[11px] w-full">
+                                <div className="font-bold text-[#707070] text-[11px] w-full">
                                     <div className='flex'>START</div>
                                 </div>
                                 <Button
@@ -86,7 +86,7 @@ export const NewHeader = ({ props }: any) => {
                                 </Button>
                             </div>
                             <div>
-                                <div className="font-extrabold text-[#707070] text-[11px]">
+                                <div className="font-bold text-[#707070] text-[11px]">
                                     <div className='flex'>END</div>
                                 </div>
                                 <Button

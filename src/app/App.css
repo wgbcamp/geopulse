@@ -3,10 +3,14 @@ html {
   background-color: #1E1E1E;
 }
 
+body {
+  background-color: black;
+}
+
 #root {
   margin: 0 auto;
   text-align: center;
-  height: 100vh;
+  height: 100dvh;
     background-color: #1E1E1E;
   --unselectedview: #c7dff7;
   color-scheme: dark;
