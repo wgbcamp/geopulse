@@ -179,7 +179,7 @@ export const Thresholds = ( { props }: any ) => {
       }}>
       <div className="w-full h-full rounded-xl bg-[#1D1D1D]">
         <Item className='w-9/10 py-0 px-2 -translate-x-1/2 -translate-y-1/2 absolute left-1/2 top-1/2'>
-          <div className="text-lg w-full font-extrabold text-[var(--muted-foreground)] absolute top-[-35px]">ANNUAL PROBABILITY OF FLOODING</div>
+          <div className="text-lg w-full font-bold text-[var(--muted-foreground)] absolute top-[-35px]">ANNUAL PROBABILITY OF FLOODING</div>
           <div className='w-full flex flex-col items-center'>
             <Slider
               className='w-75 z-1 cursor-pointer bg-white [&_[data-slot=slider-range]]:bg-transparent [&_[data-slot=slider-track]]:bg-gradient-to-r [&_[data-slot=slider-track]]:from-[rgb(16,48,80)] [&_[data-slot=slider-track]]:to-[rgb(116,221,208)]'

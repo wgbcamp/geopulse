@@ -181,32 +181,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
 
     return (
         <div className="h-full">
-        <div className='w-full h-full bg-[#1D2224] pt-[152px]' ref={ref}></div>
-            {/* <div id="viewControlsContainer" className="bg-amber-900 absolute top-174 left-33 flex flex-col items-center justify-center z-100 gap-10 ">
-                <div className="h-90 w-40 flex items-center justify-center flex-col bg-amber-200 rounded-[10px]">
-                    <div id=""
-                        className="font-[Arial] text-black bg-red-500 h-45 w-82/100 flex justify-center items-center font-[700] cursor-pointer">
-                        <div><FontAwesomeIcon icon={faPlus} size="2xs" color="white" /></div>
-                    </div>
-                    <div id="zoomOut"
-                        className="font-[Arial] text-(--black) h-45 w-82/100 flex justify-center items-center font-[700] cursor-pointer">
-                        <div><i className="fa-solid fa-minus fa-lg"></i></div>
-                    </div>
-                </div>
-                <div id="viewContainer" className="h-45 w-40 flex items-center justify-center flex-col bg-(--emptyShade) rounded-[10px]">
-                    <div className="font-[Arial] text-(--black) h-45 w-82/100 flex justify-center items-center font-[700] cursor-pointer"
-                        tabindex="0">
-                        <div id="view">3D</div>
-                    </div>
-                </div>
-                <div className="h-45 w-40 flex items-center justify-center flex-col bg-(--emptyShade) rounded-[10px]">
-                    <div id="searchButton"
-                        className="font-[Arial] text-(--black) h-45 w-82/100 flex justify-center items-center font-[700] cursor-pointer"
-                        tabindex="0">
-                        <i className="fa-solid fa-magnifying-glass"></i>
-                    </div>
-                </div>
-            </div> */}
+        <div className='w-full h-full bg-[#1D2224] ' ref={ref}></div>
         <svg id="legendContainer" className="w-[210px] md:w-[260px] border-solid border-b-1 absolute bottom-0 z-1 pointer-events-none" width="260"  viewBox="0 0 260 175" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect width="260" height="175" fill="white" />
           <text id="color3Text" x="12" y="23" fill="#DE4FA6" style={{ font: "bold 12px Arial"}}>
