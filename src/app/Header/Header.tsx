@@ -118,22 +118,22 @@ export const NewHeader = ({ props }: any) => {
         </Card>;
 
     return (
-        <div className='flex fixed top-0 z-51 w-full flex-wrap'>
-            <div className='h-17.25 w-full' style={ dataOptions ? {  height: 0 } : { height: '69px' }}>
+        <div className='flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap'>
+            <div className='h-17.25 w-full 2xl:w-fit' style={ dataOptions ? {  height: 0 } : { height: '69px' }}>
                 <div className='flex flex-row h-17.25 w-full '>
                     <Button className='rounded-none h-full w-16.75 bg-(--accentdarkblue-90) text-white'>Menu</Button>
                     <Card className="rounded-none w-40 pl-5 flex flex-row items-center justify-start font-semibold bg-(--fundblue) text-white border-none">IMF GEOPULSE</Card>
-                    <div className='bg-(--fundblue) md:bg-transparent grow'></div>
-                    <div className="flex items-center justify-center w-40 bg-(--fundblue) rounded-none border-0 border-none">
-                        <div className='h-7/10 w-33 flex items-center justify-around rounded-lg bg-(--accentblue-40)' onClick={() => setDataOptions(true)}>
+                    <div className='bg-(--fundblue) md:bg-transparent 2xl:grow-0 2xl:w-0 grow'></div>
+                    <div className="flex items-center justify-center w-40 2xl:w-0 bg-(--fundblue) rounded-none border-0 border-none">
+                        <div className='h-7/10 w-33 2xl:w-0 flex items-center justify-around rounded-lg bg-(--accentblue-40)' onClick={() => setDataOptions(true)}>
                             <Options24FilledIcon className="text-(--accentdarkblue-100)" />
-                            <span className='w-5/10 font-bold text-left text-xs text-(--accentdarkblue-100)'>DATA OPTIONS</span>
+                            <span className='w-5/10 2xl:w-0 2xl:invisible font-bold text-left text-xs text-(--accentdarkblue-100)'>DATA OPTIONS</span>
                         </div>
                     </div>
                 </div>
             </div>
-            {dataOptions ? <div className='h-17.25 w-full md:w-135 md:fixed md:right-0 flex'>
-                <Card className={`rounded-none w-52 p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
+            {dataOptions ? <div className='h-17.25 w-full md:w-135 md:fixed md:right-0 2xl:static flex flex-wrap md:flex-nowrap'>
+                <Card className={`rounded-none w-40 p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
                     <div className='h-full flex flex-col justify-center'>
                         <div className="text-[11px]">REALTIME</div>
                         <div className="flex flex-row">
@@ -143,7 +143,13 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                     <div className={`h-1 w-full bg-(--orange) ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
                 </Card>
-                <Card className={`rounded-none w-75 p-0 flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
+                {props.currentView === "Event tracking" && dataOptions ?
+                    <div className='flex h-17.25 w-full order-last md:w-135 md:fixed md:right-0 md:top-17.25 2xl:static 2xl:w-full 2xl:order-0'>
+                        {calendarComponent}
+                    </div>
+                    :
+                    null}
+                <Card className={`rounded-none grow p-0 flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
                     <div className="text-[11px]">FORWARD LOOKING</div>
                     <div className="flex flex-end flex-col w-full ">
                         <div className="flex flex-row justify-evenly items-start w-full h-full">
@@ -162,25 +168,23 @@ export const NewHeader = ({ props }: any) => {
                                 </div>
                                 <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
                             </div>
+                            <div className='bg-(--accentblue-40)  2xl:w-0 flex justify-center items-center grow 2xl:grow-0'>
+                                <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} className='2xl:w-0' />
+                            </div>
                         </div>
+
                     </div>
+                    
                 </Card>
-                <div className='bg-(--accentblue-40) w-15 flex justify-center items-center grow'>
-                    <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} />
-                </div>
+                
             </div> : null}
-            {props.currentView === "Event tracking" && dataOptions ?
-                <div className='flex h-17.25 w-full md:w-135 md:fixed md:right-0 md:top-17.25'>
-                    {calendarComponent}
-                </div>
-                :
-                null}
+            
             {(props.currentView === "Compare" || props.currentView === "Grid") && dataOptions ?
-                <div className="flex flex-col w-full md:w-135 md:fixed md:right-0 md:top-17.25">
-                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0">
+                <div className="flex flex-col 2xl:flex-row w-full md:w-135 2xl:w-full md:fixed md:right-0 md:top-17.25 2xl:static">
+                    <Card className="rounded-none p-0 flex flex-col h-17.25 items-center justify-center gap-0">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
-                                <div className="flex flex-row items-center justify-between w-95/100 h-17.25 px-1.25">
+                                <div className="flex flex-row items-center justify-between w-95/100 2xl:w-60 h-17.25 px-1.25">
                                     <div className='flex items-center justify-start cursor-pointer'>
                                         <Warning20RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                                         <div className='flex flex-col items-start pl-1'>
@@ -218,7 +222,7 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0">
+                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-17.25 2xl:w-40">
                         <Popover open={scenarioOpened} onOpenChange={() => setScenarioOpened(!scenarioOpened)}>
                             <PopoverTrigger asChild>
                                 <div className="flex flex-row items-center w-95/100 h-17.25 px-1.25 justify-between cursor-pointer">
@@ -244,7 +248,7 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className='rounded-none flex flex-row gap-0 pl-5'>
+                    <Card className='rounded-none flex flex-row gap-0 pl-5 h-17.25 w-110'>
                         <Calendar24RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                         <div className="h-full flex items-center justify-start pl-14">
                             <Timeline props={props} />

@@ -24,7 +24,7 @@ export const EventTracking = ({ props }: any) => {
 
     const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
     const [events, setEvents] = useState<any>(null);
-    const [hiddenEvents, setHiddenEvents] = useState<number>(0);
+    // const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const [focusedEvent, setFocusedEvent] = useState<any>("");
     const [eventPopup, setEventPopup] = useState<string>("all events");
     const [focusedFeatures, setFocusedFeatures] = useState<any>(null);
@@ -147,9 +147,9 @@ export const EventTracking = ({ props }: any) => {
             
     }, [clearPulses, syncPulses]);
 
-    //pasadena fire feature layer
-    const detailedEvent = new FeatureLayer({
-        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/Pasadena_Fire_Area/FeatureServer",
+    //event polygon feature layer
+    const eventPolygonsLayer = new FeatureLayer({
+        url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/gdacs_episodes_clean/FeatureServer"
     });
 
      useEffect(() => {
@@ -387,32 +387,34 @@ export const EventTracking = ({ props }: any) => {
     }, [props.dateRange.from, props.dateRange.to, clearPulses, queryEvents])
 
     // set the number of events in the date range that are not visible based on the popup container height
-    useEffect(() => {
-        const ec = eventRef.current;
-        if (!ec) return;
+    // useEffect(() => {
+    //     const ec = eventRef.current;
+    //     if (!ec) return;
 
-        const children = Array.from(ec.children) as HTMLElement[];
-        let runningHeight = 0;
-        let hidden = 0;
+    //     const children = Array.from(ec.children) as HTMLElement[];
+    //     let runningHeight = 0;
+    //     let hidden = 0;
 
-        for (const child of children) {
-            runningHeight += child.offsetHeight;
-            if (runningHeight > ec.clientHeight) hidden++;
-        }
+    //     for (const child of children) {
+    //         runningHeight += child.offsetHeight;
+    //         if (runningHeight > ec.clientHeight) hidden++;
+    //     }
 
-        setHiddenEvents(hidden);
-    }, [events]);
+    //     setHiddenEvents(hidden);
+    // }, [events]);
 
     // query feature layer 
-    async function highlightCountry(event: any, index?: number) {
+    async function highlightCountry(eventid: any, index?: number) {
 
-        const newQuery = event.createQuery();
+        const newQuery = eventPolygonsLayer.createQuery();
         newQuery.returnGeometry = true;
         newQuery.outFields = ["*"];
-
-        const result = await event.queryFeatures(newQuery);
-        const feature = result.features[index || 0];
+        newQuery.where = `eventid = ${eventid}`;
+        const result = await eventPolygonsLayer.queryFeatures(newQuery);
+        console.log("events: ", result);
+        const feature = result.features[index || 0]; //features.attributes.eventid
         console.log("feature ", result.features);
+
         setFocusedFeatures(result.features); // Store the features in state
         applyPolygon(feature); // Apply the polygon styling from the first feature (or the specified index)
     }
@@ -462,11 +464,9 @@ export const EventTracking = ({ props }: any) => {
 
         if (!map.current) return;
 
-        // only show the group layer with the event polygon when matching pasadena fire event for demonstrative purposes
-        if (attributes.htmldescription == "Orange Forest fires in United States from: 07 Jan 2025 to: 12 Jan 2025.") {
-            // reveal group layer for focused event and blur other layers
-            highlightCountry(detailedEvent);
-        }
+        // reveal group layer for focused event and blur other layers
+        highlightCountry(attributes.eventid);
+        
 
         console.log(map.current);
         setFocusedEvent(attributes);
@@ -601,7 +601,7 @@ export const EventTracking = ({ props }: any) => {
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
-                <div className="h-full overflow-hidden flex flex-col justify-start" ref={eventRef}>
+                <div className="h-full overflow-scroll flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
                         <div key={event.attributes.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
                             <h3 className="font-bold text-[14px] text-[var(--evenlighterblue)]">{event.attributes.country.toUpperCase()}</h3>
@@ -621,9 +621,9 @@ export const EventTracking = ({ props }: any) => {
                         </div>
                     ))}
                 </div>
-                <div className="h-[37px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold">{hiddenEvents} Next events</div>
+                <div className="h-[10px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold"></div>
             </div>
-            <div className={`absolute top-40 ${eventPopup == "focused event" ? "translate-x-[calc(100vw-325px)]" : "translate-x-[100vw]"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
+            <div className={`absolute top-80 ${eventPopup == "focused event" ? "translate-x-[calc(100vw-325px)]" : "translate-x-[100vw]"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur(); pauseSlider();}}> Close details [X]</div>
