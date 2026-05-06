@@ -412,18 +412,33 @@ export const EventTracking = ({ props }: any) => {
         newQuery.where = `eventid = ${eventid}`;
         const result = await eventPolygonsLayer.queryFeatures(newQuery);
         console.log("events: ", result);
-        const feature = result.features[index || 0]; //features.attributes.eventid
+
+        const feature = result.features.filter((x) => x.attributes.episodeid == 1); //features.attributes.eventid
+        // const feature = result.features[index || 0]; //features.attributes.eventid
+        
+        const ascendingFeatures = Object.values(
+            result.features.reduce((groups, feature) => {
+                const id = feature.attributes.episodeid;
+                (groups[id] ??= []).push(feature);
+                return groups;
+            }, {} as Record<number, typeof result.features>)
+        ).sort((a, b) => a[0].attributes.episodeid - b[0].attributes.episodeid);
+
+        console.log("ASCENDING FEATURES: ", ascendingFeatures);
+        
         console.log("feature ", result.features);
 
-        setFocusedFeatures(result.features); // Store the features in state
+        setFocusedFeatures(ascendingFeatures); // Store the features in state
         applyPolygon(feature); // Apply the polygon styling from the first feature (or the specified index)
     }
 
-    const applyPolygon = (feature: any) => {
-        if (feature && graphicsLayer.current && baseLayer.current && groupLayer.current && outlineLayer.current) {
+    const applyPolygon = (features: any) => {
+        console.log("sS: ", features);
+        if (features && graphicsLayer.current && baseLayer.current && groupLayer.current && outlineLayer.current) {
             graphicsLayer.current.graphics.removeAll();
-            const maskFeature = feature.clone(); // clone the feature and add styling
-            maskFeature.symbol = {
+            outlineLayer.current.graphics.removeAll();
+
+            let graphicsSymbol = {
                 type: "simple-fill",
                 color: "rgba(255, 255, 255, 1)",
                 outline: {
@@ -431,11 +446,8 @@ export const EventTracking = ({ props }: any) => {
                     width: "2px"
                 },
             };
-            graphicsLayer.current.graphics.add(maskFeature); // add graphic to the graphics layer
 
-            outlineLayer.current.graphics.removeAll();
-            const outlineFeature = feature.clone(); // clone the feature and add styling
-            outlineFeature.symbol = {
+              let outlineSymbol = {
                 type: "simple-fill",
                 color: "rgba(0, 0, 0, 0.3)",
                 outline: {
@@ -443,7 +455,16 @@ export const EventTracking = ({ props }: any) => {
                     width: "2px"
                 },
             };
-            outlineLayer.current.graphics.add(outlineFeature); // add outline graphic to the outline graphics layer
+
+            features.forEach((x: any) => {
+                const graphicClone = x.clone();
+                graphicClone.symbol = graphicsSymbol;
+                graphicsLayer.current?.graphics.add(graphicClone);
+
+                const outlineClone = x.clone();
+                outlineClone.symbol = outlineSymbol;
+                outlineLayer.current?.graphics.add(outlineClone);
+            })
 
             baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
             exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
@@ -490,7 +511,7 @@ export const EventTracking = ({ props }: any) => {
                     i += 1;
                     setFocusedSliderValue([i]);
                     }
-                }, 1500);
+                }, 500);
                 break;
             case "pause":
                 pauseSlider();
