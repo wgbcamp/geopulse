@@ -69,7 +69,7 @@ export const NewHeader = ({ props }: any) => {
 
     const calendarComponent =
         <Card className={`rounded-none w-full p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
-            <div className='w-full flex flex-col items-start'>
+            <div className='w-full 2xl:w-110 flex flex-col items-start'>
                 <Popover>
                     <PopoverTrigger asChild>
                         <div className="flex justify-around w-full px-3">
@@ -133,10 +133,10 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             </div>
             {dataOptions ? <div className='h-17.25 w-full md:w-135 md:fixed md:right-0 2xl:static flex flex-wrap md:flex-nowrap'>
-                <Card className={`rounded-none w-40 p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
-                    <div className='h-full flex flex-col justify-center'>
+                <Card className={`rounded-none  p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
+                    <div className='h-full flex flex-col justify-end w-40'>
                         <div className="text-[11px]">REALTIME</div>
-                        <div className="flex flex-row">
+                        <div className="flex flex-row h-[35px] items-center justify-center">
                             <Timer20RegularIcon size={26} strokeWidth={1} color={`${props.currentView !== "Event tracking" ? 'black' : 'var(--orange)'}`} />
                             <div className="text-sm font-bold text-end flex items-center pl-0.5 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>
                         </div>
@@ -144,38 +144,39 @@ export const NewHeader = ({ props }: any) => {
                     <div className={`h-1 w-full bg-(--orange) ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
                 </Card>
                 {props.currentView === "Event tracking" && dataOptions ?
-                    <div className='flex h-17.25 w-full order-last md:w-135 md:fixed md:right-0 md:top-17.25 2xl:static 2xl:w-full 2xl:order-0'>
+                    <div className='flex h-17.25 w-full md:w-135 order-last md:fixed md:right-0 md:top-17.25 2xl:static 2xl:order-0'>
                         {calendarComponent}
                     </div>
                     :
                     null}
-                <Card className={`rounded-none grow p-0 flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
-                    <div className="text-[11px]">FORWARD LOOKING</div>
-                    <div className="flex flex-end flex-col w-full ">
-                        <div className="flex flex-row justify-evenly items-start w-full h-full">
-                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Grid")}>
-                                <div className="flex flex-row h-8.75 items-start justify-center">
-                                    <Scales20RegularIcon size={26} strokeWidth={1} color={props.currentView === "Grid" ? "var(--orange)" : "black"} />
-                                    <div className={`text-sm ${props.currentView === "Grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5`}>Grid</div>
+                    <div className='h-full flex grow '>
+                    <Card className={`rounded-none 2xl:w-80 grow p-0 h-full flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
+                        <div className="text-[11px]">FORWARD LOOKING</div>
+                        <div className="flex flex-end flex-col w-full ">
+                            <div className="flex flex-row justify-evenly items-start w-full h-full">
+                                <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Grid")}>
+                                    <div className="flex flex-row h-8.75 items-center justify-center">
+                                        <Scales20RegularIcon size={26} strokeWidth={1} color={props.currentView === "Grid" ? "var(--orange)" : "black"} />
+                                        <div className={`text-sm ${props.currentView === "Grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5`}>Grid</div>
+                                    </div>
+                                    <div className={`h-1 bg-(--orange) ${props.currentView === "Grid" ? "opacity-100" : "opacity-0"}`}></div>
                                 </div>
-                                <div className={`h-1 bg-(--orange) ${props.currentView === "Grid" ? "opacity-100" : "opacity-0"}`}></div>
-                            </div>
-                            <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
-                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Compare")}>
-                                <div className="flex flex-row h-8.75 items-start justify-center">
-                                    <Globe32LightIcon size={24} strokeWidth={1} color={props.currentView === "Compare" ? "var(--orange)" : "black"} />
-                                    <div className={`text-sm ${props.currentView === "Compare" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5 pl-1`}>Compare</div>
+                                <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
+                                <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Compare")}>
+                                    <div className="flex flex-row h-8.75 items-center justify-center">
+                                        <Globe32LightIcon size={24} strokeWidth={1} color={props.currentView === "Compare" ? "var(--orange)" : "black"} />
+                                        <div className={`text-sm ${props.currentView === "Compare" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5 pl-1`}>Compare</div>
+                                    </div>
+                                    <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
                                 </div>
-                                <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
-                            </div>
-                            <div className='bg-(--accentblue-40)  2xl:w-0 flex justify-center items-center grow 2xl:grow-0'>
-                                <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} className='2xl:w-0' />
+
                             </div>
                         </div>
-
+                    </Card>
+                    <div className='bg-white h-full w-10 2xl:w-0 flex justify-center items-center  2xl:grow-0' style={ props.currentView == "Event tracking" ? {backgroundColor: "var(--accentblue-40)"} : {backgroundColor: "white"} }>
+                        <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} className='2xl:w-0' />
                     </div>
-                    
-                </Card>
+                </div>
                 
             </div> : null}
             
@@ -248,7 +249,7 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className='rounded-none flex flex-row gap-0 pl-5 h-17.25 w-110'>
+                    <Card className='rounded-none flex flex-row gap-0 pl-5 h-17.25 w-full'>
                         <Calendar24RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                         <div className="h-full flex items-center justify-start pl-14">
                             <Timeline props={props} />

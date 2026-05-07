@@ -15,7 +15,7 @@ const tileLayerURLs = [
   { hazard: "Riverine Flooding", exposure: "Population", time: 2080, string: "End-Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2080/VectorTileServer" }
 ];
 
-const ticks:any = [];
+const ticks: any = [];
 tileLayerURLs.forEach(layer => {
   ticks.push(layer.string);
 })
