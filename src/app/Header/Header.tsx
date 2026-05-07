@@ -37,6 +37,8 @@ import { format } from 'date-fns';
 
 import { urlObject, scenarioMapper, measureMapper } from '@/config/datasets';
 
+import Hamburger from '../../assets/Group 51.png'
+
 export const NewHeader = ({ props }: any) => {
 
     const [riskState, setRiskState] = useState<string>("Riverine Flooding");
@@ -69,10 +71,10 @@ export const NewHeader = ({ props }: any) => {
 
     const calendarComponent =
         <Card className={`rounded-none w-full p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
-            <div className='w-full 2xl:w-110 flex flex-col items-start'>
+            <div className='w-full flex flex-col items-start pl-2.5 md:pl-5'>
                 <Popover>
                     <PopoverTrigger asChild>
-                        <div className="flex justify-around w-full px-3">
+                        <div className="flex justify-around px-3 max-w-125 gap-x-2">
                             <div>
                                 <div className="font-bold text-[#707070] text-[11px] w-full">
                                     <div className='flex'>START</div>
@@ -118,70 +120,68 @@ export const NewHeader = ({ props }: any) => {
         </Card>;
 
     return (
-        <div className='flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap'>
-            <div className='h-17.25 w-full 2xl:w-fit' style={ dataOptions ? {  height: 0 } : { height: '69px' }}>
-                <div className='flex flex-row h-17.25 w-full '>
-                    <Button className='rounded-none h-full w-16.75 bg-(--accentdarkblue-90) text-white'>Menu</Button>
-                    <Card className="rounded-none w-40 pl-5 flex flex-row items-center justify-start font-semibold bg-(--fundblue) text-white border-none">IMF GEOPULSE</Card>
-                    <div className='bg-(--fundblue) md:bg-transparent 2xl:grow-0 2xl:w-0 grow'></div>
-                    <div className="flex items-center justify-center w-40 2xl:w-0 bg-(--fundblue) rounded-none border-0 border-none">
-                        <div className='h-7/10 w-33 2xl:w-0 flex items-center justify-around rounded-lg bg-(--accentblue-40)' onClick={() => setDataOptions(true)}>
-                            <Options24FilledIcon className="text-(--accentdarkblue-100)" />
-                            <span className='w-5/10 2xl:w-0 2xl:invisible font-bold text-left text-xs text-(--accentdarkblue-100)'>DATA OPTIONS</span>
+        <div className='flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap '>
+            <div className={`flex w-full justify-between md:justify-start bg-(--fundblue) overflow-hidden ${dataOptions ? 'h-0' : 'h-17.25'} md:h-17.25 md:w-58 `}>
+                <div className='flex'>
+                    <div className='flex h-17.25 w-full'>
+                        <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) md:bg-(--accentdarkblue-90) text-white'>
+                            <img className='absolute right-4' src={Hamburger}></img>
+                            <div className='absolute text-[11px] top-9.5 right-7 font-bold'>MENU</div>
                         </div>
+                    </div>
+                </div>
+                <div className="rounded-none flex flex-row items-center justify-start md:pl-6 font-semibold bg-(--fundblue) text-white border-none">IMF GEOPULSE</div>
+                <div className={`flex items-center w-16.75 md:w-0 md:h-0 overflow-hidden justify-center bg-(--fundblue) rounded-none border-0 border-none`}>
+                    <div className='h-7/10 flex items-center justify-around rounded-lg' onClick={() => setDataOptions(true)}>
+                        <Options24FilledIcon className="text-white" />
                     </div>
                 </div>
             </div>
-            {dataOptions ? <div className='h-17.25 w-full md:w-135 md:fixed md:right-0 2xl:static flex flex-wrap md:flex-nowrap'>
-                <Card className={`rounded-none  p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
-                    <div className='h-full flex flex-col justify-end w-40'>
-                        <div className="text-[11px]">REALTIME</div>
-                        <div className="flex flex-row h-[35px] items-center justify-center">
-                            <Timer20RegularIcon size={26} strokeWidth={1} color={`${props.currentView !== "Event tracking" ? 'black' : 'var(--orange)'}`} />
-                            <div className="text-sm font-bold text-end flex items-center pl-0.5 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>
-                        </div>
-                    </div>
-                    <div className={`h-1 w-full bg-(--orange) ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
-                </Card>
-                {props.currentView === "Event tracking" && dataOptions ?
-                    <div className='flex h-17.25 w-full md:w-135 order-last md:fixed md:right-0 md:top-17.25 2xl:static 2xl:order-0'>
-                        {calendarComponent}
-                    </div>
-                    :
-                    null}
-                    <div className='h-full flex grow '>
-                    <Card className={`rounded-none 2xl:w-80 grow p-0 h-full flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
-                        <div className="text-[11px]">FORWARD LOOKING</div>
-                        <div className="flex flex-end flex-col w-full ">
-                            <div className="flex flex-row justify-evenly items-start w-full h-full">
-                                <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Grid")}>
-                                    <div className="flex flex-row h-8.75 items-center justify-center">
-                                        <Scales20RegularIcon size={26} strokeWidth={1} color={props.currentView === "Grid" ? "var(--orange)" : "black"} />
-                                        <div className={`text-sm ${props.currentView === "Grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5`}>Grid</div>
-                                    </div>
-                                    <div className={`h-1 bg-(--orange) ${props.currentView === "Grid" ? "opacity-100" : "opacity-0"}`}></div>
+                <div className={`flex justify-end 2xl:justify-start grow 2xl:grow-0 overflow-hidden ${dataOptions ? 'h-17.25' : 'h-0'} md:h-17.25 `}>
+                    <div className='h-17.25 flex flex-wrap md:flex-nowrap md:w-45'>
+                        <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
+                            <div className='h-full flex flex-col justify-end w-40 md:w-45'>
+                                <div className="text-[11px]">REALTIME</div>
+                                <div className="flex flex-row h-[35px] items-center justify-center">
+                                    <Timer20RegularIcon size={26} strokeWidth={1} color={`${props.currentView !== "Event tracking" ? 'black' : 'var(--orange)'}`} />
+                                    <div className="text-sm font-bold text-end flex items-center pl-0.5 cursor-pointer" onClick={() => props.setView("Event tracking")}>Event Tracking</div>
                                 </div>
-                                <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
-                                <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Compare")}>
-                                    <div className="flex flex-row h-8.75 items-center justify-center">
-                                        <Globe32LightIcon size={24} strokeWidth={1} color={props.currentView === "Compare" ? "var(--orange)" : "black"} />
-                                        <div className={`text-sm ${props.currentView === "Compare" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5 pl-1`}>Compare</div>
-                                    </div>
-                                    <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
-                                </div>
-
                             </div>
+                            <div className={`h-1 w-full bg-(--orange) ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
+                        </Card>
+                    </div>
+                    <div className='h-17.25 flex grow md:grow-0 md:w-90 2xl:w-90'>
+                        <Card className={`rounded-none grow p-0 h-full flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
+                            <div className="text-[11px]">FORWARD LOOKING</div>
+                            <div className="flex flex-end flex-col w-full ">
+                                <div className="flex flex-row justify-evenly items-start w-full h-full">
+                                    <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Grid")}>
+                                        <div className="flex flex-row h-8.75 items-center justify-center">
+                                            <Scales20RegularIcon size={26} strokeWidth={1} color={props.currentView === "Grid" ? "var(--orange)" : "black"} />
+                                            <div className={`text-sm ${props.currentView === "Grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5`}>Grid</div>
+                                        </div>
+                                        <div className={`h-1 bg-(--orange) ${props.currentView === "Grid" ? "opacity-100" : "opacity-0"}`}></div>
+                                    </div>
+                                    <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
+                                    <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Compare")}>
+                                        <div className="flex flex-row h-8.75 items-center justify-center">
+                                            <Globe32LightIcon size={24} strokeWidth={1} color={props.currentView === "Compare" ? "var(--orange)" : "black"} />
+                                            <div className={`text-sm ${props.currentView === "Compare" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5 pl-1`}>Compare</div>
+                                        </div>
+                                        <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </Card>
+                        <div className='bg-white h-full w-10 md:w-0 flex justify-center items-center ' style={props.currentView == "Event tracking" ? { backgroundColor: "var(--accentblue-40)" } : { backgroundColor: "white" }}>
+                            <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} />
                         </div>
-                    </Card>
-                    <div className='bg-white h-full w-10 2xl:w-0 flex justify-center items-center  2xl:grow-0' style={ props.currentView == "Event tracking" ? {backgroundColor: "var(--accentblue-40)"} : {backgroundColor: "white"} }>
-                        <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} className='2xl:w-0' />
                     </div>
                 </div>
-                
-            </div> : null}
             
-            {(props.currentView === "Compare" || props.currentView === "Grid") && dataOptions ?
-                <div className="flex flex-col 2xl:flex-row w-full md:w-135 2xl:w-full md:fixed md:right-0 md:top-17.25 2xl:static">
+            {(props.currentView === "Compare" || props.currentView === "Grid") ?
+                <div className={`flex flex-col 2xl:flex-row w-full md:w-135 2xl:w-230 md:fixed md:right-0 md:top-17.25 2xl:static ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-17.25 overflow-hidden`}>
                     <Card className="rounded-none p-0 flex flex-col h-17.25 items-center justify-center gap-0">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
@@ -249,7 +249,7 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className='rounded-none flex flex-row gap-0 pl-5 h-17.25 w-full'>
+                    <Card className='rounded-none flex flex-row gap-0 pl-5 h-17.25 2xl:w-110'>
                         <Calendar24RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                         <div className="h-full flex items-center justify-start pl-14">
                             <Timeline props={props} />
@@ -259,6 +259,13 @@ export const NewHeader = ({ props }: any) => {
                 :
                 <div></div>
             }
+            {props.currentView === "Event tracking" ?
+                <div className={`flex ${dataOptions ? 'h-17.25' : 'h-0'} overflow-hidden md:h-17.25 w-full md:w-135 order-last md:fixed md:right-0 md:top-17.25 2xl:static 2xl:order-0`}>
+                    {calendarComponent}
+                </div>
+                :
+                null}
+            
         </div>
     );
 };

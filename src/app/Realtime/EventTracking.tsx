@@ -618,7 +618,7 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 )}
             </div>
-            <div className={`absolute top-80 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
+            <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
@@ -644,7 +644,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="h-[10px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold"></div>
             </div>
-            <div className={`absolute top-80 ${eventPopup == "focused event" ? "translate-x-[calc(100vw-325px)]" : "translate-x-[100vw]"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
+            <div className={`absolute top-40 ${eventPopup == "focused event" ? "translate-x-[calc(100vw-325px)]" : "translate-x-[100vw]"} h-70/100 w-[325px] pt-3 shadow-lg/40 rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur(); pauseSlider();}}> Close details [X]</div>
