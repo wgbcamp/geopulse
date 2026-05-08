@@ -606,7 +606,7 @@ export const EventTracking = ({ props }: any) => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
                 </div>
             </div>
-            <div className="absolute z-50 top-80 w-[300px] flex flex-col justify-start items-start pointer-events-none">
+            <div className="absolute z-50 top-40 w-[300px] flex flex-col justify-start items-start pointer-events-none">
                 {exposuresArray.map((e: any) =>
                     <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                         <div className="">
