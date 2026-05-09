@@ -31,10 +31,10 @@ export const Timeline = ({ props }: any) => {
   }
 
   return (
-    <Item className='w-65 py-0 px-2'>
+    <Item className='w-45 py-0 px-2'>
       <div className='w-full flex flex-col items-center'>
         <Slider
-          className='w-[320px] z-1 cursor-pointer bg-white'
+          className='w-60 z-1 cursor-pointer bg-white'
           min={0}
           max={3}
           step={1}
@@ -42,7 +42,7 @@ export const Timeline = ({ props }: any) => {
           onValueChange={handleValueChange}
         />
         <div className="relative h-6" 
-        style={{width: "calc(100% + 62px)"}}
+        style={{width: "calc(100% + 63px)"}}
         >
           {ticks.map((tick:any, index:any) => {
             const percent = (index / (ticks.length - 1)) * 100;
@@ -53,7 +53,7 @@ export const Timeline = ({ props }: any) => {
                 style={{ left: `${percent}%`}}
               >
                 <div className="w-px h-2 bg-muted-foreground/50"></div>
-                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && props.currentTime === tileLayerURLs[index]?.time ? "font-bold" : "text-[black]"}`}>
+                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && props.currentTime === tileLayerURLs[index]?.time ? "font-bold" : " font-normal"}`}>
                   {tick}
                 </span>
               </div>

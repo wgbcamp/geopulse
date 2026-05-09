@@ -121,9 +121,9 @@ export const NewHeader = ({ props }: any) => {
 
     return (
         <div className='flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap '>
-            <div className={`flex w-full justify-between md:justify-start bg-(--fundblue) overflow-hidden ${dataOptions ? 'h-0' : 'h-17.25'} md:h-17.25 md:w-58 `}>
+            <div className={`flex w-full justify-between md:justify-start bg-(--fundblue) overflow-hidden ${dataOptions ? 'h-0' : 'h-14.75'} md:h-14.75 md:w-58 `}>
                 <div className='flex'>
-                    <div className='flex h-17.25 w-full'>
+                    <div className='flex h-14.75 w-full'>
                         <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) md:bg-(--accentdarkblue-90) text-white'>
                             <img className='absolute right-4' src={Hamburger}></img>
                             <div className='absolute text-[11px] top-9.5 right-7 font-bold'>MENU</div>
@@ -137,8 +137,8 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                 </div>
             </div>
-                <div className={`flex justify-end 2xl:justify-start grow 2xl:grow-0 overflow-hidden ${dataOptions ? 'h-17.25' : 'h-0'} md:h-17.25 `}>
-                    <div className='h-17.25 flex flex-wrap md:flex-nowrap md:w-45'>
+                <div className={`flex justify-end 2xl:justify-start grow 2xl:grow-0 overflow-hidden ${dataOptions ? 'h-14.75' : 'h-0'} md:h-14.75 `}>
+                    <div className='h-14.75 flex flex-wrap md:flex-nowrap md:w-45'>
                         <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
                             <div className='h-full flex flex-col justify-end w-40 md:w-45'>
                                 <div className="text-[11px]">REALTIME</div>
@@ -150,7 +150,7 @@ export const NewHeader = ({ props }: any) => {
                             <div className={`h-1 w-full bg-(--orange) ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
                         </Card>
                     </div>
-                    <div className='h-17.25 flex grow md:grow-0 md:w-90 2xl:w-90'>
+                    <div className='h-14.75 flex grow md:grow-0 md:w-90 2xl:w-90'>
                         <Card className={`rounded-none grow p-0 h-full flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
                             <div className="text-[11px]">FORWARD LOOKING</div>
                             <div className="flex flex-end flex-col w-full ">
@@ -181,11 +181,11 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             
             {(props.currentView === "Compare" || props.currentView === "Grid") ?
-                <div className={`flex flex-col 2xl:flex-row w-full md:w-135 2xl:w-230 md:fixed md:right-0 md:top-17.25 2xl:static ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-17.25 overflow-hidden`}>
-                    <Card className="rounded-none p-0 flex flex-col h-17.25 items-center justify-center gap-0">
+                <div className={`flex flex-col 2xl:flex-row w-full md:w-135 2xl:w-230 md:fixed md:right-0 md:top-14.75 2xl:static ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
+                    <Card className="rounded-none p-0 flex flex-col h-14.75 items-center justify-center gap-0">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
-                                <div className="flex flex-row items-center justify-between w-95/100 2xl:w-60 h-17.25 px-1.25">
+                                <div className="flex flex-row items-center justify-between w-95/100 2xl:w-60 h-14.75 ">
                                     <div className='flex items-center justify-start cursor-pointer'>
                                         <Warning20RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                                         <div className='flex flex-col items-start pl-1'>
@@ -223,10 +223,10 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-17.25 2xl:w-40">
+                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 2xl:w-40">
                         <Popover open={scenarioOpened} onOpenChange={() => setScenarioOpened(!scenarioOpened)}>
                             <PopoverTrigger asChild>
-                                <div className="flex flex-row items-center w-95/100 h-17.25 px-1.25 justify-between cursor-pointer">
+                                <div className="flex flex-row items-center w-95/100 h-14.75 justify-between cursor-pointer">
                                     <div className='flex items-center'>
                                         <Layer20RegularIcon size={26} strokeWidth={1} color="var(--orange)" />
                                         <div className="text-[16px] font-bold text-end flex items-center">{scenarioMapper[props.currentScenario]}</div>
@@ -249,18 +249,20 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className='rounded-none flex flex-row gap-0 pl-5 h-17.25 2xl:w-110'>
+                <div className='2xl:w-92 flex justify-center bg-white'>
+                    <div className='rounded-none flex flex-row items-center gap-0 h-14.75 w-95/100'>
                         <Calendar24RegularIcon size={26} strokeWidth={1} color="var(--orange)"/>
                         <div className="h-full flex items-center justify-start pl-14">
                             <Timeline props={props} />
                         </div>
-                    </Card>
+                    </div>
+                </div>
                 </div>
                 :
                 <div></div>
             }
             {props.currentView === "Event tracking" ?
-                <div className={`flex ${dataOptions ? 'h-17.25' : 'h-0'} overflow-hidden md:h-17.25 w-full md:w-135 order-last md:fixed md:right-0 md:top-17.25 2xl:static 2xl:order-0`}>
+                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden md:h-14.75 w-full md:w-135 order-last md:fixed md:right-0 md:top-14.75 2xl:static 2xl:order-0`}>
                     {calendarComponent}
                 </div>
                 :

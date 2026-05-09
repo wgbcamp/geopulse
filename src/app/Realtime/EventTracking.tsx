@@ -622,7 +622,7 @@ export const EventTracking = ({ props }: any) => {
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
-                <div className="h-full overflow-scroll flex flex-col justify-start" ref={eventRef}>
+                <div className="h-full overflow-y-scroll flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
                         <div key={event.attributes.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
                             <h3 className="font-bold text-[14px] text-[var(--evenlighterblue)]">{event.attributes.country.toUpperCase()}</h3>
