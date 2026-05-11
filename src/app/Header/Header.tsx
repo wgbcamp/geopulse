@@ -130,7 +130,9 @@ export const NewHeader = ({ props }: any) => {
                         </div>
                     </div>
                 </div>
-                <div className="rounded-none flex flex-row items-center justify-start md:pl-6 font-semibold bg-(--fundblue) text-white border-none">IMF GEOPULSE</div>
+                <div className="rounded-none w-full flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
+                    <div>IMF GEOUPLSE</div>
+                </div>
                 <div className={`flex items-center w-16.75 md:w-0 md:h-0 overflow-hidden justify-center bg-(--fundblue) rounded-none border-0 border-none`}>
                     <div className='h-7/10 flex items-center justify-around rounded-lg' onClick={() => setDataOptions(true)}>
                         <Options24FilledIcon className="text-white" />
@@ -138,9 +140,9 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             </div>
                 <div className={`flex justify-end 2xl:justify-start grow 2xl:grow-0 overflow-hidden ${dataOptions ? 'h-14.75' : 'h-0'} md:h-14.75 `}>
-                    <div className='h-14.75 flex flex-wrap md:flex-nowrap md:w-45'>
+                    <div className='h-14.75 flex flex-wrap md:flex-nowrap md:w-44'>
                         <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
-                            <div className='h-full flex flex-col justify-end w-40 md:w-45'>
+                            <div className='h-full flex flex-col justify-end w-40 md:w-44'>
                                 <div className="text-[11px]">REALTIME</div>
                                 <div className="flex flex-row h-[35px] items-center justify-center">
                                     <Timer20RegularIcon size={26} strokeWidth={1} color={`${props.currentView !== "Event tracking" ? 'black' : 'var(--orange)'}`} />
@@ -262,7 +264,7 @@ export const NewHeader = ({ props }: any) => {
                 <div></div>
             }
             {props.currentView === "Event tracking" ?
-                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden md:h-14.75 w-full md:w-135 order-last md:fixed md:right-0 md:top-14.75 2xl:static 2xl:order-0`}>
+                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden md:h-14.75 w-full md:w-134 order-last md:fixed md:right-0 md:top-14.75 2xl:static 2xl:order-0`}>
                     {calendarComponent}
                 </div>
                 :
