@@ -20,6 +20,8 @@ import { Slider } from "@/components/ui/slider"
 
 import { realtimeObject } from '@/config/datasets';
 
+import Exposures from '../../assets/Layers.svg';
+
 export const EventTracking = ({ props }: any) => {
 
     const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
@@ -34,6 +36,8 @@ export const EventTracking = ({ props }: any) => {
     const eventRef = useRef<HTMLDivElement | null>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const [mobileExposures, setMobileExposures] = useState<boolean>(false);
 
     let map = useRef<Map | null>(null);
     const view = useRef<MapView>(new MapView);
@@ -606,7 +610,12 @@ export const EventTracking = ({ props }: any) => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
                 </div>
             </div>
-            <div className="absolute z-50 top-40 w-[300px] flex flex-col justify-start items-start pointer-events-none">
+            <div className={`absolute z-50 top-33.5 left-8.25 flex items-center border-solid transition-all duration-300 text-white`}>
+                <div className="rounded-full flex items-center justify-center h-17.5 w-17.5 md:invisible text-white bg-black border-[1.37px] border-solid border-[#0084FF] mr-[10px]" onClick={() => setMobileExposures(!mobileExposures)}>
+                    <img src={Exposures}></img>
+                </div>
+            </div>
+            <div className={`absolute z-50 top-60.25 md:top-40 ${mobileExposures ? 'visible' : 'invisible'} md:visible w-[300px] flex flex-col justify-start items-start pointer-events-none`}>
                 {exposuresArray.map((e: any) =>
                     <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                         <div className="">
@@ -618,7 +627,7 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 )}
             </div>
-            <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
+            <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] invisible md:visible flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Data Range</b>
                 </div>
@@ -725,7 +734,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="pt-[24px] pb-5 text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
-            <div className="absolute bottom-0 h-[175px] w-[350px] bg-[rgba(0,0,0,0.85)] flex flex-col items-center justify-around"> 
+            <div className="absolute bottom-0 invisible md:visible h-[175px] w-[350px] bg-[rgba(0,0,0,0.85)] flex flex-col items-center justify-around"> 
                 <div className="w-8/10 h-5/10 flex flex-col items-center">
                     <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
                         <div>EVENT TYPES</div>
