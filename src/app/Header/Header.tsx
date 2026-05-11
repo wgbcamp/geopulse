@@ -131,7 +131,7 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                 </div>
                 <div className="rounded-none w-full flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
-                    <div>IMF GEOUPLSE</div>
+                    <div>IMF GEOPULSE</div>
                 </div>
                 <div className={`flex items-center w-16.75 md:w-0 md:h-0 overflow-hidden justify-center bg-(--fundblue) rounded-none border-0 border-none`}>
                     <div className='h-7/10 flex items-center justify-around rounded-lg' onClick={() => setDataOptions(true)}>
