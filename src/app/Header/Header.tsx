@@ -126,7 +126,7 @@ export const NewHeader = ({ props }: any) => {
                     <div className='flex h-14.75 w-full'>
                         <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) md:bg-(--accentdarkblue-90) text-white'>
                             <img className='absolute right-4' src={Hamburger}></img>
-                            <div className='absolute text-[11px] top-9.5 right-7 font-bold'>MENU</div>
+                            <div className='absolute text-[11px] top-8.5 right-6.5 font-bold'>MENU</div>
                         </div>
                     </div>
                 </div>
@@ -183,7 +183,7 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             
             {(props.currentView === "Compare" || props.currentView === "Grid") ?
-                <div className={`flex flex-col 2xl:flex-row w-full md:w-135 2xl:w-230 md:fixed md:right-0 md:top-14.75 2xl:static ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
+                <div className={`flex flex-col 2xl:flex-row w-full md:w-134 2xl:w-230 md:fixed md:right-0 md:top-14.75 2xl:static ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
                     <Card className="rounded-none p-0 flex flex-col h-14.75 items-center justify-center gap-0">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
