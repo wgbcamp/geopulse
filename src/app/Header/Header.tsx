@@ -130,7 +130,7 @@ export const NewHeader = ({ props }: any) => {
                         </div>
                     </div>
                 </div>
-                <div className="rounded-none w-full flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
+                <div className="rounded-none flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
                     <div>IMF GEOPULSE</div>
                 </div>
                 <div className={`flex items-center w-16.75 md:w-0 md:h-0 overflow-hidden justify-center bg-(--fundblue) rounded-none border-0 border-none`}>
