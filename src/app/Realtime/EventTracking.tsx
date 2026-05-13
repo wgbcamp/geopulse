@@ -34,6 +34,7 @@ export const EventTracking = ({ props }: any) => {
     const [focusedSliderPlaying, setFocusedSliderPlaying] = useState<boolean>(false);   
     const ref = useRef(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
+    const eventsRef = useRef<any>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -236,21 +237,28 @@ export const EventTracking = ({ props }: any) => {
 
     useEffect(() => {
         if (!view.current) return;
+        eventsRef.current = events;
 
         // handle clicks on event feature layer to focus on matching events
         const handleClick = (event: any) => {
-            if (!eventFeatureLayer.current) return;
+            if (!eventFeatureLayer.current || !eventsRef.current) return;
             view.current.hitTest(event, { include: eventFeatureLayer.current }).then((res: any) => {
                 const hit = res.results[0];
                 if (!hit) return;
                 const graphic = hit.graphic;
-                events.forEach((x: { geometry: { longitude: number, latitude: number }, attributes: { description: string } }) => {
-                    if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
-                        focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);
+                eventsRef.current.forEach((x: any) => {
+                    if (
+                        x.geometry.longitude === graphic.geometry.longitude &&
+                        x.geometry.latitude === graphic.geometry.latitude
+                    ) {
+                        focusOnEvent(
+                            { longitude: x.geometry.longitude, latitude: x.geometry.latitude },
+                            x.attributes
+                        );
                     }
                 });
             });
-        }
+        };
 
         const handle = view.current.on("click", handleClick);
         return () => {
