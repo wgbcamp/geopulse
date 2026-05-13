@@ -186,7 +186,7 @@ export const NewHeader = ({ props }: any) => {
 
             {(props.currentView === "Compare" || props.currentView === "Grid") ?
                 <div className={`flex flex-col 2xl:flex-row w-full md:w-192 2xl:w-230 ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
-                    <Card className="rounded-none p-0 flex flex-col h-14.75 items-center justify-center gap-0">
+                    <Card className="rounded-none p-0 flex flex-col h-14.75 items-center justify-center gap-0 2xl:px-2">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
                                 <div className="flex flex-row items-center justify-between w-95/100 2xl:w-60 h-14.75 ">
@@ -239,7 +239,7 @@ export const NewHeader = ({ props }: any) => {
                             </PopoverContent>
                         </Popover>
                     </Card>
-                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 2xl:w-40">
+                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 2xl:w-40 2xl:px-2">
                         <Popover open={scenarioOpened} onOpenChange={() => setScenarioOpened(!scenarioOpened)}>
                             <PopoverTrigger asChild>
                                 <div className="flex flex-row items-center w-95/100 h-14.75 justify-between cursor-pointer">

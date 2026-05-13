@@ -239,18 +239,17 @@ export const EventTracking = ({ props }: any) => {
 
         // handle clicks on event feature layer to focus on matching events
         const handleClick = (event: any) => {
-            view.current.hitTest(event).then((res: any) => {
-                if (res.results.length > 0) {
-                    const graphic = res.results.filter((value: any) => {
-                        return value.graphic.layer === eventFeatureLayer.current;
-                    })[0].graphic;
-                    events.forEach((x: { geometry: { longitude: number, latitude: number }, attributes: { description: string } }) => {
-                        if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
-                            focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);                            
-                        }
-                    });
-                }
-            })
+            if (!eventFeatureLayer.current) return;
+            view.current.hitTest(event, { include: eventFeatureLayer.current }).then((res: any) => {
+                const hit = res.results[0];
+                if (!hit) return;
+                const graphic = hit.graphic;
+                events.forEach((x: { geometry: { longitude: number, latitude: number }, attributes: { description: string } }) => {
+                    if (x.geometry.longitude == graphic.geometry.longitude && x.geometry.latitude == graphic.geometry.latitude) {
+                        focusOnEvent({ longitude: x.geometry.longitude, latitude: x.geometry.latitude }, x.attributes);
+                    }
+                });
+            });
         }
 
         const handle = view.current.on("click", handleClick);
