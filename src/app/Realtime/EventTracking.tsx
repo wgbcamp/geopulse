@@ -260,7 +260,7 @@ export const EventTracking = ({ props }: any) => {
             });
         };
 
-        const handle = view.current.on("click", handleClick);
+        const handle = view.current.on("immediate-click", handleClick);
         return () => {
             handle.remove(); 
         };
