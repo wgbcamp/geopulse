@@ -114,6 +114,10 @@ export const EventTracking = ({ props }: any) => {
                     const phase = Math.random();
                     const w = document.createElement("div");
                     w.className = "pw";
+                    w.onclick = () => {
+                        focusOnEvent({ longitude: f.geometry.longitude, latitude: f.geometry.latitude },
+                            f.attributes)
+                    };
 
                     // Three staggered rings
                     const classes = ["pr", "pr pr2", "pr pr3"];
@@ -128,7 +132,7 @@ export const EventTracking = ({ props }: any) => {
 
                     // Center dot
                     const d = document.createElement("div");
-                    d. className = "pd";
+                    d.className = "pd";
                     d.style.background = color;
                     // d.style.boxShadow = "0 0 20px rgba(0, 255, 255, 0.7), 0 0 40px rgba(0, 255, 255, 0.4)";
                     w.appendChild(d);
@@ -242,22 +246,25 @@ export const EventTracking = ({ props }: any) => {
         // handle clicks on event feature layer to focus on matching events
         const handleClick = (event: any) => {
             if (!eventFeatureLayer.current || !eventsRef.current) return;
-            view.current.hitTest(event, { include: eventFeatureLayer.current }).then((res: any) => {
-                const hit = res.results[0];
-                if (!hit) return;
-                const graphic = hit.graphic;
-                eventsRef.current.forEach((x: any) => {
-                    if (
-                        x.geometry.longitude === graphic.geometry.longitude &&
-                        x.geometry.latitude === graphic.geometry.latitude
-                    ) {
-                        focusOnEvent(
-                            { longitude: x.geometry.longitude, latitude: x.geometry.latitude },
-                            x.attributes
-                        );
-                    }
-                });
-            });
+            // view.current.hitTest(event, { include: eventFeatureLayer.current }).then((res: any) => {
+            //     const hit = res.results[0];
+            //     console.log(eventsRef.current);
+            //     console.log(event);
+            //     console.log(hit);
+            //     if (!hit) return;
+            //     const graphic = hit.graphic;
+            //     eventsRef.current.forEach((x: any) => {
+            //         if (
+            //             x.geometry.longitude === graphic.geometry.longitude &&
+            //             x.geometry.latitude === graphic.geometry.latitude
+            //         ) {
+            //             focusOnEvent(
+            //                 { longitude: x.geometry.longitude, latitude: x.geometry.latitude },
+            //                 x.attributes
+            //             );
+            //         }
+            //     });
+            // });
         };
 
         const handle = view.current.on("immediate-click", handleClick);
