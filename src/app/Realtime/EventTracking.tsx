@@ -119,11 +119,6 @@ export const EventTracking = ({ props }: any) => {
                     };
                     console.log("focusedEvent ", focusedEvent)
 
-                    // hide event dots if an event is already focused
-                    if (focusedEvent == "") {
-                        w.style.visibility = "hidden";
-                    }
-
                     // Three staggered rings
                     const classes = ["pr", "pr pr2", "pr pr3"];
                     const delays = [0, -1.8, -3.2];
@@ -139,8 +134,12 @@ export const EventTracking = ({ props }: any) => {
                     const d = document.createElement("div");
                     d.className = "pd";
                     d.style.background = color;
-                    // d.style.boxShadow = "0 0 20px rgba(0, 255, 255, 0.7), 0 0 40px rgba(0, 255, 255, 0.4)";
                     w.appendChild(d);
+
+                    // hide event dots if an event is already focused
+                    if (eventPopup == "focused event") {
+                        w.style.visibility = "hidden";
+                    }
 
                     pulseContainerRef.current!.appendChild(w);
                     pulseEls.current.push({ el: w, geometry: f.geometry });
@@ -159,7 +158,7 @@ export const EventTracking = ({ props }: any) => {
                 syncPulses();
             });
             
-    }, [clearPulses, syncPulses]);
+    }, [clearPulses, syncPulses, eventPopup]);
 
     //event polygon feature layer
     const eventPolygonsLayer = new FeatureLayer({
@@ -620,7 +619,7 @@ export const EventTracking = ({ props }: any) => {
                 {exposuresArray.map((e: any) =>
                     <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                         <div className="">
-                            <div className={`flex items-center w-[200px] h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] transition-all duration-300 ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
+                            <div className={`flex items-center pr-4 h-[25px] rounded-2xl border-[1.37px] border-solid border-[#0084FF] transition-all duration-300 ${realtimeExposure == e.name ? 'bg-[var(--evenlighterblue)]' : 'bg-black'} text-white`}>
                                 <div className="rounded-full flex items-center justify-center bg-black border-[1.37px] border-solid border-[#0084FF] h-[37px] w-[37px] mr-[10px]">{e.icon}</div>
                                 <div>{e.name}</div>
                             </div>
