@@ -141,14 +141,14 @@ export const EventTracking = ({ props }: any) => {
                     pulseEls.current.push({ el: w, geometry: f.geometry });
                 });
                 console.log(result.features.map(f => f.attributes));
-                console.log();
                 
                 var x = result.features.map((feature) => {
                     return {
                         attributes: feature.attributes,
                         geometry: feature.geometry 
                     }
-                })
+                }).sort((a, b) => a.attributes.fromdate - b.attributes.fromdate);
+
                 setEvents(x);
                 console.log(result);
                 syncPulses();
