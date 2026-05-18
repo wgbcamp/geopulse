@@ -239,40 +239,6 @@ export const EventTracking = ({ props }: any) => {
    
     }, [syncPulses]);
 
-    useEffect(() => {
-        if (!view.current) return;
-        eventsRef.current = events;
-
-        // handle clicks on event feature layer to focus on matching events
-        const handleClick = (event: any) => {
-            if (!eventFeatureLayer.current || !eventsRef.current) return;
-            // view.current.hitTest(event, { include: eventFeatureLayer.current }).then((res: any) => {
-            //     const hit = res.results[0];
-            //     console.log(eventsRef.current);
-            //     console.log(event);
-            //     console.log(hit);
-            //     if (!hit) return;
-            //     const graphic = hit.graphic;
-            //     eventsRef.current.forEach((x: any) => {
-            //         if (
-            //             x.geometry.longitude === graphic.geometry.longitude &&
-            //             x.geometry.latitude === graphic.geometry.latitude
-            //         ) {
-            //             focusOnEvent(
-            //                 { longitude: x.geometry.longitude, latitude: x.geometry.latitude },
-            //                 x.attributes
-            //             );
-            //         }
-            //     });
-            // });
-        };
-
-        const handle = view.current.on("immediate-click", handleClick);
-        return () => {
-            handle.remove(); 
-        };
-    }, [events])
-
        useEffect(() => {
 
         if (!map.current || !groupLayer.current) return;
@@ -431,7 +397,7 @@ export const EventTracking = ({ props }: any) => {
         const result = await eventPolygonsLayer.queryFeatures(newQuery);
         console.log("events: ", result);
 
-        const feature = result.features.filter((x) => x.attributes.episodeid == 1); //features.attributes.eventid
+        // const feature = result.features.filter((x) => x.attributes.episodeid == 1); //features.attributes.eventid
         // const feature = result.features[index || 0]; //features.attributes.eventid
         
         const ascendingFeatures = Object.values(
@@ -447,7 +413,8 @@ export const EventTracking = ({ props }: any) => {
         console.log("feature ", result.features);
 
         setFocusedFeatures(ascendingFeatures); // Store the features in state
-        applyPolygon(feature); // Apply the polygon styling from the first feature (or the specified index)
+        console.log("FocusedFeatures: ", ascendingFeatures);
+        applyPolygon(ascendingFeatures[0]); // Apply the polygon styling from the first feature (or the specified index)
     }
 
     const applyPolygon = (features: any) => {
@@ -487,6 +454,8 @@ export const EventTracking = ({ props }: any) => {
             baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
             exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
             groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)"; // brighten and add drop shadow to the group layer
+
+            view.current.goTo(features[0].geometry.extent);
         }
     }
 
@@ -496,10 +465,6 @@ export const EventTracking = ({ props }: any) => {
         removeBlur(); // remove blur from previous event if it exists
         setFocusedSliderValue([0]); // reset slider value to 0 when focusing on a new event
         console.log(coors);
-        view.current.goTo({
-            center: [coors.longitude, coors.latitude],
-            zoom: 11
-        });
 
         if (!map.current) return;
 
@@ -525,8 +490,8 @@ export const EventTracking = ({ props }: any) => {
                         pauseSlider();
                         return;
                     } else {
-                    applyPolygon(focusedFeatures[i]);
                     i += 1;
+                    applyPolygon(focusedFeatures[i]);
                     setFocusedSliderValue([i]);
                     }
                 }, 500);
