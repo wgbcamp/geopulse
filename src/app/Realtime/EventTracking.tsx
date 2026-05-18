@@ -118,6 +118,10 @@ export const EventTracking = ({ props }: any) => {
                         focusOnEvent({ longitude: f.geometry.longitude, latitude: f.geometry.latitude },
                             f.attributes)
                     };
+                    console.log("focusedEvent ", focusedEvent)
+                    if (focusedEvent !== "") {
+                        w.style.visibility = "hidden";
+                    }
 
                     // Three staggered rings
                     const classes = ["pr", "pr pr2", "pr pr3"];
@@ -475,6 +479,11 @@ export const EventTracking = ({ props }: any) => {
         console.log(map.current);
         setFocusedEvent(attributes);
         setEventPopup("focused event");
+
+        // hide event dots 
+        document.querySelectorAll<HTMLElement>(".pw").forEach(element => {
+            element.style.visibility = "hidden";
+        }) 
     }
 
     // play through the event by incrementing the slider value which updates the position
@@ -509,6 +518,18 @@ export const EventTracking = ({ props }: any) => {
             intervalRef.current = null;
             setFocusedSliderPlaying(false); // reset playing state of slider when focusing on a new event
         }
+    }
+
+    const unfocusEvent = () => {
+        setEventPopup("all events"); 
+        setFocusedEvent(""); 
+        removeBlur(); 
+        pauseSlider();
+
+        // show event dots 
+        document.querySelectorAll<HTMLElement>(".pw").forEach(element => {
+            element.style.visibility = "visible";
+        }) 
     }
 
     const exposuresArray: any = [
@@ -635,7 +656,7 @@ export const EventTracking = ({ props }: any) => {
             <div className={`absolute bottom-0 right-0 md:top-40 md:bottom-[unset] ${eventPopup == "focused event" ? "visible" : "invisible"} h-40/100 md:h-70/100 w-full md:w-[325px] pt-3 shadow-lg/40 md:rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
-                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => {setEventPopup("all events"); setFocusedEvent(""); removeBlur(); pauseSlider();}}> Close details [X]</div>
+                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => unfocusEvent()}> Close details [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
@@ -722,10 +743,12 @@ export const EventTracking = ({ props }: any) => {
                         <div className="grid grid-cols-2 grid-rows-3 gap-2">
                             {hazardsArray.map((h, i) =>
                                 <div className='flex'>
-                                    <div className='flex items-center justify-center'>
-                                        <div className="rounded-4xl w-[7px] h-[7px]" style={{ background: h.color }}></div>
+                                    <div className='flex justify-center border-1 rounded-4xl w-4 h-4' style={{ borderColor: h.color }}>
+                                        <div className='flex items-center justify-center'>
+                                            <div className="rounded-4xl w-[7px] h-[7px]" style={{ background: h.color }}></div>
+                                        </div>
                                     </div>
-                                    <div className="mx-[10px] text-[10px] tracking-wide">{h.type.toUpperCase()}</div>
+                                    <div className="mx-2 text-[10px] tracking-wide">{h.type.toUpperCase()}</div>
                                 </div>
                             )}
                         </div>
