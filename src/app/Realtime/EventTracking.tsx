@@ -105,7 +105,6 @@ export const EventTracking = ({ props }: any) => {
         query.outFields = ["*"];
         query.outSpatialReference = view.current.spatialReference;
         query.maxRecordCountFactor = 5;
-            // No need to set outFields here — it inherits from the layer config above
 
             eventFeatureLayer.current!.queryFeatures(query).then((result) => {
                 result.features.forEach((f: any) => {
@@ -119,7 +118,9 @@ export const EventTracking = ({ props }: any) => {
                             f.attributes)
                     };
                     console.log("focusedEvent ", focusedEvent)
-                    if (focusedEvent !== "") {
+
+                    // hide event dots if an event is already focused
+                    if (focusedEvent == "") {
                         w.style.visibility = "hidden";
                     }
 
