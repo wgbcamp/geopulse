@@ -117,7 +117,6 @@ export const EventTracking = ({ props }: any) => {
                         focusOnEvent({ longitude: f.geometry.longitude, latitude: f.geometry.latitude },
                             f.attributes)
                     };
-                    console.log("focusedEvent ", focusedEvent)
 
                     // Three staggered rings
                     const classes = ["pr", "pr pr2", "pr pr3"];
@@ -144,7 +143,6 @@ export const EventTracking = ({ props }: any) => {
                     pulseContainerRef.current!.appendChild(w);
                     pulseEls.current.push({ el: w, geometry: f.geometry });
                 });
-                console.log(result.features.map(f => f.attributes));
                 
                 var x = result.features.map((feature) => {
                     return {
@@ -369,27 +367,9 @@ export const EventTracking = ({ props }: any) => {
             queryEvents();
         });
 
-        console.log("props: ", props.dateRange.from, "propsToIsoString: ", new Date(props.dateRange.from).toISOString());
         map.current.add(eventFeatureLayer.current); // add events feature layer to map
 
     }, [props.dateRange.from, props.dateRange.to, clearPulses, queryEvents])
-
-    // set the number of events in the date range that are not visible based on the popup container height
-    // useEffect(() => {
-    //     const ec = eventRef.current;
-    //     if (!ec) return;
-
-    //     const children = Array.from(ec.children) as HTMLElement[];
-    //     let runningHeight = 0;
-    //     let hidden = 0;
-
-    //     for (const child of children) {
-    //         runningHeight += child.offsetHeight;
-    //         if (runningHeight > ec.clientHeight) hidden++;
-    //     }
-
-    //     setHiddenEvents(hidden);
-    // }, [events]);
 
     // query feature layer 
     async function highlightCountry(eventid: any, index?: number) {
@@ -416,8 +396,26 @@ export const EventTracking = ({ props }: any) => {
         
         console.log("feature ", result.features);
 
+        
+
         setFocusedFeatures(ascendingFeatures); // Store the features in state
         console.log("FocusedFeatures: ", ascendingFeatures);
+
+        let combinedExtent: __esri.Extent | null = null;
+            for (const feature of result.features) {
+                const ext = feature.geometry?.extent;
+                console.log("feature element extent: ", feature.geometry?.extent?.toJSON());
+                if (!ext) continue;
+                combinedExtent = combinedExtent ? combinedExtent.union(ext) : ext;
+            }
+
+            if (combinedExtent) {
+                console.log("combinedExtent: ", combinedExtent.toJSON());
+                view.current.goTo(combinedExtent);
+            }
+
+        
+
         applyPolygon(ascendingFeatures[0]); // Apply the polygon styling from the first feature (or the specified index)
     }
 
@@ -459,7 +457,12 @@ export const EventTracking = ({ props }: any) => {
             exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
             groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)"; // brighten and add drop shadow to the group layer
 
-            view.current.goTo(features[0].geometry.extent);
+            // view.current.goTo(features[0].geometry.extent);
+
+            // eventPolygonsLayer.queryExtent().then((res) => {
+            //     console.log(res.extent);
+            //     view.current.goTo(res.extent);
+            // })
         }
     }
 
