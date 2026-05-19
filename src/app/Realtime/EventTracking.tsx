@@ -149,7 +149,7 @@ export const EventTracking = ({ props }: any) => {
                         attributes: feature.attributes,
                         geometry: feature.geometry 
                     }
-                }).sort((a, b) => a.attributes.fromdate - b.attributes.fromdate);
+                }).sort((a, b) => b.attributes.fromdate - a.attributes.fromdate);
 
                 setEvents(x);
                 console.log(result);
@@ -632,7 +632,7 @@ export const EventTracking = ({ props }: any) => {
             </div>
             <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] invisible md:visible flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
-                    <b className="ml-2">{events?.length || 0} Events in Data Range</b>
+                    <b className="ml-2">{events?.length || 0} Events in Date Range</b>
                 </div>
                 <div className="h-full overflow-y-scroll flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
