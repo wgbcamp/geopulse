@@ -5,7 +5,9 @@ import { NewHeader } from './Header/Header';
 import { CompareView } from './ForwardLooking/Compare/Compare';
 import { Thresholds } from './ForwardLooking/Compare/thresholds';
 import { EventTracking } from './Realtime/EventTracking';
+import { About } from './Articles/About';
 import { type DateRange } from "react-day-picker"
+
 
 type JsonShape = {
   features: Array<{
@@ -46,7 +48,7 @@ function App() {
     }
     getGeoJson();
   }, []);
- 
+
   return (
     <div className='h-full'>
       <NewHeader props={{
@@ -69,49 +71,54 @@ function App() {
 
       {currentView == "Grid"
         ?
-        <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario}/>
+        <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />
         :
         <div></div>
       }
-      {currentView == "Compare" && geoJson 
-      ? 
-          <div>
-            <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
-              <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
-                <CompareView props={{
-                  currentTime,
-                  currentScenario,
-                  geoJson,
-                  currentExposure,
-                  currentHazard,
-                  currentMeasure,
-                  currentThreshold,
-                  setScenario,
-                  setThreshold
-                }} />
-              </div>
+      {currentView == "Compare" && geoJson
+        ?
+        <div>
+          <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
+            <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
+              <CompareView props={{
+                currentTime,
+                currentScenario,
+                geoJson,
+                currentExposure,
+                currentHazard,
+                currentMeasure,
+                currentThreshold,
+                setScenario,
+                setThreshold
+              }} />
             </div>
-            <Thresholds props={{
-              currentHazard,
-              currentExposure,
-              currentThreshold,
-              currentMeasure,
-              setThreshold,
-              setMeasure
-            }} />
-          </div> 
-          :
-          <div></div>
-          }
+          </div>
+          <Thresholds props={{
+            currentHazard,
+            currentExposure,
+            currentThreshold,
+            currentMeasure,
+            setThreshold,
+            setMeasure
+          }} />
+        </div>
+        :
+        <div></div>
+      }
       {currentView == "Event tracking"
         ?
-          <EventTracking props={{
-            dateRange: dateRange,
-            setDateRange: setDateRange
-          }} />
+        <EventTracking props={{
+          dateRange: dateRange,
+          setDateRange: setDateRange
+        }} />
         :
         <div></div>
       }
+      {currentView == "About"
+        ?
+        <About />
+        :
+        null}
     </div>
 
   )

@@ -8,6 +8,7 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
+import SceneView from "@arcgis/core/views/SceneView.js";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
@@ -29,6 +30,7 @@ export const EventTracking = ({ props }: any) => {
     // const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const [focusedEvent, setFocusedEvent] = useState<any>("");
     const [eventPopup, setEventPopup] = useState<string>("all events");
+    // const eventPopupRef = useRef<string>("all events");
     const [focusedFeatures, setFocusedFeatures] = useState<any>(null);
     const [focusedSliderValue, setFocusedSliderValue] = useState<number[]>([0]);
     const [focusedSliderPlaying, setFocusedSliderPlaying] = useState<boolean>(false);   
@@ -76,15 +78,39 @@ export const EventTracking = ({ props }: any) => {
         }
     }
 
-        // --- Sync pulse positions to screen coords ---
+    // useEffect(() => {
+    //     eventPopupRef.current = eventPopup;
+    // }, [eventPopup]);
+
+    // --- Sync pulse positions to screen coords ---
     const syncPulses = useCallback(() => {
         if (!view.current) return;
+        // const camera = view.current.camera;
+        // const R = 6371000;
+        // const camAlt = R + (camera?.position?.z ?? 0);
+        // cos of the horizon half-angle: points with dot < threshold are below the horizon
+        // const threshold = R / camAlt;
+
         pulseEls.current.forEach((p) => {
             const sp = view.current.toScreen(p.geometry);
             if (sp) {
                 p.el.style.left = sp.x + "px";
                 p.el.style.top = sp.y + "px";
             }
+
+            // Skip visibility management while an event is focused (those dots are hidden separately)
+            // if (eventPopupRef.current === "focused event") return;
+
+            // if (camera?.position && p.geometry.latitude != null
+            //         && camera.position.latitude != null && camera.position.longitude != null) {
+            //     const pLat = p.geometry.latitude * Math.PI / 180;
+            //     const pLon = p.geometry.longitude * Math.PI / 180;
+            //     const cLat = camera.position.latitude * Math.PI / 180;
+            //     const cLon = camera.position.longitude * Math.PI / 180;
+            //     const dot = Math.sin(pLat) * Math.sin(cLat)
+            //               + Math.cos(pLat) * Math.cos(cLat) * Math.cos(pLon - cLon);
+            //     p.el.style.visibility = dot > threshold ? "visible" : "hidden";
+            // }
         });
     }, []);
 
@@ -607,7 +633,7 @@ export const EventTracking = ({ props }: any) => {
     ];
 
     return (
-        <div className="w-full h-full relative overflow-hidden">
+        <div className="w-full h-full relative overflow-hidden z-50">
             <div className='w-full h-full'>
                 <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>

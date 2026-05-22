@@ -28,7 +28,6 @@ import { urlObject, scenarioMapper, measureMapper } from '@/config/datasets';
 
 import Hamburger from '../../assets/Group 51.png'
 
-
 export const NewHeader = ({ props }: any) => {
 
     const [riskState, setRiskState] = useState<string>("Riverine Flooding");
@@ -41,6 +40,7 @@ export const NewHeader = ({ props }: any) => {
         setRiskOpened(newOpenState);
     };
     const [dataOptions, setDataOptions] = useState<boolean>(false);
+    const [menuOptions, setMenuOptions] = useState<boolean>(false);
 
     const swapTable = (hazard: string, exposure: string, threshold: object, measure: object) => {
         const findMatchingScenario = new Promise((resolve) => {
@@ -110,9 +110,23 @@ export const NewHeader = ({ props }: any) => {
         </Card>;
 
     return (
-        <div className={`flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap ${dataOptions ? '' : 'overflow-hidden h-14.75'} md:h-[unset]`}>
-            <div className={`flex w-full justify-between md:justify-start bg-(--fundblue) ${dataOptions ? 'h-0' : 'h-14.75'} overflow-hidden md:h-14.75 md:w-58 `}>
-                <div className='flex'>
+        <div className={`flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap ${dataOptions || menuOptions ? '' : 'overflow-hidden h-14.75'} md:h-[unset]`}>
+            <div className={`flex flex-col ${menuOptions && !dataOptions ? 'z-50 h-59' : '-z-10 h-0 overflow-hidden'}  w-full md:w-58 bg-(--accentdarkblue-90) md:bg-[unset] absolute shadow-xl/40`}>
+                <div className='flex w-16.75 h-14.75 justify-center items-center bg-(--accentdarkblue-90)' onClick={() => setMenuOptions(!menuOptions)}>
+                    <div className=" flex items-center flex-center">
+                        <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.390625 1.67969C0 1.32812 0 0.703125 0.390625 0.351562C0.742188 0 1.32812 0 1.67969 0.351562L7.57812 6.25L13.4766 0.351562C13.8672 0 14.4531 0 14.8047 0.351562C15.1953 0.742188 15.1953 1.32812 14.8047 1.67969L8.90625 7.57812L14.8047 13.4766C15.1953 13.8281 15.1953 14.4531 14.8047 14.8047C14.4531 15.1562 13.8672 15.1562 13.4766 14.8047L7.57812 8.90625L1.67969 14.8047C1.32812 15.1562 0.742188 15.1562 0.390625 14.8047C0 14.4531 0 13.8281 0.390625 13.4766L6.28906 7.57812L0.390625 1.67969Z" fill="white" />
+                        </svg>
+                    </div>
+                </div>
+                <div className='pl-7 bg-(--accentdarkblue-90)'>
+                    <div className='flex items-center w-full h-14.75 text-white cursor-not-allowed'>Methodology</div>
+                    <div className='flex items-center w-full h-14.75 text-white cursor-not-allowed'>Data Sources</div>
+                    <div className='flex items-center w-full h-14.75 text-white cursor-pointer' onClick={ () => {props.setView('About'); setMenuOptions(false)} }>About</div>
+                </div>
+            </div>
+            <div className={`flex w-full md:w-58 justify-between md:justify-start bg-(--fundblue) ${dataOptions ? 'h-0' : 'h-14.75'} overflow-hidden md:h-14.75`}>
+                <div className='flex' onClick={() => setMenuOptions(!menuOptions)}>
                     <div className='flex h-14.75 w-full'>
                         <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) md:bg-(--accentdarkblue-90) text-white'>
                             <img className='absolute right-4' src={Hamburger}></img>
@@ -185,7 +199,7 @@ export const NewHeader = ({ props }: any) => {
             {/* </div> */}
 
             {(props.currentView === "Compare" || props.currentView === "Grid") ?
-                <div className={`flex flex-col 2xl:flex-row w-full md:w-192 2xl:w-230 ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
+                <div className={`flex flex-col 2xl:flex-row w-full md:w-192  ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
                     <Card className="rounded-none p-0 flex flex-col h-14.75 items-center justify-center gap-0 2xl:px-2">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
