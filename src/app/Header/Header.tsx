@@ -112,7 +112,7 @@ export const NewHeader = ({ props }: any) => {
     return (
         <div className={`flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap ${dataOptions || menuOptions ? '' : 'overflow-hidden h-14.75'} md:h-[unset]`}>
             <div className={`flex flex-col ${menuOptions && !dataOptions ? 'z-50 h-59' : '-z-10 h-0 overflow-hidden'}  w-full md:w-58 bg-(--accentdarkblue-90) md:bg-[unset] absolute shadow-xl/40`}>
-                <div className='flex w-16.75 h-14.75 justify-center items-center bg-(--accentdarkblue-90)' onClick={() => setMenuOptions(!menuOptions)}>
+                <div className='flex w-16.75 h-14.75 justify-center items-center bg-(--accentdarkblue-90) cursor-pointer' onClick={() => setMenuOptions(!menuOptions)}>
                     <div className=" flex items-center flex-center">
                         <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0.390625 1.67969C0 1.32812 0 0.703125 0.390625 0.351562C0.742188 0 1.32812 0 1.67969 0.351562L7.57812 6.25L13.4766 0.351562C13.8672 0 14.4531 0 14.8047 0.351562C15.1953 0.742188 15.1953 1.32812 14.8047 1.67969L8.90625 7.57812L14.8047 13.4766C15.1953 13.8281 15.1953 14.4531 14.8047 14.8047C14.4531 15.1562 13.8672 15.1562 13.4766 14.8047L7.57812 8.90625L1.67969 14.8047C1.32812 15.1562 0.742188 15.1562 0.390625 14.8047C0 14.4531 0 13.8281 0.390625 13.4766L6.28906 7.57812L0.390625 1.67969Z" fill="white" />
@@ -126,7 +126,7 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             </div>
             <div className={`flex w-full md:w-58 justify-between md:justify-start bg-(--fundblue) ${dataOptions ? 'h-0' : 'h-14.75'} overflow-hidden md:h-14.75`}>
-                <div className='flex' onClick={() => setMenuOptions(!menuOptions)}>
+                <div className='flex cursor-pointer' onClick={() => setMenuOptions(!menuOptions)}>
                     <div className='flex h-14.75 w-full'>
                         <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) md:bg-(--accentdarkblue-90) text-white'>
                             <img className='absolute right-4' src={Hamburger}></img>
@@ -134,7 +134,7 @@ export const NewHeader = ({ props }: any) => {
                         </div>
                     </div>
                 </div>
-                <div className="rounded-none w-full flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
+                <div className="rounded-none w-120 flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
                     <div>IMF GEOPULSE</div>
                 </div>
                 <div className={`flex items-center w-16.75 md:w-0 md:h-0 overflow-hidden justify-center bg-(--fundblue) rounded-none border-0 border-none`}>
