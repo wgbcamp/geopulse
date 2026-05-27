@@ -2,8 +2,8 @@ import MenuBackground from '../../assets/image 18.png'
 
 export const About = () => {
     return (
-        <div className={`absolute flex justify-center h-auto w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
-            <div className="flex pt-15 pb-25 flex-col items-center lg:items-start gap-y-6 w-9/10 text-left text-white">
+        <div className={`absolute flex justify-center h-full w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+            <div className="flex pt-15 pb-25 flex-col items-center overflow-scroll lg:items-start gap-y-6 w-9/10 text-left text-white">
                 <section className='pt-14.75 text-[22px] w-full max-w-174 font-bold'>IMF GeoPulse: Track, Analyze, and Respond to Economic Risk</section>
                 <div className='flex flex-col gap-x-20 lg:flex-row leading-[21px]'>
                     <div className='flex flex-col gap-y-5 max-w-[75ch]'>

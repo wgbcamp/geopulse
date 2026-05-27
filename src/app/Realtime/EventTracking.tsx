@@ -8,7 +8,7 @@ import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
-import SceneView from "@arcgis/core/views/SceneView.js";
+// import SceneView from "@arcgis/core/views/SceneView.js";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
