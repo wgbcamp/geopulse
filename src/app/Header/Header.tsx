@@ -181,8 +181,8 @@ export const NewHeader = ({ props }: any) => {
                             <PopoverContent className="w-56.25 p-0 my-1.25 rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)]">
                                 <div className={`flex flex-row justify-center py-2.5 h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
                                     <ItemGroup>
-                                        {Object.values(eventTypes).map((x) =>
-                                            <Item key={x} className={`cursor-pointer my-2 ${eventTypes[props.eventFilter] === eventTypes[x] ? 'font-bold text-(--orange) underline underline-offset-1.25 decoration-0.5' : ""} transition-all duration-200 ease-in`} onClick={() => props.eventFilter == eventTypes[x] ? props.setEventFilter("All Events") : props.setEventFilter(x)}>
+                                        {Object.entries(eventTypes).map(([x, y]) =>
+                                            <Item key={x} className={`cursor-pointer my-2 ${eventTypes[props.eventFilter] === eventTypes[x] ? 'font-bold text-(--orange) underline underline-offset-1.25 decoration-0.5' : ""} transition-all duration-200 ease-in`} onClick={() => props.eventFilter == x ? props.setEventFilter("All Events") : props.setEventFilter(x)}>
                                                 <ItemContent>
                                                     <ItemHeader>{eventTypes[x]}</ItemHeader>
                                                 </ItemContent>

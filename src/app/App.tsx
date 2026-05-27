@@ -81,7 +81,8 @@ function App() {
           case 'Event tracking':
             return <EventTracking props={{
           dateRange: dateRange,
-          setDateRange: setDateRange
+          setDateRange: setDateRange,
+          eventFilter: eventFilter,
         }} />
           case 'Grid':
             return <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />

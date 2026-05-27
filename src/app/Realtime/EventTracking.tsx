@@ -380,12 +380,12 @@ export const EventTracking = ({ props }: any) => {
                 type: "simple",
                 symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
             },
-            definitionExpression: `fromdate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
+            definitionExpression: `${props.eventFilter !== 'All Events' ? `eventtype='${props.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
             OR
             todate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
             OR
             fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND todate >= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
-            `
+        )`
         });
 
         // run query on feature layer
@@ -395,7 +395,7 @@ export const EventTracking = ({ props }: any) => {
 
         map.current.add(eventFeatureLayer.current); // add events feature layer to map
 
-    }, [props.dateRange.from, props.dateRange.to, clearPulses, queryEvents])
+    }, [props.dateRange.from, props.dateRange.to, clearPulses, queryEvents, props.eventFilter])
 
     // query feature layer 
     async function highlightCountry(eventid: any, index?: number) {
