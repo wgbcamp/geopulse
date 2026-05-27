@@ -766,3 +766,12 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
 
     return colorAxisTitleMapper[hazard][exposure]
 }
+
+export const eventTypes: Record<string, string> = {
+    "Earthquake": "Earthquake", 
+    "Drought": "Drought", 
+    "Volcano": "Volcano", 
+    "Tropical Cyclone": "Tropical Cyclone", 
+    "Flooding": "Flooding", 
+    "Wildfire": "Wildfire"
+} 

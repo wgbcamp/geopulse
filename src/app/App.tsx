@@ -36,7 +36,8 @@ function App() {
   const [dateRange, setDateRange] = useState<DateRange | undefined>({
     from: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
     to: (new Date)
-  })
+  });
+  const [eventFilter, setEventFilter] = useState<string>("All Events");
 
   let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null);
 
@@ -67,7 +68,9 @@ function App() {
         setMeasure,
         setThreshold,
         dateRange: dateRange,
-        setDateRange: setDateRange
+        setDateRange: setDateRange,
+        eventFilter: eventFilter,
+        setEventFilter: setEventFilter
       }} />   
       {(() => {
         switch (currentView) {

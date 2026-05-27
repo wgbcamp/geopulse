@@ -24,7 +24,7 @@ import {
 import { Calendar } from "@/components/ui/calendar"
 import { format } from 'date-fns';
 
-import { urlObject, scenarioMapper, measureMapper } from '@/config/datasets';
+import { urlObject, scenarioMapper, measureMapper, eventTypes } from '@/config/datasets';
 
 import Hamburger from '../../assets/Group 51.png'
 
@@ -37,6 +37,7 @@ export const NewHeader = ({ props }: any) => {
     const [riskState, setRiskState] = useState<string>("Riverine Flooding");
     const [riskOpened, setRiskOpened] = useState<boolean>(false);
     const [scenarioOpened, setScenarioOpened] = useState<boolean>(false);
+    const [eventFilterOpened, setEventFilterOpened] = useState<boolean>(false);
     const handleOpenChange = (newOpenState: boolean) => {
         if (newOpenState) {
             setRiskState(props.currentHazard)
@@ -164,7 +165,34 @@ export const NewHeader = ({ props }: any) => {
                 </Card>
             </div>
             {props.currentView === "Event tracking" ?
-                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden md:h-14.75 w-full md:w-192 2xl:w-95 order-1 2xl:order-0`}>
+                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden md:h-14.75 w-full md:w-192 2xl:w-145 order-1 2xl:order-0`}>
+                    <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 w-65 2xl:px-2">
+                        <Popover open={eventFilterOpened} onOpenChange={() => setEventFilterOpened(!eventFilterOpened)}>
+                            <PopoverTrigger asChild>
+                                <div className="flex flex-row items-center w-95/100 h-14.75 justify-between cursor-pointer">
+                                        <div className="text-[16px] font-bold text-end flex items-center pl-2">{eventTypes[props.eventFilter] ?? "All Events"}</div>
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <g transform={`rotate(${eventFilterOpened ? "180" : "0"}, 10, 10)`}>
+                                            <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
+                                        </g>
+                                    </svg>
+                                </div>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-56.25 p-0 my-1.25 rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)]">
+                                <div className={`flex flex-row justify-center py-2.5 h-[calc(80px*${urlObject[props.currentHazard][props.currentExposure].scenarios.length})]`}>
+                                    <ItemGroup>
+                                        {Object.values(eventTypes).map((x) =>
+                                            <Item key={x} className={`cursor-pointer my-2 ${eventTypes[props.eventFilter] === eventTypes[x] ? 'font-bold text-(--orange) underline underline-offset-1.25 decoration-0.5' : ""} transition-all duration-200 ease-in`} onClick={() => props.eventFilter == eventTypes[x] ? props.setEventFilter("All Events") : props.setEventFilter(x)}>
+                                                <ItemContent>
+                                                    <ItemHeader>{eventTypes[x]}</ItemHeader>
+                                                </ItemContent>
+                                            </Item>
+                                        )}
+                                    </ItemGroup>
+                                </div>
+                            </PopoverContent>
+                        </Popover>
+                    </Card>
                     {calendarComponent}
                 </div>
                 :
