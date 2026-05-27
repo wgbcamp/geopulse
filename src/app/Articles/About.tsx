@@ -3,43 +3,46 @@ import MenuBackground from '../../assets/image 18.png'
 export const About = () => {
     return (
         <div className={`absolute flex justify-center h-full w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
-            <div className="flex pt-15 pb-25 flex-col items-center overflow-scroll lg:items-start gap-y-6 w-9/10 text-left text-white">
+            <div className="flex py-15 flex-col items-center overflow-scroll lg:items-start gap-y-6 w-9/10 text-left text-white">
                 <section className='pt-14.75 text-[22px] w-full max-w-174 font-bold'>IMF GeoPulse: Track, Analyze, and Respond to Economic Risk</section>
                 <div className='flex flex-col gap-x-20 lg:flex-row leading-[21px]'>
                     <div className='flex flex-col gap-y-5 max-w-[75ch]'>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        <p>IMF GeoPulse is a geospatial platform that monitors physical risks to the economy, people, and our environment. The frequency and severity of damages from natural disasters such as floods, hurricanes, and wildfires have been increasing over time resulting in billions of dollars damage to economies and loss of human lives. As impacts often ripple through economies, including the financial systems, public finances, and trade, the first-order effects of most of these risks are highly localized.
                         </p>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        <p>GeoPulse provides high-resolution geospatial data on hazards, exposures, and risks to help economies prepare for, respond to, and recover from natural disasters. It is state-of-the-art platform translating complex and big geospatial data into actionable insights for policy analysis, financing, and resilience planning now and for the future.
                         </p>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        <p>Designed to map the exposure of economies to physical hazards, GeoPulse enables users to quantify both potential and realized risks on people, GDP, physical capital, agriculture, critical infrastructures, and other key sectors of the economy.
                         </p>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        <p>By delivering globally harmonized data at an unprecedented level of spatial granularity down to one kilometer grid resolution, the platform provides critical and timely information far beyond macroeconomic statistics down to the local level where risks materialize and impacts are felt.
                         </p>
                         <div>
                             <section className='font-bold text-[16px]'>Real-Time Insights</section>
-                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                            <p>The real‑time feature of GeoPulse provides continuous monitoring of looming and ongoing natural disasters, through an interactive global map interface. It enables users to assess the immediate risks and quantify the scale and nature of impacts on population, buildings, capital stock, GDP, agriculture and critical infrastructure such as airports and maritime ports as events unfold in affected regions.
                             </p>
                         </div>
                     </div>
                     <div className='flex flex-col gap-y-5 max-w-[75ch]'>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        <p>Further, it supports retrospective analysis, providing users with detailed data on past disaster events and their impacts. Users can toggle through panels to view and download severity metrics, affected economies, and disaster footprints.
                         </p>
                         <div>
                             <section className='font-bold text-[16px]'>Forward-Looking Analysis</section>
-                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                            <p>Beyond monitoring today’s risks and shocks, GeoPulse enables users to explore tomorrow’s risks. The platform provides forward‑looking indicators under multiple climate scenarios—with projections extending through 2100—so policymakers can visualize how exposure trajectories change under different warming pathways and plan adaptation investments accordingly.
                             </p>
                         </div>
                         <div>
                             <section className='font-bold text-[16px]'>Explore the two forward-looking views:</section>
-                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                            <p>Grid: Investigate hazard–exposure indicators on 2D and 3D interactive maps, with color‑coded intensities and legends to support local decision‑making.
+                                Compare: Benchmark exposure and risk across countries or subnational regions using harmonized indicators, aiding resource allocation and international cooperation.
                             </p>
                         </div>
                         <div>
                             <section className='font-bold text-[16px]'>From Insight to Action</section>
-                            <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                            <p>GeoPulse supports exportable charts and downloadable datasets, helping users communicate findings, inform disaster risk financing, and embed results in reports to authorities or funders. Methodology and data‑source documentation are available to promote transparency and correct interpretation.
                             </p>
                         </div>
-                        <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere. Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra inceptos himenaeos.
+                        <p>
+                            <div>An IMF Initiative Advancing Global Data Standards </div>
+                            GeoPulse helps fill priority data gaps identified by the G20 Data Gaps Initiative, bringing IMF‑generated risk indicators into a consistent, accessible format for surveillance and policy analysis. The platform is designed and sponsored within the IMF, leveraging secure cloud infrastructure and geospatial services to deliver scalable, high‑quality analytics.
                         </p>
                     </div>
                 </div>

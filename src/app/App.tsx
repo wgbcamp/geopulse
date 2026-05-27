@@ -7,6 +7,7 @@ import { Thresholds } from './ForwardLooking/Compare/thresholds';
 import { EventTracking } from './Realtime/EventTracking';
 import { About } from './Articles/About';
 import { type DateRange } from "react-day-picker"
+import { DataMethodology } from './Articles/DataMethodology';
 
 
 type JsonShape = {
@@ -67,17 +68,22 @@ function App() {
         setThreshold,
         dateRange: dateRange,
         setDateRange: setDateRange
-      }} />
-
-      {currentView == "Grid"
-        ?
-        <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />
-        :
-        <div></div>
-      }
-      {currentView == "Compare" && geoJson
-        ?
-        <div>
+      }} />   
+      {(() => {
+        switch (currentView) {
+          case 'About':
+            return <About />
+          case 'DataMethodology':
+            return <DataMethodology />
+          case 'Event tracking':
+            return <EventTracking props={{
+          dateRange: dateRange,
+          setDateRange: setDateRange
+        }} />
+          case 'Grid':
+            return <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />
+          case 'Compare':
+            return <div>
           <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
             <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
               <CompareView props={{
@@ -102,23 +108,9 @@ function App() {
             setMeasure
           }} />
         </div>
-        :
-        <div></div>
-      }
-      {currentView == "Event tracking"
-        ?
-        <EventTracking props={{
-          dateRange: dateRange,
-          setDateRange: setDateRange
-        }} />
-        :
-        <div></div>
-      }
-      {currentView == "About"
-        ?
-        <About />
-        :
-        null}
+        }
+      })()}
+   
     </div>
 
   )
