@@ -170,7 +170,7 @@ export const NewHeader = ({ props }: any) => {
                         <Popover open={eventFilterOpened} onOpenChange={() => setEventFilterOpened(!eventFilterOpened)}>
                             <PopoverTrigger asChild>
                                 <div className="flex flex-row items-center w-95/100 h-14.75 justify-between cursor-pointer">
-                                        <div className="text-[16px] font-bold text-end flex items-center pl-2">{eventTypes[props.eventFilter] ?? "All Events"}</div>
+                                        <div className="text-[14px] font-bold text-end flex items-center pl-2">{eventTypes[props.eventFilter] ?? "All Events"}</div>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g transform={`rotate(${eventFilterOpened ? "180" : "0"}, 10, 10)`}>
                                             <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
@@ -243,9 +243,9 @@ export const NewHeader = ({ props }: any) => {
                                         </svg>
 
                                         <div className='flex flex-col items-start pl-2'>
-                                            <div className="text-[16px] font-bold text-end flex items-center">{props.currentHazard}</div>
+                                            <div className="text-[14px] font-bold text-end flex items-center">{props.currentHazard}</div>
                                             <div className='w-28.75 h-0.5 bg-gray-300'></div>
-                                            <div className="text-[16px] font-bold text-end flex items-center">{props.currentExposure}</div>
+                                            <div className="text-[14px] font-bold text-end flex items-center">{props.currentExposure}</div>
                                         </div>
                                     </div>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -294,7 +294,7 @@ export const NewHeader = ({ props }: any) => {
                                         <svg id="scenariosIcon" width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M10.3906 1.40625C10.1562 1.28906 9.84375 1.28906 9.60938 1.40625L1.67969 5.07812L9.60938 8.75C9.84375 8.86719 10.1562 8.86719 10.3906 8.75L18.3203 5.07812L10.3906 1.40625ZM10.9375 0.273438L19.4531 4.21875C19.8047 4.375 20 4.72656 20 5.07812C20 5.42969 19.8047 5.78125 19.4531 5.9375L10.9375 9.88281C10.3516 10.1562 9.64844 10.1562 9.10156 9.88281L0.546875 5.9375C0.195312 5.78125 0 5.42969 0 5.07812C0 4.72656 0.195312 4.375 0.546875 4.21875L9.10156 0.273438C9.64844 0 10.3516 0 10.9375 0.273438ZM1.875 8.59375L3.35938 9.29688L1.67969 10.0781L9.60938 13.75C9.84375 13.8672 10.1562 13.8672 10.3906 13.75L18.3203 10.0781L16.6406 9.29688L18.125 8.59375L19.4531 9.21875C19.8047 9.375 20 9.72656 20 10.0781C20 10.4297 19.8047 10.7812 19.4531 10.9375L10.9375 14.8828C10.3516 15.1562 9.64844 15.1562 9.10156 14.8828L0.546875 10.9375C0.195312 10.7812 0 10.4297 0 10.0781C0 9.72656 0.195312 9.375 0.546875 9.21875L1.875 8.59375ZM0.546875 14.2188L1.875 13.5938L3.35938 14.2969L1.67969 15.0781L9.60938 18.75C9.84375 18.8672 10.1562 18.8672 10.3906 18.75L18.3203 15.0781L16.6406 14.2969L18.125 13.5938L19.4531 14.2188C19.8047 14.375 20 14.7266 20 15.0781C20 15.4297 19.8047 15.7812 19.4531 15.9375L10.9375 19.8828C10.3516 20.1562 9.64844 20.1562 9.10156 19.8828L0.546875 15.9375C0.195312 15.7812 0 15.4297 0 15.0781C0 14.7266 0.195312 14.375 0.546875 14.2188Z" fill="var(--orange)" />
                                         </svg>
-                                        <div className="text-[16px] font-bold text-end flex items-center pl-2">{scenarioMapper[props.currentScenario]}</div>
+                                        <div className="text-[14px] font-bold text-end flex items-center pl-2">{scenarioMapper[props.currentScenario]}</div>
                                     </div>
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <g transform={`rotate(${scenarioOpened ? "180" : "0"}, 10, 10)`}>
