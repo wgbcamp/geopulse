@@ -432,7 +432,25 @@ export const Region = ( props: any ) => {
                                                 value = value.slice(0, i) + "," + value.substring(i, value.length);
                                             }
                                         }
-                                        return `<b>${this.point.NAME_1}</b><br/>${value}`;
+
+                                        let append;
+
+                                        switch (props.currentHazard) {
+                                            case "Riverine Flooding":
+                                                append = `% of ${props.currentExposure}`;
+                                                break;
+                                            case "Coastal Flooding":
+                                                append = `% of ${props.currentExposure}`;
+                                                break;
+                                            case "Drought":
+                                                append = " Consecutive Dry Days";
+                                                break;
+                                            case "Temperature Extremes":
+                                                append = " Days";
+                                                break;
+                                        }
+
+                                        return `<b>${this.point.NAME_1}</b><br/>${value + append}`;
                                     },
                                     backgroundColor: "#212121",
                                     style: {
