@@ -3,8 +3,8 @@ import { Button } from "@/components/ui/button"
 
 export const DataMethodology = () => {
     return (
-        <div className={`absolute flex justify-center h-full w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
-            <div className="flex py-15 flex-col items-center overflow-scroll lg:items-start w-9/10 text-left text-white">
+        <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+            <div className="flex py-15 flex-col items-center  lg:items-start w-9/10 text-left text-white">
                 <section className='pt-14.75 text-[26px] w-full max-w-174 font-bold'>Access Data & Methodology Page</section>
                 <div className='flex flex-col gap-y-7'>
                     <div className='flex flex-col gap-x-20 gap-y-5 leading-[21px] pt-10'>
@@ -131,8 +131,8 @@ export const DataMethodology = () => {
                                 <strong>Data:</strong>
                                 <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. </span>
                             </div>
-                            <div className='flex flex-row gap-x-20 gap-y-10 flex-wrap'>
-                                <div className='flex flex-col gap-y-5'>
+                            <div className='flex flex-row gap-x-10  gap-y-10 flex-wrap'>
+                                <div className='flex flex-col gap-y-5 w-4/10'>
                                     <span><strong>Temperature Extremes</strong></span>
                                     <span><u>Buildings</u></span>
                                     <span><u>Cropland</u></span>
@@ -141,18 +141,18 @@ export const DataMethodology = () => {
                                     <span><u>Population</u></span>
                                     <span><u>Livestock</u></span>
                                 </div>
-                                <div className='flex flex-col gap-y-5'>
+                                <div className='flex flex-col gap-y-5 w-4/10'>
                                     <span><strong>Coastal Flooding</strong></span>
                                     <span><u>Population</u></span>
                                     <span><u>Buildings</u></span>
                                     <span><u>GDP</u></span>
                                     <span><u>Urban GDP</u></span>
                                 </div>
-                                <div className='flex flex-col gap-y-5'>
+                                <div className='flex flex-col gap-y-5 w-4/10'>
                                     <span><strong>Drought</strong></span>
                                     <span><u>Livestock</u></span>
                                 </div>
-                                <div className='flex flex-col gap-y-5'>
+                                <div className='flex flex-col gap-y-5 w-4/10'>
                                     <span><strong>Temperature Extremes</strong></span>
                                     <span><u>Population</u></span>
                                     <span><u>Livestock</u></span>
