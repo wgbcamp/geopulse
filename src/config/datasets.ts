@@ -768,10 +768,10 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
 }
 
 export const eventTypes: Record<string, string> = {
-    "EQ": "Earthquake", 
-    "TC": "Tropical Cyclone", 
-    "DR": "Drought", 
+    "EQ": "Earthquakes", 
+    "TC": "Tropical Cyclones", 
+    "DR": "Droughts", 
     "FL": "Flooding", 
-    "VO": "Volcano", 
-    "WF": "Wildfire"
+    "VO": "Volcanic Eruptions", 
+    "WF": "Wildfires"
 } 

@@ -230,18 +230,39 @@ export const EventTracking = ({ props }: any) => {
                 layers: [baseLayer.current, boundariesLayer.current, groupLayer.current]
             });
 
+            // calculate minimum zoom level based on input
+            function getMinZoom(containerWidth: number, containerHeight: number): number {
+                const minZoomX = Math.log2(containerWidth / 256);
+                const minZoomY = Math.log2(containerHeight / 256);
+                return Math.max(minZoomX, minZoomY);
+            }
+
+            const minZoom = getMinZoom(window.innerWidth, window.innerHeight);
+            
             // default map properties
             view.current = new MapView({
                 container: ref.current,
                 map: map.current,
-                zoom: 2,
+                zoom: Math.max(2, minZoom),
                 center: [-40.9465, 0.775],
                 constraints: {
-                    minZoom: 2,
+                    minZoom: Math.floor(minZoom),
                     maxZoom: 11,
                 },
                 popupEnabled: false
             });
+
+            // resize minimum zoom level when viewport is resized
+            const resizeObserver = new ResizeObserver((entries) => {
+                const { width, height } = entries[0].contentRect;
+                const newMinZoom = getMinZoom(width, height);
+                view.current.constraints.minZoom = Math.floor(newMinZoom);
+
+                if (view.current.zoom < newMinZoom) {
+                    view.current.zoom = newMinZoom;
+                }
+            });
+            resizeObserver.observe(ref.current);
 
             // remove all arcgis default ui components
             view.current.ui.components = [];
