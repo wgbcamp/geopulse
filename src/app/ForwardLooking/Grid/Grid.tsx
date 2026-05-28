@@ -264,7 +264,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
       </svg>
       <div className='absolute bottom-0 right-0 flex flex-col items-start justify-end rounded-xs bg-white w-50 h-45'>
         <div id="newLegend" onMouseLeave={() => hideTooltip()} className='w-full'>
-          <div className='absolute bottom-35 w-full flex h-20 justify-center'>
+          <div className='absolute bottom-40 w-full flex  justify-center'>
             <div id="tooltip" className='invisible opacity-0 shadow-xl/20 rounded-md flex h-15 w-40 items-center justify-center bg-(--accentdarkblue-80) transition-all delay-150 duration-300 ease-in-out'>
               <div className='text-white text-[10px] w-9/10'><strong>{tooltipValue}</strong></div>
             </div>
