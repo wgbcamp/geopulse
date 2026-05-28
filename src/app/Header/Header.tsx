@@ -140,7 +140,7 @@ export const NewHeader = ({ props }: any) => {
                         </div>
                     </div>
                 </div>
-                <div className='w-35 md:w-0'></div>
+                <div className='w-23 md:w-0'></div>
                 <div className="rounded-none w-full md:w-120 flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
                     <div className=''>IMF GEOPULSE</div>
                 </div>
