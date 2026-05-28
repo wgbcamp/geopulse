@@ -276,7 +276,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
             <div className="">
               <div className='flex w-30 h-30 flex-wrap'>
                 {Object.entries(colors).map(([key, value]) => (
-                  <div key={value} style={{ backgroundColor: value }} className="w-10 h-10 hover:border-2 hover:border-solid hover:border-(--accentred-80)" onMouseOver={() => showTooltip(key)}></div>
+                  <div key={value} style={{ backgroundColor: value }} className="w-10 h-10 hover:border-2 hover:border-solid hover:border-(--accentred-80)" onMouseOver={() => showTooltip(key)} onTouchStart={() => showTooltip(key)}></div>
                 ))}
               </div>
               <div className='w-full h-10 flex justify-center items-center'>
