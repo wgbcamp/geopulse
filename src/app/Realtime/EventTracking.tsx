@@ -51,6 +51,9 @@ export const EventTracking = ({ props }: any) => {
     const eventFeatureLayer = useRef<FeatureLayer | null>(null);
     const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
 
+    const [popInState, setPopInState] = useState<boolean>(false);
+    const [layerSettingsPopup, setLayerSettingsPopup] = useState<boolean>(false); 
+
     const exposureLayerForGroup = useRef<any>(null);
     const graphicsLayer = useRef<GraphicsLayer>(null);
     const outlineLayer = useRef<GraphicsLayer>(null);
@@ -653,19 +656,31 @@ export const EventTracking = ({ props }: any) => {
         { type: "Wildfire", color: "var(--orange)" }
     ];
 
+    const toggleLayerSettingsPopup = (value: boolean) => {
+        if (window.innerWidth < 768) {
+            setLayerSettingsPopup(value);
+        }
+    }
+
+    const togglePopIn = () => {
+        if (window.innerWidth >= 768) {
+            setPopInState(true);
+        }
+    }
+
     return (
-        <div className="w-full h-full relative overflow-hidden z-50">
+        <div className="w-full h-full relative overflow-hidden">
             <div className='w-full h-full'>
                 <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
                 </div>
             </div>
-            <div className={`absolute z-50 top-33.5 left-8.25 flex items-center border-solid transition-all duration-300 text-white`}>
+            {/* <div className={`absolute z-1 top-33.5 left-8.25 flex items-center border-solid transition-all duration-300 text-white`}>
                 <div className="rounded-full flex items-center justify-center h-17.5 w-17.5 md:invisible text-white bg-black border-[1.37px] border-solid border-[#0084FF] mr-[10px]" onClick={() => setMobileExposures(!mobileExposures)}>
                     <img src={Exposures}></img>
                 </div>
             </div>
-            <div className={`absolute z-50 top-60.25 md:top-40 ${mobileExposures ? 'visible' : 'invisible'} md:visible w-[300px] flex flex-col justify-start items-start pointer-events-none`}>
+            <div className={`absolute z-1 top-60.25 md:top-40 ${mobileExposures ? 'visible' : 'invisible'} md:visible w-[300px] flex flex-col justify-start items-start pointer-events-none`}>
                 {exposuresArray.map((e: any) =>
                     <div key={e.name} className="flex h-[37px] pl-9 items-center justify-center my-2 pointer-events-auto cursor-pointer" onClick={() => setRealtimeExposure(e.name)}>
                         <div className="">
@@ -676,6 +691,52 @@ export const EventTracking = ({ props }: any) => {
                         </div>
                     </div>
                 )}
+            </div> */}
+            <div className='absolute z-1 top-33.5 left-8.25' onMouseLeave={() => setPopInState(false)}>
+                <div className=' flex gap-2 items-start pointer-events-none'>
+                    <div className={`flex items-center border-solid transition-all duration-300 text-white`}>
+                        <div className={`flex items-center justify-center cursor-pointer select-none rounded-xl w-18 h-18 bg-black border-(--accentdarkblue-80) border-2 pointer-events-auto`} onClick={() => { toggleLayerSettingsPopup(true); }} onMouseEnter={() => togglePopIn()}>
+                            <div className='flex h-8/10 w-6/10 justify-center items-end'>
+                                {/* <img className='h-50/100 w-50/100' src={Exposures}></img> */}
+                                <div className='text-white text-[12px] font-bold'>Exposures</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id='exposureContainer' className={`z-1 pointer-events-auto invisible has-[.pop-in]:visible flex gap-2 flex-wrap max-w-5/10 items-center border-solid transition-all duration-300 text-white`}>
+                        {exposuresArray.map((e: any, index: number) =>
+                            <div id={`exposure_${e.name}`} className={`exposure_ w-18 h-18 bg-black border-2 rounded-2xl opacity-0 cursor-pointer ${popInState ? 'pop-in' : 'pop-out'} ${realtimeExposure == e.name ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} style={{ animationDelay: index * 50 + 'ms' }} onClick={() => setRealtimeExposure(e.name)}>
+                                <div className='h-9/10 flex justify-center items-end'>
+                                    <div className='text-white text-[12px] font-bold'>{e.name}</div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+            <div className={`absolute ${layerSettingsPopup ? 'z-1' : '-z-1'} top-0 h-full w-full bg-[#00000090] flex items-center justify-center`}>
+                <div className='flex flex-col justify-center items-center gap-y-4 h-8/10 w-9/10 rounded-md border-(--accentdarkblue-80) border bg-(--accentdarkblue-100)'>
+                    <div className='flex w-full flex-col h-1/10 items-center justify-center'>
+                        <div className='flex h-full w-86/100 py-4 items-center justify-between'>
+                            <section className='text-white font-bold text-[16px]'>Layers</section>
+                            <div className='text-white font-bold text-[16px] cursor-pointer' onClick={() => setLayerSettingsPopup(false)}>X</div>
+                        </div>
+                        <div className='w-9/10 border-b-1 border-(--accentdarkblue-80)'></div>
+                    </div>
+                    <div className='h-9/10 w-86/100 flex flex-col gap-2 justify-start items-center overflow-scroll'>
+                        <div className='flex gap-y-3 flex-col justify-center '>
+                            <section className='text-left w-95/100 font-bold text-(--accentdarkblue-50)'>EXPOSURES</section>
+                            <div className='flex flex-row flex-wrap gap-3'>
+                                {exposuresArray.map((e: any) =>
+                                    <div className={`w-25 h-25 bg-black border-2 rounded-2xl ${realtimeExposure == e.name ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} onClick={() => setRealtimeExposure(e.name)}>
+                                        <div className='h-full flex justify-center items-end'>
+                                            <div className='text-white text-[12px] font-bold'>{e.name}</div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] invisible md:visible flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">

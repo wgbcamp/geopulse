@@ -115,8 +115,8 @@ export const NewHeader = ({ props }: any) => {
         </Card>;
 
     return (
-        <div className={`flex fixed top-0 z-51 w-full flex-wrap 2xl:flex-nowrap ${dataOptions || menuOptions ? '' : 'overflow-hidden h-14.75'} md:h-[unset]`}>
-            <div className={`flex flex-col ${menuOptions && !dataOptions ? 'z-50 h-73.75' : '-z-10 h-0 overflow-hidden'} w-full md:w-58 bg-(--accentdarkblue-90) md:bg-[unset] absolute shadow-xl/40`}>
+        <div className={`flex fixed top-0 z-1 w-full flex-wrap 2xl:flex-nowrap ${dataOptions || menuOptions ? '' : 'overflow-hidden h-14.75'} md:h-[unset]`}>
+            <div className={`flex flex-col ${menuOptions && !dataOptions ? 'z-2 h-73.75' : '-z-10 h-0 overflow-hidden'} w-full md:w-58 bg-(--accentdarkblue-90) md:bg-[unset] absolute shadow-xl/40`}>
                 <div className='flex w-16.75 h-14.75 justify-center items-center bg-(--accentdarkblue-90) cursor-pointer' onClick={() => setMenuOptions(!menuOptions)}>
                     <div className=" flex items-center flex-center">
                         <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
