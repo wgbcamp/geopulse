@@ -764,13 +764,15 @@ export const EventTracking = ({ props }: any) => {
             </div>
             <div className={`absolute z-2 bottom-0 md:top-50 md:right-0 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default draggable`} style={{
                         "--drag-y": `${y}px`,
-                        touchAction: "none"
-                    }}>
-                <div className='h-12 w-full flex items-center justify-center md:hidden' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
-                    <div className='w-15 h-1 bg-(--accentcoolgray-60) rounded-xl'></div>
-                </div>
-                <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
-                    <b className="ml-2">{events?.length || 0} Events in Date Range</b>
+                touchAction: "none"
+            }}>
+                <div onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+                    <div className='h-4 w-full flex items-end justify-center md:hidden'>
+                        <div className='w-15 h-1 bg-(--accentcoolgray-60) rounded-xl'></div>
+                    </div>
+                    <div className="h-[32px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
+                        <b className="ml-2">{events?.length || 0} Events in Date Range</b>
+                    </div>
                 </div>
                 <div className="h-full pb-20 md:pb-0 overflow-y-scroll flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
