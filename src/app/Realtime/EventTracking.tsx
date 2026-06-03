@@ -675,6 +675,31 @@ export const EventTracking = ({ props }: any) => {
         }
     }
 
+    const MAX_Y = 90;
+    const MIN_Y = window.innerHeight - 50;
+    const SNAP_TO_MAX_HEIGHT = window.innerHeight - 50;
+    const SNAP_TO_MIN_HEIGHT = 90;
+
+    const [y, setY] = useState(SNAP_TO_MAX_HEIGHT);
+    const dragRef = useRef({ active: false, startY: 0, startOffset: 0 });
+
+    const onPointerDown = (e) => {
+        e.currentTarget.setPointerCapture(e.pointerId);
+        dragRef.current = { active: true, startY: e.clientY, startOffset: y };
+    };
+
+    const onPointerMove = (e) => {
+        if (!dragRef.current.active) return;
+        const delta = e.clientY - dragRef.current.startY;
+        setY(dragRef.current.startOffset + delta);
+    };
+
+    const onPointerUp = () => {
+        dragRef.current.active = false;
+        if (y > MIN_Y) setY(SNAP_TO_MAX_HEIGHT);
+        if (y < MAX_Y) setY(SNAP_TO_MIN_HEIGHT);
+    };
+
     return (
         <div className="w-full h-full relative overflow-hidden">
             <div className='w-full h-full'>
@@ -736,7 +761,13 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 </div>
             </div>
-            <div className={`absolute top-40 ${eventPopup == "all events" ? "translate-x-[calc(100vw-300px)]" : "translate-x-[100vw]"} h-70/100 w-[300px] invisible md:visible flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`}>
+            <div className={`absolute bottom-0 md:top-40 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`} style={{
+                        transform: `translateY(${y}px)`,
+                        touchAction: "none"
+                    }}>
+                <div className='h-8 w-full flex items-center justify-center' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+                    <div className='w-15 h-1 bg-(--accentcoolgray-60) rounded-xl'></div>
+                </div>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Date Range</b>
                 </div>
@@ -762,7 +793,7 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className="h-[10px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold"></div>
             </div>
-            <div className={`absolute bottom-0 right-0 md:top-40 md:bottom-[unset] ${eventPopup == "focused event" ? "visible" : "invisible"} h-40/100 md:h-70/100 w-full md:w-[325px] pt-3 shadow-lg/40 md:rounded-tl-md rounded-bl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
+            <div className={`absolute bottom-0 right-0 md:top-40 md:bottom-[unset] ${eventPopup == "focused event" ? "visible" : "invisible"} h-40/100 md:h-70/100 w-full md:w-[325px] pt-3 shadow-lg/40 md:rounded-tl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
                 <div className="h-[37px] w-full flex items-center justify-between pl-4">
                     <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => unfocusEvent()}> Close details [X]</div>
