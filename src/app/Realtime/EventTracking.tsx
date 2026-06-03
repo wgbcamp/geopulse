@@ -708,7 +708,7 @@ export const EventTracking = ({ props }: any) => {
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
                 </div>
             </div>
-            <div className={`absolute z-1 md:-z-1 top-33.5 left-8.25 flex items-center border-solid transition-all duration-300 text-white`} onClick={() =>  toggleLayerSettingsPopup(true)}>
+            <div className={`absolute z-0 md:-z-1 top-33.5 left-8.25 flex items-center border-solid transition-all duration-300 text-white`} onClick={() =>  toggleLayerSettingsPopup(true)}>
                 <div className="rounded-full flex items-center justify-center h-17.5 w-17.5 md:invisible text-white bg-black border-[1.37px] border-solid border-[#0084FF] mr-[10px]" onClick={() => setMobileExposures(!mobileExposures)}>
                     <img src={Exposures}></img>
                 </div>
@@ -737,7 +737,7 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 </div>
             )}
-            <div className={`absolute ${layerSettingsPopup ? 'z-1' : '-z-1'} top-0 h-full w-full bg-[#00000090] flex items-center justify-center`}>
+            <div className={`absolute ${layerSettingsPopup ? 'z-3' : '-z-1'} top-0 h-full w-full bg-[#00000090] flex items-center justify-center`}>
                 <div className='flex flex-col justify-center items-center gap-y-4 h-8/10 w-9/10 rounded-md border-(--accentdarkblue-80) border bg-(--accentdarkblue-100)'>
                     <div className='flex w-full flex-col h-1/10 items-center justify-center'>
                         <div className='flex h-full w-86/100 py-4 items-center justify-between'>
@@ -762,11 +762,11 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 </div>
             </div>
-            <div className={`absolute bottom-0 md:top-50 md:right-0 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default draggable`} style={{
+            <div className={`absolute z-2 bottom-0 md:top-50 md:right-0 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default draggable`} style={{
                         "--drag-y": `${y}px`,
                         touchAction: "none"
                     }}>
-                <div className='h-8 w-full flex items-center justify-center md:hidden' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+                <div className='h-12 w-full flex items-center justify-center md:hidden' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
                     <div className='w-15 h-1 bg-(--accentcoolgray-60) rounded-xl'></div>
                 </div>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
