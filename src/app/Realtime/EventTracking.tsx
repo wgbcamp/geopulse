@@ -691,6 +691,7 @@ export const EventTracking = ({ props }: any) => {
     const onPointerMove = (e) => {
         if (!dragRef.current.active) return;
         const delta = e.clientY - dragRef.current.startY;
+        if (y < MAX_Y) return;
         setY(dragRef.current.startOffset + delta);
     };
 
@@ -761,17 +762,17 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 </div>
             </div>
-            <div className={`absolute bottom-0 md:top-40 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300`} style={{
-                        transform: `translateY(${y}px)`,
+            <div className={`absolute bottom-0 md:top-50 md:right-0 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300 draggable`} style={{
+                        "--drag-y": `${y}px`,
                         touchAction: "none"
                     }}>
-                <div className='h-8 w-full flex items-center justify-center' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
+                <div className='h-8 w-full flex items-center justify-center md:hidden' onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp}>
                     <div className='w-15 h-1 bg-(--accentcoolgray-60) rounded-xl'></div>
                 </div>
                 <div className="h-[37px] shadow-[0px_4px_5.8px_0px_#00000024] flex items-center justify-start">
                     <b className="ml-2">{events?.length || 0} Events in Date Range</b>
                 </div>
-                <div className="h-full overflow-y-scroll flex flex-col justify-start" ref={eventRef}>
+                <div className="h-full pb-20 md:pb-0 overflow-y-scroll flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
                         <div key={event.attributes.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
                             <h3 className="font-bold text-[14px] text-[var(--evenlighterblue)]">{event.attributes.country.toUpperCase()}</h3>
