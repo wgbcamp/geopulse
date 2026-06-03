@@ -762,7 +762,7 @@ export const EventTracking = ({ props }: any) => {
                     </div>
                 </div>
             </div>
-            <div className={`absolute bottom-0 md:top-50 md:right-0 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default transition-all ease-in-out duration-300 draggable`} style={{
+            <div className={`absolute bottom-0 md:top-50 md:right-0 ${eventPopup == "all events" ? "visible" : "invisible"} max-h-full md:h-70/100 w-full md:w-[300px] flex flex-col bg-white shadow-lg/40 cursor-default draggable`} style={{
                         "--drag-y": `${y}px`,
                         touchAction: "none"
                     }}>
