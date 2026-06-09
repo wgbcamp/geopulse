@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { ComboBox } from './comboBox';
 import { Card } from "@/components/ui/card"
@@ -34,18 +34,20 @@ export const Region = ( props: any ) => {
         mapLegendValueRange: Record<string, MeasureRange>
     };
 
-    const [iso3, setIso3] = React.useState(props.defaultIso3);
-    const [chartData, setChartData] = React.useState<ChartData | null>(null);
-    const [mapChartData, setMapChartData] = React.useState<Feature[]>([])
-    const [lineChartData, setLineChartData] = React.useState<Record<string, number[]>>({});
-    const [polygons, setPolygons] = React.useState({
+    const [iso3, setIso3] = useState(props.defaultIso3);
+    const [chartData, setChartData] = useState<ChartData | null>(null);
+    const [mapChartData, setMapChartData] = useState<Feature[]>([])
+    const [lineChartData, setLineChartData] = useState<Record<string, number[]>>({});
+    const [polygons, setPolygons] = useState({
         features: [{}],
         iso3: iso3,
         name: "",
         type: "FeatureCollection"
     });
 
-    const [currentSubnational, setSubnational] = React.useState<Record<any, any>>({refAreaName: null, refArea: null, iso3: null});
+    const [currentSubnational, setSubnational] = useState<Record<any, any>>({refAreaName: null, refArea: null, iso3: null});
+
+    const [yAxisRange, setyAxisRange] = useState<{min: number, max: number, tickInterval: any}>({min: 0, max: 0, tickInterval: undefined});
 
     // set global highcharts chart styling options
     Highcharts.setOptions({
@@ -111,7 +113,6 @@ export const Region = ( props: any ) => {
         SSP245: {color: '#FF8200', symbol: 'triangle'},
         SSP370: {color: '#DA291C', symbol: 'diamond'}
     }
-
 
     // fetch new data when country, hazard or exposure changes
     useEffect(() => {
@@ -336,6 +337,20 @@ export const Region = ( props: any ) => {
 
         return { adm1Data, adm0ChartData, mapLegendValueRange }
     }
+
+    useEffect(() => {
+        switch(props.currentMeasure.id) {
+            case "SPEI_CROP_EXP": setyAxisRange({min: -2.5, max: 2.5, tickInterval: 0.5})
+                break;
+            case "ID_PW_EXP":
+            case "TN_PW_EXP":
+            case "HD_PW_EXP":
+            case "HD_LW_EXP": setyAxisRange({min: 0, max: 365, tickInterval: 25})
+                break;
+            default: setyAxisRange({min: 0, max: 100, tickInterval: undefined})
+        }
+    }, [props.currentMeasure]);
+    
 
     return (
         <Card className="bg-[#1E1E1E] w-full h-9/10 pt-30 dark flex items-center justify-center shadow-md">
@@ -583,8 +598,7 @@ export const Region = ( props: any ) => {
                                             symbol: lineChartStyleMapper[scenario].symbol
                                         }
                                     }))
-                                }}
-                            >
+                                }}>
                                 <Credits enabled={false} />
                                 <XAxis
                                     categories={lineChartXLabels}
@@ -624,6 +638,10 @@ export const Region = ( props: any ) => {
                                             }
                                         }
                                     }}
+                                    min={yAxisRange.min}
+                                    max={yAxisRange.max}
+                                    allowDecimals={true}
+                                    tickInterval={yAxisRange.tickInterval}
                                 />
                                 <Exporting />
                             </Chart>

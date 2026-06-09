@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import {
     Item,
     ItemContent,
-    ItemDescription,
+    Itelgescription,
     ItemGroup,
     ItemHeader,
     ItemTitle,
@@ -38,6 +38,8 @@ export const NewHeader = ({ props }: any) => {
     const [riskOpened, setRiskOpened] = useState<boolean>(false);
     const [scenarioOpened, setScenarioOpened] = useState<boolean>(false);
     const [eventFilterOpened, setEventFilterOpened] = useState<boolean>(false);
+    const [calendarOpened, setCalendarOpened] = useState<boolean>(false);
+    const [hoverDate, setHoverDate] = useState<Date | undefined>(undefined);
     const handleOpenChange = (newOpenState: boolean) => {
         if (newOpenState) {
             setRiskState(props.currentHazard)
@@ -66,44 +68,46 @@ export const NewHeader = ({ props }: any) => {
 
     const calendarComponent =
         <Card className={`rounded-none w-full p-0 items-center justify-center shadow-none border-x-0 gap-0`}>
-            <div className='w-full flex flex-col items-start'>
-                <Popover>
+            <div className='w-full flex flex-col items-center'>
+                <Popover open={calendarOpened} onOpenChange={() => setCalendarOpened(!calendarOpened)}>
                     <PopoverTrigger asChild>
-                        <div className="flex justify-around px-3 max-w-125 gap-x-2">
-                            <div>
-                                <div className="font-bold text-[#707070] text-[11px] w-full">
-                                    <div className='flex'>START</div>
+                        <div className="flex flex-row items-center w-95/100 h-14.75 justify-between cursor-pointer">
+                            <div className="flex w-62 justify-between items-center pl-2">
+                                <div className='flex gap-x-3 items-center'>
+                                    <section className="font-bold text-[14px]">
+                                        {props.dateRange.from ? format(props.dateRange.from, "MMM d, yyyy") : <span>Select a date</span>}
+                                    </section>
+                                    <span>to</span>
+                                    <section className="font-bold text-[14px]">
+                                        {props.dateRange.to ? format(props.dateRange.to, "MMM d, yyyy") : <span>Select a date</span>}
+                                    </section>
                                 </div>
-                                <Button
-                                    variant="outline"
-                                    data-empty={!props.dateRange.from}
-                                    className="w-43.75 h-9 px-4 py-2 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                                >
-                                    {props.dateRange.from ? format(props.dateRange.from, "PPP") : <span>Select a date</span>}
-                                </Button>
+                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <g transform={`rotate(${calendarOpened ? "180" : "0"}, 10, 10)`}>
+                                        <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
+                                    </g>
+                                </svg>
                             </div>
-                            <div>
-                                <div className="font-bold text-[#707070] text-[11px]">
-                                    <div className='flex'>END</div>
-                                </div>
-                                <Button
-                                    variant="outline"
-                                    data-empty={!props.dateRange.to}
-                                    className="w-43.75 h-9 px-4 py-2 justify-between text-left font-normal data-[empty=true]:text-muted-foreground"
-                                >
-                                    {props.dateRange.to ? format(props.dateRange.to, "PPP") : <span>Select a date</span>}
-                                </Button>
-                            </div>
+                            
                         </div>
                     </PopoverTrigger>
                     <PopoverContent className="w-auto p-0 my-2.5 rounded-none flex flex-row">
                         <Calendar
                             mode="range"
                             defaultMonth={props.dateRange.from}
-                            selected={props.dateRange}
+                            selected={
+                                props.dateRange.from && !props.dateRange.to && hoverDate && hoverDate > props.dateRange.from
+                                    ? { from: props.dateRange.from, to: hoverDate }
+                                    : props.dateRange
+                            }
                             onSelect={(date) => {
-                                if (date) props.setDateRange(date)
+                                if (date) props.setDateRange(date);
+                                if (date?.to) setHoverDate(undefined);
                             }}
+                            onDayMouseEnter={(day) => {
+                                if (props.dateRange.from && !props.dateRange.to) setHoverDate(day);
+                            }}
+                            onDayMouseLeave={() => setHoverDate(undefined)}
                             numberOfMonths={2}
                             disabled={(date) => date < new Date("2019-01-01")}
                             startMonth={new Date("2019-01-07")}
@@ -115,8 +119,8 @@ export const NewHeader = ({ props }: any) => {
         </Card>;
 
     return (
-        <div className={`flex fixed top-0 z-3 w-full flex-wrap 2xl:flex-nowrap ${dataOptions || menuOptions ? '' : 'overflow-hidden h-14.75'} md:h-[unset]`}>
-            <div className={`flex flex-col ${menuOptions && !dataOptions ? 'z-2 h-73.75' : '-z-10 h-0 overflow-hidden'} w-full md:w-58 bg-(--accentdarkblue-90) md:bg-[unset] absolute shadow-xl/40`}>
+        <div className={`flex fixed top-0 z-3 w-full flex-wrap 2xl:flex-nowrap ${dataOptions || menuOptions ? '' : 'overflow-hidden h-14.75'} lg:h-[unset]`}>
+            <div className={`flex flex-col ${menuOptions ? 'z-2 h-73.75' : '-z-10 h-0 overflow-hidden'} w-full lg:w-58 bg-(--accentdarkblue-90) lg:bg-[unset] absolute shadow-xl/40`}>
                 <div className='flex w-16.75 h-14.75 justify-center items-center bg-(--accentdarkblue-90) cursor-pointer' onClick={() => setMenuOptions(!menuOptions)}>
                     <div className=" flex items-center flex-center">
                         <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
@@ -131,20 +135,20 @@ export const NewHeader = ({ props }: any) => {
                     <div className='flex items-center w-full h-14.75 text-white cursor-not-allowed'>Team & Contact us</div>
                 </div>
             </div>
-            <div className={`flex w-full md:w-58 justify-between md:justify-start bg-(--fundblue) ${dataOptions ? 'h-0' : 'h-14.75'} overflow-hidden md:h-14.75`}>
+            <div className={`flex w-full lg:w-58 justify-between lg:justify-start bg-(--fundblue) ${dataOptions ? 'h-0' : 'h-14.75'} overflow-hidden lg:h-14.75`}>
                 <div className='flex cursor-pointer' onClick={() => setMenuOptions(!menuOptions)}>
                     <div className='flex h-14.75 w-full'>
-                        <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) md:bg-(--accentdarkblue-90) text-white'>
+                        <div className='relative flex items-center rounded-none h-full w-16.75 bg-(--fundblue) lg:bg-(--accentdarkblue-90) text-white'>
                             <img className='absolute right-4' src={Hamburger}></img>
                             <div className='absolute text-[11px] top-8.5 right-6.5 font-bold'>MENU</div>
                         </div>
                     </div>
                 </div>
-                <div className='w-23 md:w-0'></div>
-                <div className="rounded-none w-full md:w-120 flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
+                <div className='w-23 lg:w-0'></div>
+                <div className="rounded-none w-full lg:w-120 flex flex-row items-center justify-center font-semibold bg-(--fundblue) text-white border-none">
                     <div className=''>IMF GEOPULSE</div>
                 </div>
-                <div className={`flex items-center w-60 md:w-0 md:h-0 overflow-hidden justify-center bg-(--fundblue) rounded-none border-0 border-none`}>
+                <div className={`flex items-center w-60 lg:w-0 lg:h-0 overflow-hidden justify-center cursor-pointer bg-(--fundblue) rounded-none border-0 border-none`}>
                     <div className='h-7/10 flex w-9/10 items-center justify-evenly rounded-lg bg-(--accentblue-30)' onClick={() => setDataOptions(true)}>
                         <svg width="26" height="23" viewBox="0 0 26 23" xmlns="http://www.w3.org/2000/svg">
                             <path d="M0.796233 -2.8491e-05C1.24411 -2.8491e-05 1.59247 0.348323 1.59247 0.796204V18.3133C1.59247 19.657 2.68729 20.702 3.98116 20.702H24.6832C25.1311 20.702 25.4795 21.0504 25.4795 21.4983C25.4795 21.9461 25.1311 22.2945 24.6832 22.2945H3.98116C1.79152 22.2945 0 20.503 0 18.3133V0.796204C0 0.348323 0.348352 -2.8491e-05 0.796233 -2.8491e-05ZM14.7303 4.77737C14.5313 4.77737 14.3322 4.97643 14.3322 5.17549V9.15665C14.3322 9.35571 14.5313 9.55477 14.7303 9.55477H15.5265C15.7256 9.55477 15.9247 9.35571 15.9247 9.15665V5.17549C15.9247 4.97643 15.7256 4.77737 15.5265 4.77737H14.7303ZM14.3322 3.1849V0.796204C14.3322 0.348323 14.6805 -2.8491e-05 15.1284 -2.8491e-05C15.5763 -2.8491e-05 15.9247 0.348323 15.9247 0.796204V3.1849V3.23467C16.8204 3.43373 17.5171 4.22996 17.5171 5.17549V9.15665C17.5171 10.1022 16.8204 10.9482 15.9247 11.0975C15.9247 11.1472 15.9247 11.1472 15.9247 11.1472V13.5359C15.9247 13.9838 15.5763 14.3322 15.1284 14.3322C14.6805 14.3322 14.3322 13.9838 14.3322 13.5359V11.1472C14.3322 11.1472 14.3322 11.1472 14.3322 11.0975C13.4364 10.9482 12.7397 10.1022 12.7397 9.15665V5.17549C12.7397 4.22996 13.4364 3.43373 14.3322 3.23467V3.1849ZM22.2945 9.95288V12.3416C22.2945 12.5406 22.4936 12.7397 22.6926 12.7397H23.4889C23.6879 12.7397 23.887 12.5406 23.887 12.3416V9.95288C23.887 9.75382 23.6879 9.55477 23.4889 9.55477H22.6926C22.4936 9.55477 22.2945 9.75382 22.2945 9.95288ZM22.2945 8.01206V7.9623V5.5736C22.2945 5.12572 22.6429 4.77737 23.0908 4.77737C23.5386 4.77737 23.887 5.12572 23.887 5.5736V7.9623V8.01206C24.7827 8.21112 25.4795 9.00736 25.4795 9.95288V12.3416C25.4795 13.2871 24.7827 14.1331 23.887 14.2824C23.887 14.3322 23.887 14.3322 23.887 14.3322V16.7209C23.887 17.1687 23.5386 17.5171 23.0908 17.5171C22.6429 17.5171 22.2945 17.1687 22.2945 16.7209V14.3322C22.2945 14.3322 22.2945 14.3322 22.2945 14.2824C21.3988 14.1331 20.7021 13.2871 20.7021 12.3416V9.95288C20.7021 9.00736 21.3988 8.21112 22.2945 8.01206ZM7.96233 6.76795C7.96233 6.56889 7.76327 6.36983 7.56421 6.36983H6.76798C6.56892 6.36983 6.36986 6.56889 6.36986 6.76795V12.3416C6.36986 12.5406 6.56892 12.7397 6.76798 12.7397H7.56421C7.76327 12.7397 7.96233 12.5406 7.96233 12.3416V6.76795ZM6.36986 4.82713V4.77737V2.38867C6.36986 1.94079 6.71821 1.59244 7.1661 1.59244C7.61398 1.59244 7.96233 1.94079 7.96233 2.38867V4.77737V4.82713C8.85809 5.02619 9.55479 5.82242 9.55479 6.76795V12.3416C9.55479 13.2871 8.85809 14.1331 7.96233 14.2824C7.96233 14.3322 7.96233 14.3322 7.96233 14.3322V16.7209C7.96233 17.1687 7.61398 17.5171 7.1661 17.5171C6.71821 17.5171 6.36986 17.1687 6.36986 16.7209V14.3322C6.36986 14.3322 6.36986 14.3322 6.36986 14.2824C5.4741 14.1331 4.7774 13.2871 4.7774 12.3416V6.76795C4.7774 5.82242 5.4741 5.02619 6.36986 4.82713Z" fill="#1A3763" />
@@ -153,23 +157,22 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                 </div>
             </div>
-            {/* <div className={`flex justify-end 2xl:justify-start grow 2xl:grow-0 overflow-hidden ${dataOptions ? 'h-14.75' : 'h-0'} md:h-14.75 `}> */}
-            <div className='h-14.75 flex flex-wrap md:flex-nowrap md:w-44'>
-                <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 ${props.currentView !== "Event tracking" ? 'bg-[var(--unselectedview)]' : 'bg-white'} border-0`}>
-                    <div className='h-full flex flex-col justify-end w-40 md:w-44'>
+            <div className='h-14.75 flex flex-wrap lg:flex-nowrap lg:w-40'>
+                <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 hover:bg-white transition-colors duration-200 ${props.currentView !== "Event tracking" ? 'bg-(--accentblue-30)' : 'bg-white'} border-0`}>
+                    <div className='h-full flex flex-col justify-end w-40'>
                         <div className="text-[11px]">REAL-TIME</div>
-                        <div className="flex flex-row h-[35px] items-center justify-center">
+                        <div className="flex flex-row h-[35px] items-center justify-center cursor-pointer">
                             <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                 <path d="M18.537 9.99983C18.537 14.7074 14.7075 18.5372 10.0003 18.5372C5.29321 18.5372 1.463 14.7074 1.463 9.99983C1.463 5.2923 5.29287 1.46244 10.0003 1.46244C11.7447 1.46244 13.4073 1.98621 14.815 2.95286L13.1275 3.19924L13.3392 4.64652L17.3756 4.05635L16.7835 0.0202228L15.3363 0.232225L15.5483 1.67748C13.9192 0.586124 12.0042 0 9.99966 0C4.48571 0 0 4.48643 0 10.0002C0 15.5142 4.48638 20 10.0003 20C15.5143 20 20 15.5139 20 9.99983H18.537ZM7.43361 3.65628L6.0852 4.22286L9.25182 11.7565L16.7859 8.58929L16.2197 7.24077L10.0334 9.84142L7.43361 3.65628Z" fill={`${props.currentView !== "Event tracking" ? 'black' : 'var(--orange)'}`} />
                             </svg>
-                            <div className={`text-sm font-bold text-end flex items-center pl-1 cursor-pointer ${props.currentView !== "Event tracking" ? 'text-red' : 'text-(--orange)'}`} onClick={() => props.setView("Event tracking")}>Event Tracking</div>
+                            <div className={`text-sm font-bold text-end flex items-center pl-1 ${props.currentView !== "Event tracking" ? 'text-red' : 'text-(--orange)'}`} onClick={() => props.setView("Event tracking")}>Event Tracking</div>
                         </div>
                     </div>
                     <div className={`h-1 w-full bg-(--orange) ${props.currentView === "Event tracking" ? "opacity-100" : "opacity-0"}`}></div>
                 </Card>
             </div>
             {props.currentView === "Event tracking" ?
-                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden md:h-14.75 w-full md:w-192 2xl:w-145 order-1 2xl:order-0`}>
+                <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden lg:h-14.75 w-full lg:w-88 2xl:w-145 order-1 2xl:order-0`}>
                     <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 w-65 2xl:px-2">
                         <Popover open={eventFilterOpened} onOpenChange={() => setEventFilterOpened(!eventFilterOpened)}>
                             <PopoverTrigger asChild>
@@ -201,21 +204,11 @@ export const NewHeader = ({ props }: any) => {
                 </div>
                 :
                 null}
-            <div className='h-14.75 flex grow md:grow-0 md:w-90'>
-                <Card className={`rounded-none grow p-0 h-full flex flex-col items-center justify-end gap-0 ${props.currentView == "Event tracking" ? 'bg-(--accentblue-40)' : 'bg-white'} border-0`}>
+            <div className='h-14.75 flex grow lg:grow-0 lg:w-70'>
+                <Card className={`shadow-none rounded-none grow p-0 h-full flex flex-col items-center justify-end gap-0 hover:bg-white transition-colors duration-200 ${props.currentView == "Compare" || props.currentView == "Grid" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                     <div className="text-[11px]">FORWARD LOOKING</div>
                     <div className="flex flex-end flex-col w-full ">
                         <div className="flex flex-row justify-evenly items-start w-full h-full">
-                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Grid")}>
-                                <div className="flex flex-row h-8.75 items-center justify-center">
-                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M3.67078 0.396729C1.86271 0.396729 0.396973 1.86246 0.396973 3.67054V16.3293C0.396973 18.1373 1.86271 19.6031 3.67078 19.6031H16.3295C18.1376 19.6031 19.6033 18.1373 19.6033 16.3293V3.67054C19.6033 1.86246 18.1376 0.396729 16.3295 0.396729H3.67078ZM16.3295 1.70625C17.4144 1.70625 18.2938 2.58569 18.2938 3.67054V4.3253L1.7065 4.3253V3.67054C1.7065 2.58569 2.58594 1.70625 3.67078 1.70625H16.3295ZM1.7065 5.63482L18.2938 5.63482V14.365L1.7065 14.365V5.63482ZM1.7065 16.3293V15.6745L18.2938 15.6745V16.3293C18.2938 17.4141 17.4144 18.2936 16.3295 18.2936H3.67078C2.58594 18.2936 1.7065 17.4141 1.7065 16.3293ZM13.9985 9.34514H6.00186L6.7792 8.47062C7.01945 8.20035 6.9951 7.78649 6.72483 7.54625C6.45455 7.30601 6.0407 7.33035 5.80045 7.60062L4.05442 9.56491C3.83391 9.81299 3.83391 10.1868 4.05442 10.4349L5.80045 12.3992C6.0407 12.6695 6.45455 12.6938 6.72483 12.4536C6.9951 12.2133 7.01945 11.7995 6.7792 11.5292L6.00184 10.6547H13.9985L13.2211 11.5292C12.9809 11.7995 13.0052 12.2133 13.2755 12.4536C13.5458 12.6938 13.9596 12.6695 14.1999 12.3992L15.9459 10.4349L15.9551 10.4243C16.047 10.3165 16.1045 10.1785 16.1107 10.0272C16.1114 10.0097 16.1115 9.99207 16.1108 9.9745C16.1048 9.8165 16.0427 9.67284 15.944 9.5628L14.1999 7.60062C13.9596 7.33035 13.5458 7.30601 13.2755 7.54625C13.0052 7.78649 12.9809 8.20035 13.2211 8.47062L13.9985 9.34514Z" fill={`${props.currentView === "Grid" ? "var(--orange)" : "black"}`} />
-                                    </svg>
-                                    <div className={`text-sm ${props.currentView === "Grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pl-1 pr-0.5`}>Grid</div>
-                                </div>
-                                <div className={`h-1 bg-(--orange) ${props.currentView === "Grid" ? "opacity-100" : "opacity-0"}`}></div>
-                            </div>
-                            <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
                             <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Compare")}>
                                 <div className="flex flex-row h-8.75 items-center justify-center">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -225,18 +218,29 @@ export const NewHeader = ({ props }: any) => {
                                 </div>
                                 <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
                             </div>
-
+                            <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
+                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => props.setView("Grid")}>
+                                <div className="flex flex-row h-8.75 items-center justify-center">
+                                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M3.67078 0.396729C1.86271 0.396729 0.396973 1.86246 0.396973 3.67054V16.3293C0.396973 18.1373 1.86271 19.6031 3.67078 19.6031H16.3295C18.1376 19.6031 19.6033 18.1373 19.6033 16.3293V3.67054C19.6033 1.86246 18.1376 0.396729 16.3295 0.396729H3.67078ZM16.3295 1.70625C17.4144 1.70625 18.2938 2.58569 18.2938 3.67054V4.3253L1.7065 4.3253V3.67054C1.7065 2.58569 2.58594 1.70625 3.67078 1.70625H16.3295ZM1.7065 5.63482L18.2938 5.63482V14.365L1.7065 14.365V5.63482ZM1.7065 16.3293V15.6745L18.2938 15.6745V16.3293C18.2938 17.4141 17.4144 18.2936 16.3295 18.2936H3.67078C2.58594 18.2936 1.7065 17.4141 1.7065 16.3293ZM13.9985 9.34514H6.00186L6.7792 8.47062C7.01945 8.20035 6.9951 7.78649 6.72483 7.54625C6.45455 7.30601 6.0407 7.33035 5.80045 7.60062L4.05442 9.56491C3.83391 9.81299 3.83391 10.1868 4.05442 10.4349L5.80045 12.3992C6.0407 12.6695 6.45455 12.6938 6.72483 12.4536C6.9951 12.2133 7.01945 11.7995 6.7792 11.5292L6.00184 10.6547H13.9985L13.2211 11.5292C12.9809 11.7995 13.0052 12.2133 13.2755 12.4536C13.5458 12.6938 13.9596 12.6695 14.1999 12.3992L15.9459 10.4349L15.9551 10.4243C16.047 10.3165 16.1045 10.1785 16.1107 10.0272C16.1114 10.0097 16.1115 9.99207 16.1108 9.9745C16.1048 9.8165 16.0427 9.67284 15.944 9.5628L14.1999 7.60062C13.9596 7.33035 13.5458 7.30601 13.2755 7.54625C13.0052 7.78649 12.9809 8.20035 13.2211 8.47062L13.9985 9.34514Z" fill={`${props.currentView === "Grid" ? "var(--orange)" : "black"}`} />
+                                    </svg>
+                                    <div className={`text-sm ${props.currentView === "Grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pl-1 pr-0.5`}>Grid</div>
+                                </div>
+                                <div className={`h-1 bg-(--orange) ${props.currentView === "Grid" ? "opacity-100" : "opacity-0"}`}></div>
+                            </div>
                         </div>
                     </div>
                 </Card>
-                <div className='bg-white h-full w-10 md:w-0 flex justify-center items-center ' style={props.currentView == "Event tracking" ? { backgroundColor: "var(--accentblue-40)" } : { backgroundColor: "white" }}>
-                    <Dismiss12RegularIcon size={18} onClick={() => setDataOptions(false)} />
+                <div className='bg-white h-full w-10 lg:w-0 lg:hidden flex justify-center items-center cursor-pointer' style={props.currentView == "Event tracking" ? { backgroundColor: "bg-(--accentblue-30)" } : { backgroundColor: "white" }}>
+                    <div className=" flex items-center flex-center" onClick={() => setDataOptions(false)} >
+                        <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.390625 1.67969C0 1.32812 0 0.703125 0.390625 0.351562C0.742188 0 1.32812 0 1.67969 0.351562L7.57812 6.25L13.4766 0.351562C13.8672 0 14.4531 0 14.8047 0.351562C15.1953 0.742188 15.1953 1.32812 14.8047 1.67969L8.90625 7.57812L14.8047 13.4766C15.1953 13.8281 15.1953 14.4531 14.8047 14.8047C14.4531 15.1562 13.8672 15.1562 13.4766 14.8047L7.57812 8.90625L1.67969 14.8047C1.32812 15.1562 0.742188 15.1562 0.390625 14.8047C0 14.4531 0 13.8281 0.390625 13.4766L6.28906 7.57812L0.390625 1.67969Z" fill="black" />
+                        </svg>
+                    </div>
                 </div>
             </div>
-            {/* </div> */}
-
             {(props.currentView === "Compare" || props.currentView === "Grid") ?
-                <div className={`flex flex-col 2xl:flex-row w-full md:w-192  ${dataOptions ? 'h-full' : 'h-0'} md:h-52 2xl:h-14.75 overflow-hidden`}>
+                <div className={`flex flex-col lg:flex-row 2xl:flex-row w-full  ${dataOptions ? 'h-full' : 'h-0'} lg:h-52 2xl:h-14.75 overflow-hidden`}>
                     <Card className="rounded-none p-0 flex flex-col h-14.75 items-center justify-center gap-0 2xl:px-2">
                         <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                             <PopoverTrigger asChild>
