@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 
+import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
+
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import GroupLayer from "@arcgis/core/layers/GroupLayer.js";
 
@@ -258,6 +260,25 @@ export const EventTracking = ({ props }: any) => {
                 popupEnabled: false
             });
 
+            // force the view view.current.center to the yLimit whenever the user reaches the limit
+            const WORLD_HALF_HEIGHT = 20037508.34; // Web Mercator y at ±85.05°
+
+            reactiveUtils.watch(
+                () => view.current.extent,
+                (extent) => {
+                    if (!extent) return;
+
+                    const halfViewHeight = extent.height / 2;
+                    const yLimit = Math.max(0, WORLD_HALF_HEIGHT - halfViewHeight);
+
+                    if (Math.abs(view.current.center.y) > yLimit) {
+                        const clamped = view.current.center.clone();
+                        clamped.y = Math.sign(clamped.y) * yLimit;
+                        view.current.center = clamped;
+                    }
+                }
+            );
+
             // resize minimum zoom level when viewport is resized
             const resizeObserver = new ResizeObserver((entries) => {
                 const { width, height } = entries[0].contentRect;
@@ -384,6 +405,7 @@ export const EventTracking = ({ props }: any) => {
             setFocusedSliderValue([0]); // reset focused slider value
         }
     }
+
     useEffect(() => {
 
         if (!map.current) return;
