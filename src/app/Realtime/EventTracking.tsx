@@ -30,7 +30,7 @@ import Exposures from '../../assets/Layers.svg';
 
 export const EventTracking = ({ props }: any) => {
 
-    const [realtimeExposure, setRealtimeExposure] = useState<string>("Population");
+    const [realtimeExposure, setRealtimeExposure] = useState<{exposure: string, filter: string}>({ exposure: "Population", filter: "Population"});
     const [events, setEvents] = useState<any>(null);
     // const [hiddenEvents, setHiddenEvents] = useState<number>(0);
     const [focusedEvent, setFocusedEvent] = useState<any>("");
@@ -56,7 +56,7 @@ export const EventTracking = ({ props }: any) => {
     const eventFeatureLayer = useRef<FeatureLayer | null>(null);
     const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
 
-    const [popInState, setPopInState] = useState<string>("");
+    const [popInState, setPopInState] = useState<string>("initial");
     const [layerSettingsPopup, setLayerSettingsPopup] = useState<boolean>(false); 
 
     const exposureLayerForGroup = useRef<any>(null);
@@ -260,24 +260,24 @@ export const EventTracking = ({ props }: any) => {
                 popupEnabled: false
             });
 
-            // force the view view.current.center to the yLimit whenever the user reaches the limit
-            const WORLD_HALF_HEIGHT = 20037508.34; // Web Mercator y at ±85.05°
+            // force the view view.current.center to the yLimit whenever the user reaches the limit (need to review and fix)
+            // const WORLD_HALF_HEIGHT = 20037508.34; // Web Mercator y at ±85.05°
 
-            reactiveUtils.watch(
-                () => view.current.extent,
-                (extent) => {
-                    if (!extent) return;
+            // reactiveUtils.watch(
+            //     () => view.current.extent,
+            //     (extent) => {
+            //         if (!extent) return;
 
-                    const halfViewHeight = extent.height / 2;
-                    const yLimit = Math.max(0, WORLD_HALF_HEIGHT - halfViewHeight);
+            //         const halfViewHeight = extent.height / 2;
+            //         const yLimit = Math.max(0, WORLD_HALF_HEIGHT - halfViewHeight);
 
-                    if (Math.abs(view.current.center.y) > yLimit) {
-                        const clamped = view.current.center.clone();
-                        clamped.y = Math.sign(clamped.y) * yLimit;
-                        view.current.center = clamped;
-                    }
-                }
-            );
+            //         if (Math.abs(view.current.center.y) > yLimit) {
+            //             const clamped = view.current.center.clone();
+            //             clamped.y = Math.sign(clamped.y) * yLimit;
+            //             view.current.center = clamped;
+            //         }
+            //     }
+            // );
 
             // resize minimum zoom level when viewport is resized
             const resizeObserver = new ResizeObserver((entries) => {
@@ -332,7 +332,7 @@ export const EventTracking = ({ props }: any) => {
 
         
         // assign exposure layer values based on realtime exposure value 
-        switch (realtimeExposure) {
+        switch (realtimeExposure.exposure) {
             case "Population":
             // case "Vulnerable People":
             case "Buildings":
@@ -341,20 +341,20 @@ export const EventTracking = ({ props }: any) => {
             case "Urban GDP":
             case "Cropland":
                 exposureLayer.current = new ImageryTileLayer({
-                    url: realtimeObject[realtimeExposure].url,
-                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
+                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
+                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure.exposure].colorScheme }),
                     title: "exposure"
                 });
                 exposureLayerForGroup.current = new ImageryTileLayer({
-                    url: realtimeObject[realtimeExposure].url,
-                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure].colorScheme }),
+                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
+                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure.exposure].colorScheme }),
                     title: "exposure"
                 });
                 break;
             case "Airports":
             case "Ports":
                 exposureLayer.current = new FeatureLayer({
-                    url: realtimeObject[realtimeExposure].url,
+                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
                     effect: "bloom(1.8, 0.85px, 0.4)",
                     renderer: new SimpleRenderer({
                         symbol: new SimpleMarkerSymbol({
@@ -366,7 +366,7 @@ export const EventTracking = ({ props }: any) => {
                     title: "exposure"
                 });
                 exposureLayerForGroup.current = new FeatureLayer({
-                    url: realtimeObject[realtimeExposure].url,
+                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
                     effect: "bloom(1.8, 0.85px, 0.4)",
                     renderer: new SimpleRenderer({
                         symbol: new SimpleMarkerSymbol({
@@ -616,7 +616,7 @@ export const EventTracking = ({ props }: any) => {
             icon: <svg width="17" height="17" viewBox="0 0 17 17" fill="white" xmlns="http://www.w3.org/2000/svg">
                 <path d="M9.26163 2.05815C9.26163 1.47929 8.81141 1.02908 8.23256 1.02908C7.65371 1.02908 7.20349 1.47929 7.20349 2.05815C7.20349 2.637 7.65371 3.08721 8.23256 3.08721C8.81141 3.08721 9.26163 2.637 9.26163 2.05815ZM6.17442 2.05815C6.17442 0.9326 7.10701 5.48363e-06 8.23256 5.48363e-06C9.3581 5.48363e-06 10.2907 0.9326 10.2907 2.05815C10.2907 3.18369 9.3581 4.11628 8.23256 4.11628C7.10701 4.11628 6.17442 3.18369 6.17442 2.05815ZM3.08721 3.60175C3.50527 3.60175 3.85901 3.24801 3.85901 2.82995C3.85901 2.41189 3.50527 2.05815 3.08721 2.05815C2.66915 2.05815 2.31541 2.41189 2.31541 2.82995C2.31541 3.24801 2.66915 3.60175 3.08721 3.60175ZM3.08721 1.02908C4.08412 1.02908 4.88808 1.83304 4.88808 2.82995C4.88808 3.82686 4.08412 4.63082 3.08721 4.63082C2.0903 4.63082 1.28634 3.82686 1.28634 2.82995C1.28634 1.83304 2.0903 1.02908 3.08721 1.02908ZM13.3779 3.60175C13.796 3.60175 14.1497 3.24801 14.1497 2.82995C14.1497 2.41189 13.796 2.05815 13.3779 2.05815C12.9598 2.05815 12.6061 2.41189 12.6061 2.82995C12.6061 3.24801 12.9598 3.60175 13.3779 3.60175ZM13.3779 1.02908C14.3748 1.02908 15.1788 1.83304 15.1788 2.82995C15.1788 3.82686 14.3748 4.63082 13.3779 4.63082C12.381 4.63082 11.577 3.82686 11.577 2.82995C11.577 1.83304 12.381 1.02908 13.3779 1.02908ZM4.08412 6.20658C3.85901 6.52817 3.66606 6.84975 3.50527 7.20349C2.12246 7.23565 1.02907 8.39336 1.02907 9.77617C1.02907 10.548 1.35065 11.2233 1.89735 11.7057C1.99382 11.8021 2.05814 11.9308 2.05814 12.0916V14.9215C2.05814 15.2109 1.83303 15.4361 1.5436 15.4361C1.25418 15.4361 1.02907 15.2109 1.02907 14.9215V12.2845C0.385901 11.6414 0 10.7731 0 9.77617C0 7.78235 1.60792 6.17442 3.60174 6.17442C3.76254 6.17442 3.92333 6.17442 4.08412 6.20658ZM12.9598 7.20349C12.7991 6.84975 12.6061 6.52817 12.381 6.20658C12.5418 6.17442 12.7026 6.17442 12.8634 6.17442C14.8572 6.17442 16.4651 7.78235 16.4651 9.77617C16.4651 10.7731 16.0792 11.6414 15.436 12.2845V14.9215C15.436 15.2109 15.2109 15.4361 14.9215 15.4361C14.6321 15.4361 14.407 15.2109 14.407 14.9215V12.0916C14.407 11.9308 14.4713 11.8021 14.5678 11.7057C15.1145 11.2233 15.436 10.548 15.436 9.77617C15.436 8.39336 14.3427 7.26781 12.9598 7.20349ZM8.23256 6.68896C6.81759 6.68896 5.65988 7.84666 5.65988 9.26163V9.77617C5.65988 10.548 5.98147 11.2233 6.52816 11.7057C6.62464 11.8021 6.68895 11.9308 6.68895 12.0916V14.6642C6.68895 15.0823 7.0427 15.4361 7.46076 15.4361H9.00436C9.42242 15.4361 9.77616 15.0823 9.77616 14.6642V12.0916C9.77616 11.9308 9.84048 11.8021 9.93696 11.7057C10.4836 11.2233 10.8052 10.548 10.8052 9.77617V9.26163C10.8052 7.84666 9.64753 6.68896 8.23256 6.68896ZM4.63081 9.26163C4.63081 7.26781 6.23874 5.65989 8.23256 5.65989C10.2264 5.65989 11.8343 7.26781 11.8343 9.26163V9.77617C11.8343 10.7731 11.4484 11.6414 10.8052 12.2845V14.6642C10.8052 15.6612 10.0013 16.4651 9.00436 16.4651H7.46076C6.46384 16.4651 5.65988 15.6612 5.65988 14.6642V12.2845C5.01672 11.6414 4.63081 10.7731 4.63081 9.77617V9.26163Z" />
             </svg>,
-            categories: ["Children < 15 years old", "Working population", "65 year old +"]
+            categories: ["Working population", "< 15 years old", "≥ 65 years old"]
         },
         {
             name: "Buildings",
@@ -735,8 +735,8 @@ export const EventTracking = ({ props }: any) => {
                 <div id={`${index}`} className={`absolute -z-1 md:z-1 left-8.25 pointer-events-none`} style={{top: index*55 + 200}} onMouseLeave={() => setPopInState("")}>
                     <div className=' flex gap-2 items-start pointer-events-none has-[.pop-in]:pointer-events-auto'>
                         <div className={`flex items-center border-solid transition-all duration-300 text-white`}>
-                                <div className={`flex items-center pointer-events-auto cursor-pointer transition-all duration-300  text-white`} onClick={() =>  setRealtimeExposure(e.name)} onMouseEnter={() => togglePopIn(e.name)}>
-                                    <div className={`rounded-full flex items-center justify-start ${realtimeExposure == e.name ? 'bg-(--accentblue-100)' : 'bg-black hover:bg-(--accentdarkblue-100)'} transition-all duration-300 border-[1.37px] border-solid border-[#0084FF] h-[37px] pr-[10px]`}>
+                                <div className={`flex items-center pointer-events-auto cursor-pointer transition-all duration-300  text-white`} onClick={() => setRealtimeExposure({exposure: e.name, filter: e.name}) } onMouseEnter={() => togglePopIn(e.name)}>
+                                    <div className={`rounded-full flex items-center justify-start ${realtimeExposure.exposure == e.name ? 'bg-(--accentblue-100)' : 'bg-black hover:bg-(--accentdarkblue-100)'} transition-all duration-300 border-[1.37px] border-solid border-[#0084FF] h-[37px] pr-[10px]`}>
                                         <div className='rounded-full flex items-center justify-center bg-black border border-solid border-[#0084FF] h-[37px] w-[37px]'>{e.icon}</div>
                                         <div className='text-white text-[12px] ml-3 font-bold'>{e.name}</div>
 
@@ -745,7 +745,7 @@ export const EventTracking = ({ props }: any) => {
                         </div>
                         <div id='exposureContainer' className={`pointer-events-none has-[.pop-in]:pointer-events-auto flex gap-2 flex-wrap max-w-5/10 items-center border-solid transition-all duration-300 text-white`}>
                             {e.categories.map((f: any, index: number) =>
-                                <div id={`exposure_category_${f}`} className={`exposure_ h-9 bg-black border-2 rounded-2xl px-5 opacity-0 cursor-pointer ${popInState == e.name ? 'pop-in' : 'pop-out'} ${realtimeExposure == e.name ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} style={{ animationDelay: index * 50 + 'ms' }} onClick={() => setRealtimeExposure(e.name)}>
+                                <div id={`exposure_category_${f}`} className={`exposure_ h-9 bg-black border-2 rounded-2xl px-5 opacity-0 cursor-pointer ${popInState == e.name ? 'pop-in' : popInState == "initial" ? '' : 'pop-out'} ${realtimeExposure.filter == f ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} style={{ animationDelay: index * 50 + 'ms' }} onClick={() => setRealtimeExposure({exposure: e.name, filter: f})}>
                                     <div className='h-9/10 flex justify-center items-center overflow-hidden'>
                                         <div className='text-white text-[12px] font-bold'>{f}</div>
                                     </div>
@@ -769,7 +769,7 @@ export const EventTracking = ({ props }: any) => {
                             <section className='text-left w-95/100 font-bold text-(--accentdarkblue-50)'>EXPOSURES</section>
                             <div className='flex flex-row flex-wrap gap-3'>
                                 {exposuresArray.map((e: any) =>
-                                    <div className={`w-25 h-25 bg-black border-2 rounded-2xl cursor-pointer ${realtimeExposure == e.name ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} onClick={() => {setRealtimeExposure(e.name); setLayerSettingsPopup(false);}}>
+                                    <div className={`w-25 h-25 bg-black border-2 rounded-2xl cursor-pointer ${realtimeExposure.exposure == e.name ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} onClick={() => {setRealtimeExposure({exposure: e.name, filter: e.name}); setLayerSettingsPopup(false);}}>
                                         <div className='h-full flex justify-center items-end'>
                                             <div className='text-white text-[12px] font-bold'>{e.name}</div>
                                         </div>
@@ -918,11 +918,11 @@ export const EventTracking = ({ props }: any) => {
                 </div>
                 <div className='h-3/10 w-8/10 flex flex-col items-center justify-end'>
                     <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
-                        <div>{realtimeExposure.toUpperCase()}</div>
+                        <div>{realtimeExposure.exposure.toUpperCase()}</div>
                     </div>
-                    <div className="h-1/10 w-full" style={{ background: `linear-gradient(to right, ${realtimeObject[realtimeExposure].colorScheme.map((e, i) => 'rgba(' + e.symbol.color.join(",") + ') ' + (i / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "%," + ' rgba(' + e.symbol.color.join(",") + ') ' + ((i + 1) / realtimeObject[realtimeExposure].colorScheme.length) * 100 + "% ").join(",")})` }}></div>
+                    <div className="h-1/10 w-full" style={{ background: `linear-gradient(to right, ${realtimeObject[realtimeExposure.exposure].colorScheme.map((e, i) => 'rgba(' + e.symbol.color.join(",") + ') ' + (i / realtimeObject[realtimeExposure.exposure].colorScheme.length) * 100 + "%," + ' rgba(' + e.symbol.color.join(",") + ') ' + ((i + 1) / realtimeObject[realtimeExposure.exposure].colorScheme.length) * 100 + "% ").join(",")})` }}></div>
                     <div className="h-[20px] w-full flex justify-between">
-                        {realtimeObject[realtimeExposure].colorScheme.map((e, i) =>
+                        {realtimeObject[realtimeExposure.exposure].colorScheme.map((e, i) =>
                             <div className="flex flex-col w-full h-[full]">
                                 <div style={{ justifyContent: 'center' }} className='flex items-start w-full h-[20px]'>
                                     <div className="flex justify-end items-start w-full gap-0">

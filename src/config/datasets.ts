@@ -355,11 +355,16 @@ const thresholdToTitle: Record<string, string> = {
 }
 
 
-export const realtimeObject: Record<string, { url: string, colorScheme: Array<Record<string, any>> }> = {
+export const realtimeObject: Record<string, { url: Record<string,string>, colorScheme: Array<Record<string, any>> }> = {
 
     "Population": 
     {
-        url: `${URL_RTBASE}/worldpop_population/ImageServer`,
+        url: {
+            "Population": `${URL_RTBASE}/worldpop_population/ImageServer`,
+            "< 15 years old": `${URL_RTBASE}/worldpop_population_0_14/ImageServer`,
+            "Working population": `${URL_RTBASE}/worldpop_population_15_64/ImageServer`,
+            "≥ 65 years old": `${URL_RTBASE}/worldpop_population_65plus/ImageServer`
+        },
         colorScheme: [
             {
                 "minValue": 0.0,
@@ -407,11 +412,10 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
                 "label": "> 284"
             }
         ]
-
     },
     "Vulnerable People":
     {
-        url: `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer`,
+        url: { "Vulnerable People": `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer` },
         colorScheme: [
             {
                 "minValue": 0.0,
@@ -463,7 +467,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "Buildings":
     {
-       url: `${URL_RTBASE}/gba_buildings_count/ImageServer`,
+       url: { "Buildings": `${URL_RTBASE}/gba_buildings_count/ImageServer` },
         colorScheme: [
             {
                 "minValue": 0.0,
@@ -515,7 +519,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "Nightlights":
     {
-        url: `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer`,
+        url: { "Nightlights": `${URL_RTBASE}/viirs_nighttimelights_harmonized/ImageServer` },
         colorScheme: [
             {
                 'minValue': 7,
@@ -551,7 +555,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
    "GDP":
     {
-        url: `${URL_RTBASE}/imf_gdp_total_2021_logv3/ImageServer`,
+        url: { "GDP": `${URL_RTBASE}/imf_gdp_total_2021_logv3/ImageServer` },
         colorScheme: [
             {
                 "minValue": 5.9,
@@ -603,7 +607,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "Urban GDP":
     {
-        url: `${URL_RTBASE}/murakami_urbangdp/ImageServer`,
+        url: { "Urban GDP": `${URL_RTBASE}/murakami_urbangdp/ImageServer` },
         colorScheme: [
             {
                 "minValue": 4.0,
@@ -655,7 +659,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "Cropland":
     {
-        url: `${URL_RTBASE}/esri_cropland/ImageServer`,
+        url: { "Cropland": `${URL_RTBASE}/esri_cropland/ImageServer` },
         colorScheme: [
             {
                 'minValue': 0.5,
@@ -667,7 +671,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "Airports":
     {
-        url: `${URL_BASE}/airports_latest/FeatureServer`,
+        url: { "Airports": `${URL_BASE}/airports_latest/FeatureServer` },
         colorScheme: [
             {
                 'minValue': 0.5,
@@ -679,7 +683,7 @@ export const realtimeObject: Record<string, { url: string, colorScheme: Array<Re
     },
     "Ports":
     {
-        url: `${URL_BASE}/PortWatch_ports_database/FeatureServer`,
+        url: { "Ports": `${URL_BASE}/PortWatch_ports_database/FeatureServer` },
         colorScheme: [
             {
                 'minValue': 0.5,
