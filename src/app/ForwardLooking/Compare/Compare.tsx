@@ -2,8 +2,8 @@ import { Region } from "./region";
 
 export const CompareView = (props: any) => {
     return (
-        <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15" >
-            <div className="w-9/10 h-full dark flex flex-col lg:flex-row gap-5  pt-18">
+        <div className="bg-[#1E1E1E] w-full flex justify-center pb-15" >
+            <div className="w-9/10 dark flex flex-col lg:flex-row gap-5 pt-18">
                 <Region
                     defaultIso3={"CHN"}
                     {...props}

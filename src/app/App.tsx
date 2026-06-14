@@ -1,29 +1,18 @@
 import './App.css'
-import React, { useState, useEffect } from 'react'
-import { GridView } from './ForwardLooking/Grid/Grid';
-import { NewHeader } from './Header/Header';
-import { CompareView } from './ForwardLooking/Compare/Compare';
-import { Thresholds } from './ForwardLooking/Compare/thresholds';
-import { EventTracking } from './Realtime/EventTracking';
-import { About } from './Articles/About';
+import React, { useState, useEffect, useContext } from 'react'
+import { GridView } from './ForwardLooking/Grid/Grid'
+import { NewHeader } from './Header/Header'
+import { CompareView } from './ForwardLooking/Compare/Compare'
+import { Thresholds } from './ForwardLooking/Compare/thresholds'
+import { EventTracking } from './Realtime/EventTracking'
+import { About } from './Articles/About'
 import { type DateRange } from "react-day-picker"
-import { DataMethodology } from './Articles/DataMethodology';
-
-
-type JsonShape = {
-  features: Array<{
-    properties: {
-      GID_0: string,
-      GID_1: string,
-      COUNTRY: string,
-      NAME_1: string
-    }
-  }>
-};
+import { DataMethodology } from './Articles/DataMethodology'
+import { RoutingContext } from '../context/Routing';
 
 function App() {
 
-  const base = import.meta.env.VITE_BASE;
+  const page = useContext(RoutingContext);
 
   const [currentView, setView] = useState("Event tracking");
   const [currentTime, setTime] = useState<number>(1980);
@@ -39,17 +28,31 @@ function App() {
   });
   const [eventFilter, setEventFilter] = useState<string>("All Events");
 
-  let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null);
-
-  useEffect(() => {
-    const getGeoJson = async () => {
-      console.log(base);
-      var getData = await fetch(`${base}/GADM_ADMIN1.json`);
-      geoJson = await getData.json();
-      setGeoJson(geoJson);
-    }
-    getGeoJson();
-  }, []);
+  const pagesMapping: any = {
+    "about": <About />,
+    "datamethodology": <DataMethodology />,
+    "eventtracking": <EventTracking props={{
+      dateRange: dateRange,
+      setDateRange: setDateRange,
+      eventFilter: eventFilter,
+    }} />,
+    "compare": <CompareView props={{
+      currentTime,
+      currentScenario,
+      currentExposure,
+      currentHazard,
+      currentMeasure,
+      currentThreshold,
+      setScenario,
+      setThreshold
+    }} />,
+    grid: <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />,
+    "": <EventTracking props={{
+      dateRange: dateRange,
+      setDateRange: setDateRange,
+      eventFilter: eventFilter,
+    }} />
+  };
 
   return (
     <div className='h-full'>
@@ -70,53 +73,10 @@ function App() {
         dateRange: dateRange,
         setDateRange: setDateRange,
         eventFilter: eventFilter,
-        setEventFilter: setEventFilter
-      }} />   
-      {(() => {
-        switch (currentView) {
-          case 'About':
-            return <About />
-          case 'DataMethodology':
-            return <DataMethodology />
-          case 'Event tracking':
-            return <EventTracking props={{
-          dateRange: dateRange,
-          setDateRange: setDateRange,
-          eventFilter: eventFilter,
-        }} />
-          case 'Grid':
-            return <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />
-          case 'Compare':
-            return <div>
-          <div className="bg-[#1E1E1E] w-full h-full flex justify-center pb-15">
-            <div className="w-9/10 h-full dark flex flex-col 2xl:flex-row gap-x-5 pt-18">
-              <CompareView props={{
-                currentTime,
-                currentScenario,
-                geoJson,
-                currentExposure,
-                currentHazard,
-                currentMeasure,
-                currentThreshold,
-                setScenario,
-                setThreshold
-              }} />
-            </div>
-          </div>
-          <Thresholds props={{
-            currentHazard,
-            currentExposure,
-            currentThreshold,
-            currentMeasure,
-            setThreshold,
-            setMeasure
-          }} />
-        </div>
-        }
-      })()}
-   
+        setEventFilter: setEventFilter,
+      }} />
+      {pagesMapping[page.pageStatus]}
     </div>
-
   )
 }
 

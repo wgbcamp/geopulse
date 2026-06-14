@@ -25,7 +25,34 @@ export const Region = ( props: any ) => {
     props = {
         ...props.props,
         defaultIso3: props.defaultIso3,
-    }
+    }    
+
+    type JsonShape = {
+        features: Array<{
+            properties: {
+                GID_0: string,
+                GID_1: string,
+                COUNTRY: string,
+                NAME_1: string
+            }
+        }>
+    };
+
+    let [geoJson, setGeoJson] = React.useState<JsonShape | any>(null);
+    
+      const base = import.meta.env.VITE_BASE;
+
+
+      useEffect(() => {
+        const getGeoJson = async () => {
+          var getData = await fetch(`${base}/GADM_ADMIN1.json`);
+          geoJson = await getData.json();
+          setGeoJson(geoJson);
+          console.log(geoJson)
+        }
+        getGeoJson();
+      }, []);
+
     type Feature = Record<string, any>;
 
     type ChartData = {
@@ -124,7 +151,7 @@ export const Region = ( props: any ) => {
         
             // retrieve polygons from geoJson object
             const countryPolygons = {
-                features: props.geoJson.features.filter((f: any) => f.properties.GID_0 === iso3),
+                features: geoJson.features.filter((f: any) => f.properties.GID_0 === iso3),
                 iso3: iso3,
                 name: countryByIso3[iso3],
                 type: "FeatureCollection"
@@ -160,7 +187,7 @@ export const Region = ( props: any ) => {
             // } 
         };
         loadCountryData(iso3);
-    }, [iso3, props.currentHazard, props.currentExposure]);
+    }, [geoJson, iso3, props.currentHazard, props.currentExposure]);
 
     // re-process already-fetched data
     useEffect(() => {
@@ -353,10 +380,10 @@ export const Region = ( props: any ) => {
     
 
     return (
-        <Card className="bg-[#1E1E1E] w-full h-9/10 pt-30 dark flex items-center justify-center shadow-md">
+        <Card className="bg-[#1E1E1E] w-full dark flex items-center justify-center shadow-md">
             <ComboBox iso3={iso3} setIso3={setIso3} />
             {chartData && mapChartData ?
-                <div className='w-full'>
+                <div className='w-full h-full'>
                     <div className='flex flex-col w-full justify-center items-center'>
                         <div className='w-8/10'>
                         <MapsChart
