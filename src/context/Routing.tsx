@@ -5,6 +5,8 @@ export const RoutingDispatchContext = createContext<any>(null);
 
 export function Router({ children }: any) {
 
+    const base = import.meta.env.VITE_BASE;
+
     let initialPageStatus = window.location.pathname.toLowerCase();
 
     const [pageStatus, dispatch] = useReducer<any, any>(pageStatusReducer, initialPageStatus);
@@ -14,10 +16,10 @@ export function Router({ children }: any) {
         switch (action.type) {
             case 'update': {
                 history.pushState({ id: action.url }, "", action.url);
-                return action.url;
+                return base + action.url;
             }
             case 'navigate': {
-                return action.url
+                return base + action.url
             }
         }
     }

@@ -171,20 +171,20 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             </div>
             <div className='h-14.75 flex flex-wrap lg:flex-nowrap lg:w-40'>
-                <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 hover:bg-white transition-colors duration-200 ${page.pageStatus == "/eventtracking" || page.pageStatus == "" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
+                <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 hover:bg-white transition-colors duration-200 ${page.pageStatus == "/eventtracking" || page.pageStatus == "/" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                     <div className='h-full flex flex-col justify-end w-40'>
                         <div className="text-[11px]">REAL-TIME</div>
                         <div className="flex flex-row h-[35px] items-center justify-center cursor-pointer">
                             <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M18.537 9.99983C18.537 14.7074 14.7075 18.5372 10.0003 18.5372C5.29321 18.5372 1.463 14.7074 1.463 9.99983C1.463 5.2923 5.29287 1.46244 10.0003 1.46244C11.7447 1.46244 13.4073 1.98621 14.815 2.95286L13.1275 3.19924L13.3392 4.64652L17.3756 4.05635L16.7835 0.0202228L15.3363 0.232225L15.5483 1.67748C13.9192 0.586124 12.0042 0 9.99966 0C4.48571 0 0 4.48643 0 10.0002C0 15.5142 4.48638 20 10.0003 20C15.5143 20 20 15.5139 20 9.99983H18.537ZM7.43361 3.65628L6.0852 4.22286L9.25182 11.7565L16.7859 8.58929L16.2197 7.24077L10.0334 9.84142L7.43361 3.65628Z" fill={`${page.pageStatus == "/eventtracking" || page.pageStatus == "" ? 'var(--orange)' : 'black'}`} />
+                                <path d="M18.537 9.99983C18.537 14.7074 14.7075 18.5372 10.0003 18.5372C5.29321 18.5372 1.463 14.7074 1.463 9.99983C1.463 5.2923 5.29287 1.46244 10.0003 1.46244C11.7447 1.46244 13.4073 1.98621 14.815 2.95286L13.1275 3.19924L13.3392 4.64652L17.3756 4.05635L16.7835 0.0202228L15.3363 0.232225L15.5483 1.67748C13.9192 0.586124 12.0042 0 9.99966 0C4.48571 0 0 4.48643 0 10.0002C0 15.5142 4.48638 20 10.0003 20C15.5143 20 20 15.5139 20 9.99983H18.537ZM7.43361 3.65628L6.0852 4.22286L9.25182 11.7565L16.7859 8.58929L16.2197 7.24077L10.0334 9.84142L7.43361 3.65628Z" fill={`${page.pageStatus == "/eventtracking" || page.pageStatus == "/" ? 'var(--orange)' : 'black'}`} />
                             </svg>
-                            <div className={`text-sm font-bold text-end flex items-center pl-1 ${page.pageStatus == "/eventtracking" || page.pageStatus == ""  ? 'text-(--orange)' : 'text-black'}`} onClick={() => {props.setView("Event tracking"); updateURL("/eventtracking"); }}>Event Tracking</div>
+                            <div className={`text-sm font-bold text-end flex items-center pl-1 ${page.pageStatus == "/eventtracking" || page.pageStatus == "/"  ? 'text-(--orange)' : 'text-black'}`} onClick={() => {props.setView("Event tracking"); updateURL("/eventtracking"); }}>Event Tracking</div>
                         </div>
                     </div>
-                    <div className={`h-1 w-full bg-(--orange) ${page.pageStatus == "/eventtracking" || page.pageStatus == "" ? "opacity-100" : "opacity-0"}`}></div>
+                    <div className={`h-1 w-full bg-(--orange) ${page.pageStatus == "/eventtracking" || page.pageStatus == "/" ? "opacity-100" : "opacity-0"}`}></div>
                 </Card>
             </div>
-            {page.pageStatus == "/eventtracking" || page.pageStatus == "" ?
+            {page.pageStatus == "/eventtracking" || page.pageStatus == "/" ?
                 <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden lg:h-14.75 w-full lg:w-88 2xl:w-145 order-1 2xl:order-0`}>
                     <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 w-65 2xl:px-2">
                         <Popover open={eventFilterOpened} onOpenChange={() => setEventFilterOpened(!eventFilterOpened)}>

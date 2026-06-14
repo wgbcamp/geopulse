@@ -11,7 +11,7 @@ import { DataMethodology } from './Articles/DataMethodology'
 import { RoutingContext } from '../context/Routing';
 
 function App() {
-
+  
   const page = useContext(RoutingContext);
 
   const [currentView, setView] = useState("Event tracking");
