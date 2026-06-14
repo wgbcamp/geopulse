@@ -15,7 +15,7 @@ export function Router({ children }: any) {
     function pageStatusReducer(state: string, action: { type: string, url: string }) {
         switch (action.type) {
             case 'update': {
-                history.pushState({ id: action.url }, "", action.url);
+                history.pushState({ id: action.url }, "", base + action.url);
                 return base + action.url;
             }
             case 'navigate': {
