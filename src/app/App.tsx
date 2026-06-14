@@ -11,7 +11,8 @@ import { DataMethodology } from './Articles/DataMethodology'
 import { RoutingContext } from '../context/Routing';
 
 function App() {
-  
+
+  const base = import.meta.env.VITE_BASE;
   const page = useContext(RoutingContext);
 
   const [currentView, setView] = useState("Event tracking");
@@ -29,14 +30,14 @@ function App() {
   const [eventFilter, setEventFilter] = useState<string>("All Events");
 
   const pagesMapping: any = {
-    "/about": <About />,
-    "/datamethodology": <DataMethodology />,
-    "/eventtracking": <EventTracking props={{
+    [`${base}/about`]: <About />,
+    [`${base}/datamethodology`]: <DataMethodology />,
+    [`${base}/eventtracking`]: <EventTracking props={{
       dateRange: dateRange,
       setDateRange: setDateRange,
       eventFilter: eventFilter,
     }} />,
-    "/compare": <CompareView props={{
+    [`${base}/compare`]: <CompareView props={{
       currentTime,
       currentScenario,
       currentExposure,
@@ -46,8 +47,8 @@ function App() {
       setScenario,
       setThreshold
     }} />,
-    "/grid": <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />,
-    "/": <EventTracking props={{
+    [`${base}/grid`]: <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />,
+    [`${base}/`]: <EventTracking props={{
       dateRange: dateRange,
       setDateRange: setDateRange,
       eventFilter: eventFilter,
