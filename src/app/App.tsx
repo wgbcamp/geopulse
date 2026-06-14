@@ -29,14 +29,14 @@ function App() {
   const [eventFilter, setEventFilter] = useState<string>("All Events");
 
   const pagesMapping: any = {
-    "about": <About />,
-    "datamethodology": <DataMethodology />,
-    "eventtracking": <EventTracking props={{
+    "/about": <About />,
+    "/datamethodology": <DataMethodology />,
+    "/eventtracking": <EventTracking props={{
       dateRange: dateRange,
       setDateRange: setDateRange,
       eventFilter: eventFilter,
     }} />,
-    "compare": <CompareView props={{
+    "/compare": <CompareView props={{
       currentTime,
       currentScenario,
       currentExposure,
@@ -46,8 +46,8 @@ function App() {
       setScenario,
       setThreshold
     }} />,
-    grid: <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />,
-    "": <EventTracking props={{
+    "/grid": <GridView currentTime={currentTime} currentHazard={currentHazard} currentExposure={currentExposure} currentScenario={currentScenario} />,
+    "/": <EventTracking props={{
       dateRange: dateRange,
       setDateRange: setDateRange,
       eventFilter: eventFilter,

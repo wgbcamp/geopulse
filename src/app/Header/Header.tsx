@@ -142,8 +142,8 @@ export const NewHeader = ({ props }: any) => {
                     </div>
                 </div>
                 <div className='pl-7 bg-(--accentdarkblue-90)'>
-                    <div className='flex items-center w-full h-14.75 text-white cursor-pointer' onClick={ () => {props.setView('About'); setMenuOptions(false); updateURL("about"); } }>About</div>
-                    <div className='flex items-center w-full h-14.75 text-white cursor-pointer' onClick={ () => {props.setView('DataMethodology'); setMenuOptions(false); updateURL("datamethodology"); } }>Data & Methodology</div>
+                    <div className='flex items-center w-full h-14.75 text-white cursor-pointer' onClick={ () => {props.setView('About'); setMenuOptions(false); updateURL("/about"); } }>About</div>
+                    <div className='flex items-center w-full h-14.75 text-white cursor-pointer' onClick={ () => {props.setView('DataMethodology'); setMenuOptions(false); updateURL("/datamethodology"); } }>Data & Methodology</div>
                     <div className='flex items-center w-full h-14.75 text-white cursor-not-allowed'>FAQs</div>
                     <div className='flex items-center w-full h-14.75 text-white cursor-not-allowed'>Team & Contact us</div>
                 </div>
@@ -171,20 +171,20 @@ export const NewHeader = ({ props }: any) => {
                 </div>
             </div>
             <div className='h-14.75 flex flex-wrap lg:flex-nowrap lg:w-40'>
-                <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 hover:bg-white transition-colors duration-200 ${page.pageStatus == "eventtracking" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
+                <Card className={`rounded-none p-0 flex flex-col items-center justify-center gap-0 hover:bg-white transition-colors duration-200 ${page.pageStatus == "/eventtracking" || page.pageStatus == "" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                     <div className='h-full flex flex-col justify-end w-40'>
                         <div className="text-[11px]">REAL-TIME</div>
                         <div className="flex flex-row h-[35px] items-center justify-center cursor-pointer">
                             <svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M18.537 9.99983C18.537 14.7074 14.7075 18.5372 10.0003 18.5372C5.29321 18.5372 1.463 14.7074 1.463 9.99983C1.463 5.2923 5.29287 1.46244 10.0003 1.46244C11.7447 1.46244 13.4073 1.98621 14.815 2.95286L13.1275 3.19924L13.3392 4.64652L17.3756 4.05635L16.7835 0.0202228L15.3363 0.232225L15.5483 1.67748C13.9192 0.586124 12.0042 0 9.99966 0C4.48571 0 0 4.48643 0 10.0002C0 15.5142 4.48638 20 10.0003 20C15.5143 20 20 15.5139 20 9.99983H18.537ZM7.43361 3.65628L6.0852 4.22286L9.25182 11.7565L16.7859 8.58929L16.2197 7.24077L10.0334 9.84142L7.43361 3.65628Z" fill={`${page.pageStatus !== "eventtracking" ? 'black' : 'var(--orange)'}`} />
+                                <path d="M18.537 9.99983C18.537 14.7074 14.7075 18.5372 10.0003 18.5372C5.29321 18.5372 1.463 14.7074 1.463 9.99983C1.463 5.2923 5.29287 1.46244 10.0003 1.46244C11.7447 1.46244 13.4073 1.98621 14.815 2.95286L13.1275 3.19924L13.3392 4.64652L17.3756 4.05635L16.7835 0.0202228L15.3363 0.232225L15.5483 1.67748C13.9192 0.586124 12.0042 0 9.99966 0C4.48571 0 0 4.48643 0 10.0002C0 15.5142 4.48638 20 10.0003 20C15.5143 20 20 15.5139 20 9.99983H18.537ZM7.43361 3.65628L6.0852 4.22286L9.25182 11.7565L16.7859 8.58929L16.2197 7.24077L10.0334 9.84142L7.43361 3.65628Z" fill={`${page.pageStatus == "/eventtracking" || page.pageStatus == "" ? 'var(--orange)' : 'black'}`} />
                             </svg>
-                            <div className={`text-sm font-bold text-end flex items-center pl-1 ${page.pageStatus == "eventtracking" || page.pageStatus == ""  ? 'text-(--orange)' : 'text-black'}`} onClick={() => {props.setView("Event tracking"); updateURL("eventtracking"); }}>Event Tracking</div>
+                            <div className={`text-sm font-bold text-end flex items-center pl-1 ${page.pageStatus == "/eventtracking" || page.pageStatus == ""  ? 'text-(--orange)' : 'text-black'}`} onClick={() => {props.setView("Event tracking"); updateURL("/eventtracking"); }}>Event Tracking</div>
                         </div>
                     </div>
-                    <div className={`h-1 w-full bg-(--orange) ${page.pageStatus == "eventtracking" || page.pageStatus == "" ? "opacity-100" : "opacity-0"}`}></div>
+                    <div className={`h-1 w-full bg-(--orange) ${page.pageStatus == "/eventtracking" || page.pageStatus == "" ? "opacity-100" : "opacity-0"}`}></div>
                 </Card>
             </div>
-            {page.pageStatus == "eventtracking" || page.pageStatus == "" ?
+            {page.pageStatus == "/eventtracking" || page.pageStatus == "" ?
                 <div className={`flex ${dataOptions ? 'h-14.75' : 'h-0'} overflow-hidden lg:h-14.75 w-full lg:w-88 2xl:w-145 order-1 2xl:order-0`}>
                     <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-14.75 w-65 2xl:px-2">
                         <Popover open={eventFilterOpened} onOpenChange={() => setEventFilterOpened(!eventFilterOpened)}>
@@ -222,7 +222,7 @@ export const NewHeader = ({ props }: any) => {
                     <div className="text-[11px]">FORWARD LOOKING</div>
                     <div className="flex flex-end flex-col w-full ">
                         <div className="flex flex-row justify-evenly items-start w-full h-full">
-                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => {props.setView("Compare"); updateURL("compare");}}>
+                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => {props.setView("Compare"); updateURL("/compare");}}>
                                 <div className="flex flex-row h-8.75 items-center justify-center">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M12.4219 16.4062C13.1641 14.9219 13.6719 12.8516 13.75 10.625H6.25C6.32812 12.8516 6.875 14.9219 7.61719 16.4062C8.47656 18.1641 9.41406 18.75 10 18.75C10.625 18.75 11.5234 18.1641 12.4219 16.4062ZM13.75 9.375C13.6719 7.14844 13.1641 5.11719 12.4219 3.59375C11.5234 1.83594 10.625 1.25 10 1.25C9.41406 1.25 8.47656 1.83594 7.61719 3.59375C6.875 5.11719 6.32812 7.14844 6.25 9.375H13.75ZM15 10.625C14.8828 13.7109 13.9844 16.6016 12.6953 18.3203C16.0156 17.2656 18.4766 14.2578 18.7109 10.625H15ZM18.7109 9.375C18.4766 5.78125 16.0156 2.77344 12.6953 1.67969C13.9844 3.39844 14.8828 6.28906 15 9.375H18.7109ZM5 9.375C5.11719 6.28906 6.01562 3.39844 7.30469 1.67969C3.98438 2.77344 1.52344 5.78125 1.28906 9.375H5ZM1.28906 10.625C1.52344 14.2578 3.98438 17.2656 7.30469 18.3203C6.01562 16.6016 5.11719 13.7109 5 10.625H1.28906ZM10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20Z" fill={`${props.currentView === "Compare" ? "var(--orange)" : "black"}`} />
@@ -232,7 +232,7 @@ export const NewHeader = ({ props }: any) => {
                                 <div className={`h-1 bg-(--orange) ${props.currentView === "Compare" ? "opacity-100" : "opacity-0"}`}></div>
                             </div>
                             <div className='w-0.5 h-8/10 bg-(--accentblue-60)'></div>
-                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => {props.setView("Grid"); updateURL("grid");}}>
+                            <div className='flex flex-col justify-end w-full cursor-pointer' onClick={() => {props.setView("Grid"); updateURL("/grid");}}>
                                 <div className="flex flex-row h-8.75 items-center justify-center">
                                     <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M3.67078 0.396729C1.86271 0.396729 0.396973 1.86246 0.396973 3.67054V16.3293C0.396973 18.1373 1.86271 19.6031 3.67078 19.6031H16.3295C18.1376 19.6031 19.6033 18.1373 19.6033 16.3293V3.67054C19.6033 1.86246 18.1376 0.396729 16.3295 0.396729H3.67078ZM16.3295 1.70625C17.4144 1.70625 18.2938 2.58569 18.2938 3.67054V4.3253L1.7065 4.3253V3.67054C1.7065 2.58569 2.58594 1.70625 3.67078 1.70625H16.3295ZM1.7065 5.63482L18.2938 5.63482V14.365L1.7065 14.365V5.63482ZM1.7065 16.3293V15.6745L18.2938 15.6745V16.3293C18.2938 17.4141 17.4144 18.2936 16.3295 18.2936H3.67078C2.58594 18.2936 1.7065 17.4141 1.7065 16.3293ZM13.9985 9.34514H6.00186L6.7792 8.47062C7.01945 8.20035 6.9951 7.78649 6.72483 7.54625C6.45455 7.30601 6.0407 7.33035 5.80045 7.60062L4.05442 9.56491C3.83391 9.81299 3.83391 10.1868 4.05442 10.4349L5.80045 12.3992C6.0407 12.6695 6.45455 12.6938 6.72483 12.4536C6.9951 12.2133 7.01945 11.7995 6.7792 11.5292L6.00184 10.6547H13.9985L13.2211 11.5292C12.9809 11.7995 13.0052 12.2133 13.2755 12.4536C13.5458 12.6938 13.9596 12.6695 14.1999 12.3992L15.9459 10.4349L15.9551 10.4243C16.047 10.3165 16.1045 10.1785 16.1107 10.0272C16.1114 10.0097 16.1115 9.99207 16.1108 9.9745C16.1048 9.8165 16.0427 9.67284 15.944 9.5628L14.1999 7.60062C13.9596 7.33035 13.5458 7.30601 13.2755 7.54625C13.0052 7.78649 12.9809 8.20035 13.2211 8.47062L13.9985 9.34514Z" fill={`${props.currentView === "Grid" ? "var(--orange)" : "black"}`} />

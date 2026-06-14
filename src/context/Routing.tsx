@@ -5,7 +5,7 @@ export const RoutingDispatchContext = createContext<any>(null);
 
 export function Router({ children }: any) {
 
-    let initialPageStatus = window.location.pathname.slice(1).toLowerCase();
+    let initialPageStatus = window.location.pathname.toLowerCase();
 
     const [pageStatus, dispatch] = useReducer<any, any>(pageStatusReducer, initialPageStatus);
 
@@ -32,7 +32,7 @@ export function Router({ children }: any) {
     const historyState = () => {
         dispatch({
             type: 'navigate',
-            url: window.location.pathname.slice(1).toLowerCase()
+            url: window.location.pathname.toLowerCase()
         })
     }
 
@@ -46,7 +46,7 @@ export function Router({ children }: any) {
     return (
         <RoutingContext value={value} >
             <RoutingDispatchContext value={dispatch}>
-                <title>{`Geopulse ${pageStatus}`}</title>
+                <title>{`Geopulse ${pageStatus.slice(0)}`}</title>
                 {children}
             </RoutingDispatchContext>
         </RoutingContext>
