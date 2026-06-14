@@ -19,7 +19,7 @@ export function Router({ children }: any) {
                 return base + action.url;
             }
             case 'navigate': {
-                return base + action.url
+                return action.url
             }
         }
     }
