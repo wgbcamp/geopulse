@@ -1,4 +1,4 @@
-import { createRootRoute, createRootRouteWithContext, Link, Outlet } from '@tanstack/react-router'
+import { createRootRoute, Link, Outlet, HeadContent } from '@tanstack/react-router'
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
 
 import { Header } from '../components/Header';
@@ -6,6 +6,7 @@ import { Header } from '../components/Header';
 const RootComponent = () => {
   return (
     <>
+      <HeadContent />
       <Header />
       <Outlet />
     </>

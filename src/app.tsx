@@ -2,7 +2,7 @@
 import { routeTree } from './routeTree.gen'
 import { RouterProvider, createRouter } from '@tanstack/react-router'
 import {
-    createContext, useContext, useState, useMemo,
+    createContext, useContext, useState, useMemo, useEffect,
     type Dispatch, type SetStateAction, type ReactNode,
 } from 'react'
 import { type DateRange } from "react-day-picker"
@@ -52,6 +52,7 @@ export const AppStateContext = createContext<AppState | null>(null)
 export const AppActionsContext = createContext<AppActions | null>(null)
 
 export function App() {
+
   const [currentView, setView] = useState("Event tracking")
   const [currentTime, setTime] = useState<number>(1980)
   const [currentScenario, setScenario] = useState<string>("rcp4p5")
@@ -79,11 +80,13 @@ export function App() {
   }), [])
 
 
-    return (
-        <AppActionsContext.Provider value={actions}>
-            <AppStateContext.Provider value={state}>
-                <RouterProvider router={router} />
-            </AppStateContext.Provider>
-        </AppActionsContext.Provider>
-    )
+  return (
+    <>
+      <AppActionsContext.Provider value={actions}>
+        <AppStateContext.Provider value={state}>
+          <RouterProvider router={router} />
+        </AppStateContext.Provider>
+      </AppActionsContext.Provider>
+    </>
+  )
 }
