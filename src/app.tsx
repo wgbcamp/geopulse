@@ -10,7 +10,8 @@ import { type DateRange } from "react-day-picker"
 
 // Create a new router instance
 const router = createRouter({
-    routeTree
+    routeTree,
+    basepath: import.meta.env.VITE_BASE,
 })
 
 // Register the router instance for type safety
