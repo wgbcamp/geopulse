@@ -160,7 +160,7 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
             // } 
         };
         loadCountryData(iso3);
-    }, [geoJson, iso3, state?.currentHazard, state?.currentExposure]);
+    }, [iso3, state?.currentHazard, state?.currentExposure]);
 
     // re-process already-fetched data
     useEffect(() => {
