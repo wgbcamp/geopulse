@@ -1,9 +1,14 @@
-import MenuBackground from '../../assets/image 18.png'
+import { createFileRoute } from '@tanstack/react-router'
+
+import MenuBackground from '../assets/image 18.png'
 import { Button } from "@/components/ui/button"
 
-export const DataMethodology = () => {
-    return (
-        <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+export const Route = createFileRoute('/datamethodology')({
+  component: RouteComponent,
+})
+
+function RouteComponent() {
+  return <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-(--accentdarkblue-70) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
             <div className="flex py-15 flex-col items-center lg:items-start w-9/10 text-left text-white">
                 <section className='pt-14.75 text-[26px] w-full max-w-174 font-bold'>Access Data & Methodology Page</section>
                 <div className='flex flex-col gap-y-7'>
@@ -163,5 +168,4 @@ export const DataMethodology = () => {
                 </div>
             </div>
         </div>
-    )
 }

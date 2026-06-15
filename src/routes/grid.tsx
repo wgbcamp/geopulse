@@ -1,27 +1,23 @@
-import { useState, useRef, useEffect } from 'react';
+import { createFileRoute } from '@tanstack/react-router'
+import { AppStateContext } from '../app';
+import { useState, useRef, useEffect, useContext } from 'react'
 
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 import Map from "@arcgis/core/Map.js";
-import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
 import SceneView from "@arcgis/core/views/SceneView.js";
-import Polygon from "@arcgis/core/geometry/Polygon.js";
 import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer.js";
-
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 import { gridObject } from '@/config/datasets';
 import ImageryTileLayer from '@arcgis/core/layers/ImageryTileLayer';
 
-type MapProps = {
-  currentTime: number,
-  currentHazard: string,
-  currentScenario: string,
-  currentExposure: string
-}
+export const Route = createFileRoute('/grid')({
+  component: GridView,
+})
 
-export const GridView = ({ currentTime, currentHazard, currentScenario, currentExposure }: MapProps) => {
+function GridView() {
+
+const state = useContext(AppStateContext);
 
   const [position, setPosition] = useState({});
   const [currentDimension, setDimension] = useState("2D");
@@ -33,15 +29,12 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
   const vtlayer = useRef<ImageryTileLayer | null>(null);
   var view = useRef<MapView | SceneView>(new MapView);
 
-
-
   useEffect(() => {
     if (ref.current) {
 
       map.current = new Map({
         basemap: 'dark-gray'
       })
-
 
       switch (currentDimension) {
         case "2D":
@@ -107,7 +100,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
 
 
     vtlayer.current = new ImageryTileLayer({
-      url: gridObject[currentHazard]?.[currentExposure]?.[currentScenario]?.[currentTime],
+      url: gridObject[state.currentHazard]?.[state.currentExposure]?.[state.currentScenario]?.[state.currentTime],
       renderer: new UniqueValueRenderer({
         field: "Value", uniqueValueInfos: [
           {
@@ -180,7 +173,7 @@ export const GridView = ({ currentTime, currentHazard, currentScenario, currentE
 
 
     map.current.add(vtlayer.current);
-  }, [currentTime, currentHazard, currentExposure, currentScenario])
+  }, [state.currentTime, state.currentHazard, state.currentExposure, state.currentScenario])
 
   var colors: Record<string, string> = {
     "Low Population & Low Flood Height": "rgb(206,89,163)",

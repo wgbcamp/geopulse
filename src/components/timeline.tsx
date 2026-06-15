@@ -20,14 +20,10 @@ tileLayerURLs.forEach(layer => {
   ticks.push(layer.string);
 })
 
-export const Timeline = ({ props }: any) => {
-
-  useEffect(() => {
-    console.log("props: ",props)
-  }, [props.currentTime]);
+export const Timeline = ({ currentTime, setTime }: any) => {
 
   const handleValueChange = (value: number[]) => {
-    props.setTime(tileLayerURLs[value[0]].time)
+    setTime(tileLayerURLs[value[0]].time)
   }
 
   return (
@@ -53,7 +49,7 @@ export const Timeline = ({ props }: any) => {
                 style={{ left: `${percent}%`}}
               >
                 <div className="w-px h-2 bg-muted-foreground/50"></div>
-                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && props.currentTime === tileLayerURLs[index]?.time ? "font-bold" : " font-normal"}`}>
+                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && currentTime === tileLayerURLs[index]?.time ? "font-bold" : " font-normal"}`}>
                   {tick}
                 </span>
               </div>

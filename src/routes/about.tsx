@@ -1,8 +1,14 @@
-import MenuBackground from '../../assets/image 18.png'
+import { createFileRoute } from '@tanstack/react-router'
 
-export const About = () => {
-    return (
-        <div className={`mix-blend-hard-light h-full bg-(--accentdarkblue-70) transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+import MenuBackground from '../assets/image 18.png'
+
+export const Route = createFileRoute('/about')({
+  component: About,
+})
+
+function About() {
+
+  return <div className={`mix-blend-hard-light h-full bg-(--accentdarkblue-70) transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
             <div className={` flex justify-center w-full `}>
                 <div className="flex py-15 flex-col items-center lg:items-start gap-y-6 w-9/10 text-left text-white">
                     <section className='pt-14.75 text-[22px] w-full max-w-174 font-bold'>IMF GeoPulse: Track, Analyze, and Respond to Economic Risk</section>
@@ -51,5 +57,4 @@ export const About = () => {
 
             </div>
         </div>
-    )
 }

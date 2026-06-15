@@ -1,4 +1,6 @@
-import { useState, useRef, useEffect, useCallback } from 'react'
+import { createFileRoute } from '@tanstack/react-router'
+import { AppStateContext } from '../app';
+import { useState, useRef, useEffect, useCallback, useContext } from 'react'
 
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 
@@ -23,12 +25,16 @@ import { Slider } from "@/components/ui/slider"
 
 import { realtimeObject } from '@/config/datasets';
 
-import Exposures from '../../assets/Layers.svg';
+import Exposures from '../assets/Layers.svg';
 
-// import ScaleBar "@arcgis/map-components/components/arcgis-scale-bar";
+export const Route = createFileRoute('/eventtracking')({
+  component: EventTracking,
+})
 
 
-export const EventTracking = ({ props }: any) => {
+function EventTracking() {
+
+    const state = useContext(AppStateContext);
 
     const [realtimeExposure, setRealtimeExposure] = useState<{exposure: string, filter: string}>({ exposure: "Population", filter: "Population"});
     const [events, setEvents] = useState<any>(null);
@@ -429,11 +435,11 @@ export const EventTracking = ({ props }: any) => {
                 type: "simple",
                 symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
             },
-            definitionExpression: `${props.eventFilter !== 'All Events' ? `eventtype='${props.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
+            definitionExpression: `${state?.eventFilter !== 'All Events' ? `eventtype='${state?.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(state?.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(state?.dateRange.to))}'
             OR
-            todate >= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
+            todate >= timestamp '${toTimestamp(new Date(state?.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(state?.dateRange.to))}'
             OR
-            fromdate <= timestamp '${toTimestamp(new Date(props.dateRange.from))}' AND todate >= timestamp '${toTimestamp(new Date(props.dateRange.to))}'
+            fromdate <= timestamp '${toTimestamp(new Date(state?.dateRange.from))}' AND todate >= timestamp '${toTimestamp(new Date(state?.dateRange.to))}'
         )`
         });
 
@@ -444,7 +450,7 @@ export const EventTracking = ({ props }: any) => {
 
         map.current.add(eventFeatureLayer.current); // add events feature layer to map
 
-    }, [props.dateRange.from, props.dateRange.to, clearPulses, queryEvents, props.eventFilter])
+    }, [state?.dateRange.from, state?.dateRange.to, clearPulses, queryEvents, state?.eventFilter])
 
     // query feature layer 
     async function highlightCountry(eventid: any, index?: number) {

@@ -1,5 +1,5 @@
-import React, { useEffect, useState, type ReactElement } from 'react'
-
+import React, { useEffect, useState, useContext, type ReactElement } from 'react'
+import { AppStateContext, AppActionsContext } from '../app';
 import {
   Item,
   ItemContent,
@@ -61,27 +61,30 @@ const labels = [
    }
 ];
 
-export const Thresholds = ( { props }: any ) => {
+export const Thresholds = () => {
+
+  const state = useContext(AppStateContext);
+  const actions = useContext(AppActionsContext);
  
   const [thresholdSliderValue, setThresholdSliderValue] = useState<number[]>([0]);
 
   useEffect(() => {    
     handleValueChange([0]);
-  }, [props.currentHazard])
+  }, [state.currentHazard])
 
-  const config = urlObject[props.currentHazard][props.currentExposure];
+  const config = urlObject[state.currentHazard][state.currentExposure];
   const thresholdGroup = config?.threshold?.group ?? {};
 
   const handleValueChange = (value: number[]) => {
-    const config = urlObject[props.currentHazard][props.currentExposure];
+    const config = urlObject[state.currentHazard][state.currentExposure];
     if (!config?.threshold || !config?.thresholdToMeasure) return;
 
     const thresholdKey = Object.keys(config.threshold.group)[value[0]];
     const measureId = config.thresholdToMeasure[thresholdKey];
     const measureName = measureMapper[measureId];
 
-    props.setThreshold({ name: measureName, threshold: thresholdKey });
-    props.setMeasure({ name: measureName, id: measureId });
+    actions.setThreshold({ name: measureName, threshold: thresholdKey });
+    actions.setMeasure({ name: measureName, id: measureId });
 
     //
     setThresholdSliderValue(value);
@@ -91,19 +94,19 @@ export const Thresholds = ( { props }: any ) => {
     console.log(value);
     switch (value) {
       case "Dry Days":
-        props.setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
+        actions.setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
         break;
       case "SPEI Index":
-        props.setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
+        actions.setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
         break;
     }
   }
 
   const tabComponent = 
     <div className="absolute w-[370px] h-[30px] pt-3 left-1/2 top-[10%] -translate-x-1/2  p-[1px] rounded-xl flex justify-center">
-      <Tabs onValueChange={handleDroughtTabChange} value={props.currentMeasure.name} defaultValue="Dry Days">
+      <Tabs onValueChange={handleDroughtTabChange} value={state.currentMeasure.name} defaultValue="Dry Days">
         <TabsList className='w-[300px] bg-[#1E1E1E]'>
-          {urlObject[props.currentHazard][props.currentExposure].measure.map((id) => 
+          {urlObject[state.currentHazard][state.currentExposure].measure.map((id) => 
             <TabsTrigger key={id} value={measureMapper[id]}>{measureMapper[id]}</TabsTrigger>
           )}
         </TabsList>
@@ -140,7 +143,7 @@ export const Thresholds = ( { props }: any ) => {
                         style={{ left: `${percent}%` }}
                       >
                         <div className="w-px h-2 bg-muted-foreground/50"></div>
-                        <span className={`text-xs w-[42px] mt-0.5 ${value === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                        <span className={`text-xs w-[42px] mt-0.5 ${value === state.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                           <div className='font-bold'>{index >= 1 && index <= 3 ? 'Tmin' : 'Tmax'}</div>
                           <div className='font-bold'>{value}° C</div>
                         </span>
@@ -156,7 +159,7 @@ export const Thresholds = ( { props }: any ) => {
                         className="absolute flex flex-col items-center -translate-x-1/2 -translate-y-13"
                         style={{ left: `${percent}%` }}
                       >
-                        <span className={`text-xs w-[42px] mt-0.5 flex items-end ${label.name === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                        <span className={`text-xs w-[42px] mt-0.5 flex items-end ${label.name === state.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                           <div dangerouslySetInnerHTML={{ __html: label.svg }} className="w-6 h-9" />
                           <div className=''>{label.icon && React.createElement(label.icon, { size: 24, color: label.color })}</div>
                           <div className="font-extrabold">{label.name}</div>
@@ -202,7 +205,7 @@ export const Thresholds = ( { props }: any ) => {
                     style={{ left: `${percent}%` }}
                   >
                     <div className="w-px h-2 bg-muted-foreground/50"></div>
-                    <span className={`text-xs w-[42px] mt-0.5 ${tick === props.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
+                    <span className={`text-xs w-[42px] mt-0.5 ${tick === state.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                       <div className='font-bold'>{tick}</div>
                       <div className='font-bold'>{index == 0 ? 'High' : index == Object.values(thresholdGroup).length - 1 ? "Low" : <br></br>}</div>
                     </span>
@@ -245,8 +248,8 @@ export const Thresholds = ( { props }: any ) => {
   } 
 
   return (
-    <div className='w-full h-full flex items-center justify-center'>
-          {thresholdComponents[props.currentHazard][props.currentExposure]}
+    <div className=''>
+          {thresholdComponents[state.currentHazard][state.currentExposure]}
     </div>
   )
 }
