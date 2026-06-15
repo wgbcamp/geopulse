@@ -1,17 +1,19 @@
 // Import the generated route tree
 import { routeTree } from './routeTree.gen'
-import { RouterProvider, createRouter } from '@tanstack/react-router'
+import { RouterProvider, createRouter, createHashHistory } from '@tanstack/react-router'
 import {
     createContext, useContext, useState, useMemo, useEffect,
     type Dispatch, type SetStateAction, type ReactNode,
 } from 'react'
 import { type DateRange } from "react-day-picker"
 
+const hashHistory = createHashHistory();
 
 // Create a new router instance
 const router = createRouter({
     routeTree,
     basepath: import.meta.env.VITE_BASE,
+    history: hashHistory
 })
 
 // Register the router instance for type safety
