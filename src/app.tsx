@@ -12,7 +12,6 @@ const hashHistory = createHashHistory();
 // Create a new router instance
 const router = createRouter({
     routeTree,
-    basepath: import.meta.env.VITE_BASE,
     history: hashHistory
 })
 
