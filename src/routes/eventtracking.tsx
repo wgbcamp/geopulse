@@ -6,13 +6,16 @@ import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 
 import GraphicsLayer from "@arcgis/core/layers/GraphicsLayer.js";
 import GroupLayer from "@arcgis/core/layers/GroupLayer.js";
+import ScaleBar from "@arcgis/core/widgets/ScaleBar.js";
 
 import Map from "@arcgis/core/Map.js";
 import ImageryTileLayer from "@arcgis/core/layers/ImageryTileLayer.js";
 import ClassBreaksRenderer from "@arcgis/core/renderers/ClassBreaksRenderer.js";
 import FeatureLayer from "@arcgis/core/layers/FeatureLayer.js";
 import MapView from "@arcgis/core/views/MapView.js";
-// import SceneView from "@arcgis/core/views/SceneView.js";
+import SceneView from "@arcgis/core/views/SceneView.js";
+import PointSymbol3D from "@arcgis/core/symbols/PointSymbol3D.js";
+import ObjectSymbol3DLayer from "@arcgis/core/symbols/ObjectSymbol3DLayer.js";
 import VectorTileLayer from "@arcgis/core/layers/VectorTileLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
@@ -50,6 +53,10 @@ function EventTracking() {
     const eventsRef = useRef<any>(null);
     const pulseContainerRef = useRef<HTMLDivElement>(null);
     const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const [dimension3D, setDimension3D] = useState<boolean>(false);
+
+    const countryRef = useRef<any>(null);
 
     const [mobileExposures, setMobileExposures] = useState<boolean>(false);
 
@@ -252,13 +259,14 @@ function EventTracking() {
             }
 
             const minZoom = getMinZoom(window.innerWidth, window.innerHeight);
-            
+
             // default map properties
             view.current = new MapView({
                 container: ref.current,
                 map: map.current,
                 zoom: Math.max(2, minZoom),
-                center: [-40.9465, 0.775],
+                // center: [-40.9465, 0.775],
+                center: [state.countryCoordinates.longitude, state.countryCoordinates.latitude],
                 constraints: {
                     minZoom: Math.floor(minZoom),
                     maxZoom: 11,
@@ -266,24 +274,33 @@ function EventTracking() {
                 popupEnabled: false
             });
 
+             const scaleBar = new ScaleBar({
+                view: view.current,
+                unit: "metric" // Options: "metric", "non-metric", or "dual"
+            });
+
+            view.current.ui.add(scaleBar, {
+                position: "bottom-right"
+            });
+
             // force the view view.current.center to the yLimit whenever the user reaches the limit
             const WORLD_HALF_HEIGHT = 20037508.34; // Web Mercator y at ±85.05°
 
-            reactiveUtils.watch(
-                () => view.current.extent,
-                (extent) => {
-                    if (!extent) return;
+            // reactiveUtils.watch(
+            //     () => view.current.extent,
+            //     (extent) => {
+            //         if (!extent) return;
 
-                    const halfViewHeight = extent.height / 2;
-                    const yLimit = Math.max(0, WORLD_HALF_HEIGHT - halfViewHeight);
+            //         const halfViewHeight = extent.height / 2;
+            //         const yLimit = Math.max(0, WORLD_HALF_HEIGHT - halfViewHeight);
 
-                    if (Math.abs(view.current.center.y) > yLimit) {
-                        const clamped = view.current.center.clone();
-                        clamped.y = Math.sign(clamped.y) * yLimit;
-                        view.current.goTo({target: clamped}, {duration: 0});
-                    }
-                }
-            );
+            //         if (Math.abs(view.current.center.y) > yLimit) {
+            //             const clamped = view.current.center.clone();
+            //             clamped.y = Math.sign(clamped.y) * yLimit;
+            //             view.current.goTo({target: clamped}, {duration: 0});
+            //         }
+            //     }
+            // );
 
             // resize minimum zoom level when viewport is resized
             const resizeObserver = new ResizeObserver((entries) => {
@@ -336,7 +353,19 @@ function EventTracking() {
             exposureLayerForGroup.current.destroy();
         }
 
-        
+        const url = realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter];
+        const classBreaksRenderer = new ClassBreaksRenderer({ 
+            field: "Value", 
+            classBreakInfos: realtimeObject[realtimeExposure.exposure].colorScheme
+        });
+        const renderer = new SimpleRenderer({
+            symbol: new SimpleMarkerSymbol({
+                size: 3,
+                color: [255, 200, 0],
+                outline: "null"
+            })
+        });
+
         // assign exposure layer values based on realtime exposure value 
         switch (realtimeExposure.exposure) {
             case "Population":
@@ -347,40 +376,28 @@ function EventTracking() {
             case "Urban GDP":
             case "Cropland":
                 exposureLayer.current = new ImageryTileLayer({
-                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
-                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure.exposure].colorScheme }),
+                    url: url,
+                    renderer: classBreaksRenderer,
                     title: "exposure"
                 });
                 exposureLayerForGroup.current = new ImageryTileLayer({
-                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
-                    renderer: new ClassBreaksRenderer({ field: "Value", classBreakInfos: realtimeObject[realtimeExposure.exposure].colorScheme }),
+                    url: url,
+                    renderer: classBreaksRenderer,
                     title: "exposure"
                 });
                 break;
             case "Airports":
             case "Ports":
                 exposureLayer.current = new FeatureLayer({
-                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
+                    url: url,
                     effect: "bloom(1.8, 0.85px, 0.4)",
-                    renderer: new SimpleRenderer({
-                        symbol: new SimpleMarkerSymbol({
-                            size: 3,  
-                            color: [255, 200, 0], 
-                            outline: "null"
-                        })
-                    }),
+                    renderer: renderer,
                     title: "exposure"
                 });
                 exposureLayerForGroup.current = new FeatureLayer({
-                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
+                    url: url,
                     effect: "bloom(1.8, 0.85px, 0.4)",
-                    renderer: new SimpleRenderer({
-                        symbol: new SimpleMarkerSymbol({
-                            size: 3,  
-                            color: [255, 200, 0], 
-                            outline: "null"
-                        })
-                    }),
+                    renderer: renderer,
                     title: "exposure"
                 });
                 break;
@@ -399,7 +416,7 @@ function EventTracking() {
                    exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)";
                }
            }
-    }, [realtimeExposure])
+    }, [realtimeExposure, dimension3D])
 
     const removeBlur = () => {
         if (baseLayer.current && exposureLayer.current && graphicsLayer.current && outlineLayer.current) {
@@ -435,11 +452,11 @@ function EventTracking() {
                 type: "simple",
                 symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
             },
-            definitionExpression: `${state?.eventFilter !== 'All Events' ? `eventtype='${state?.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(state?.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(state?.dateRange.to))}'
+            definitionExpression: `${state?.eventFilter !== 'All Events' ? `eventtype='${state?.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
             OR
-            todate >= timestamp '${toTimestamp(new Date(state?.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(state?.dateRange.to))}'
+            todate >= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
             OR
-            fromdate <= timestamp '${toTimestamp(new Date(state?.dateRange.from))}' AND todate >= timestamp '${toTimestamp(new Date(state?.dateRange.to))}'
+            fromdate <= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND todate >= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
         )`
         });
 
@@ -646,7 +663,7 @@ function EventTracking() {
                 <path d="M2.05814 1.02911C1.47929 1.02911 1.02907 1.47933 1.02907 2.05818V3.08725C2.15461 3.08725 3.08721 2.15465 3.08721 1.02911H2.05814ZM1.02907 4.11632V8.2326C2.73347 8.2326 4.11628 9.61541 4.11628 11.3198H12.3488C12.3488 9.61541 13.7316 8.2326 15.436 8.2326V4.11632C13.7316 4.11632 12.3488 2.73351 12.3488 1.02911H4.11628C4.11628 2.73351 2.73347 4.11632 1.02907 4.11632ZM13.3779 11.3198H14.407C14.9858 11.3198 15.436 10.8696 15.436 10.2907V9.26167C14.3105 9.26167 13.3779 10.1943 13.3779 11.3198ZM1.02907 9.26167V10.2907C1.02907 10.8696 1.47929 11.3198 2.05814 11.3198H3.08721C3.08721 10.1943 2.15461 9.26167 1.02907 9.26167ZM15.436 3.08725V2.05818C15.436 1.47933 14.9858 1.02911 14.407 1.02911H13.3779C13.3779 2.15465 14.3105 3.08725 15.436 3.08725ZM0 2.05818C0 0.932634 0.932594 3.95775e-05 2.05814 3.95775e-05H14.407C15.5325 3.95775e-05 16.4651 0.932634 16.4651 2.05818V10.2907C16.4651 11.4163 15.5325 12.3489 14.407 12.3489H2.05814C0.932594 12.3489 0 11.4163 0 10.2907V2.05818ZM10.2907 6.17446C10.2907 5.04891 9.3581 4.11632 8.23256 4.11632C7.10701 4.11632 6.17442 5.04891 6.17442 6.17446C6.17442 7.3 7.10701 8.2326 8.23256 8.2326C9.3581 8.2326 10.2907 7.3 10.2907 6.17446ZM5.14535 6.17446C5.14535 4.47006 6.52816 3.08725 8.23256 3.08725C9.93696 3.08725 11.3198 4.47006 11.3198 6.17446C11.3198 7.87886 9.93696 9.26167 8.23256 9.26167C6.52816 9.26167 5.14535 7.87886 5.14535 6.17446Z" />
             </svg>
             ,
-            categories: []
+            categories: ["Agriculture", "Construction", "Finance", "Manufacturing", "Mining", "Government", "Public Services", "Trade", "Transportation", "Other"]
         },
         {
             name: "Urban GDP",
@@ -725,8 +742,40 @@ function EventTracking() {
         if (y < MAX_Y) setY(SNAP_TO_MIN_HEIGHT);
     };
 
+    useEffect(() => {
+        view.current.goTo({
+            center: [state.countryCoordinates.longitude, state.countryCoordinates.latitude],
+        });
+    }, [state?.countryCoordinates]);
+
+    function switchTo3D(value) {
+
+        if (value.key == "h") {
+            exposureLayer.current = new FeatureLayer({
+                    url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
+                    renderer: new SimpleRenderer({
+                        symbol: new PointSymbol3D({
+                            symbolLayers: [new ObjectSymbol3DLayer({
+                                resource: {
+                                    primitive: "cube"
+                                },
+                                material: {
+                                    color: "#00E9FF"
+                                },
+                                anchor: "bottom",
+                                width: 60000,
+                                depth: 60000,
+                                height: 60000
+                            })]
+                        })
+                    }),
+                    title: "exposure"
+                });
+        }
+    }
+
     return (
-        <div className="w-full h-full relative overflow-hidden">
+        <div className="w-full h-full relative overflow-hidden" onKeyDown={switchTo3D}>
             <div className='w-full h-full'>
                 <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
@@ -745,11 +794,10 @@ function EventTracking() {
                                     <div className={`rounded-full flex items-center justify-start ${realtimeExposure.exposure == e.name ? 'bg-(--accentblue-100)' : 'bg-black hover:bg-(--accentdarkblue-100)'} transition-all duration-300 border-[1.37px] border-solid border-[#0084FF] h-[37px] pr-[10px]`}>
                                         <div className='rounded-full flex items-center justify-center bg-black border border-solid border-[#0084FF] h-[37px] w-[37px]'>{e.icon}</div>
                                         <div className='text-white text-[12px] ml-3 font-bold'>{e.name}</div>
-
                                     </div>
                                 </div>
                         </div>
-                        <div id='exposureContainer' className={`pointer-events-none has-[.pop-in]:pointer-events-auto flex gap-2 flex-wrap max-w-5/10 items-center border-solid transition-all duration-300 text-white`}>
+                        <div id='exposureContainer' className={`pointer-events-none has-[.pop-in]:pointer-events-auto flex gap-2 ml-10 flex-wrap max-w-5/10 items-center border-solid transition-all duration-300 text-white`}>
                             {e.categories.map((f: any, index: number) =>
                                 <div id={`exposure_category_${f}`} className={`exposure_ h-9 bg-black border-2 rounded-2xl px-5 opacity-0 cursor-pointer ${popInState == e.name ? 'pop-in' : popInState == "initial" ? '' : 'pop-out'} ${realtimeExposure.filter == f ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} style={{ animationDelay: index * 50 + 'ms' }} onClick={() => setRealtimeExposure({exposure: e.name, filter: f})}>
                                     <div className='h-9/10 flex justify-center items-center overflow-hidden'>
@@ -826,59 +874,63 @@ function EventTracking() {
                     <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => unfocusEvent()}> Close details [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
-                <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
-                <div className="flex flex-row justify-center items-start w-full pb-[36px]">
-                    <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">
-                        {focusedSliderPlaying ? <FontAwesomeIcon icon={faPause} size="2xs" color="white" onClick={() => playEvent("pause")}/> : <FontAwesomeIcon icon={faPlay} size="2xs" color="white" onClick={() => playEvent("play")}/>}
-                    </div>
-                    <div className="flex flex-col h-full w-7/10">
-                        <Slider 
-                        className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer ' 
-                            step={1}
-                            min={0}
-                            // if there are no features, set max to 10 for demonstrative purposes
-                            max={focusedFeatures?.length - 1 || 10 }
-                            defaultValue={[0]}
-                            value={focusedSliderValue}
-                            onValueChange={(value) => {
-                                setFocusedSliderValue(value);
-                                // apply polygon based on slider value, if features exist
-                                if (focusedFeatures) {
-                                    applyPolygon(focusedFeatures[value[0]]);
-                                    pauseSlider();
-                                }
-                            }}
-                        />
-                        <div className="relative h-6"
-                            style={{ width: "calc(100%)" }}
-                        >
-                            {focusedFeatures?.map((feature: any, index: any) => {
-                                const percent = (index / (focusedFeatures.length - 1)) * 100;
-                                return (
-                                    <div
-                                        key={index}
-                                        className="absolute flex flex-col items-center -translate-x-1/2"
-                                        style={{ left: `${percent}%` }}
-                                    >
-                                        <div className="w-px h-2 bg-muted-foreground/50"></div>
-                                        <span className={`text-xs w-10 mt-3`}>
-                                            {index == 0 ? new Date(focusedEvent.fromdate).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric"
-                                            }) + " " : index == focusedFeatures.length - 1 ? focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric"
-                                            }) : ""}
-                                        </span>
-                                    </div>
-                                )
-                            })
-                            }
+                {focusedFeatures?.length > 1 ?
+                    <div className='w-full'>
+                        <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
+                        <div className="flex flex-row justify-center items-start w-full pb-[36px]">
+                            <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">
+                                {focusedSliderPlaying ? <FontAwesomeIcon icon={faPause} size="2xs" color="white" onClick={() => playEvent("pause")} /> : <FontAwesomeIcon icon={faPlay} size="2xs" color="white" onClick={() => playEvent("play")} />}
+                            </div>
+                            <div className="flex flex-col h-full w-7/10">
+                                <Slider
+                                    className='mr-6 [&_[data-slot=slider-track]]:bg-(--orange) cursor-pointer '
+                                    step={1}
+                                    min={0}
+                                    // if there are no features, set max to 10 for demonstrative purposes
+                                    max={focusedFeatures?.length - 1 || 10}
+                                    defaultValue={[0]}
+                                    value={focusedSliderValue}
+                                    onValueChange={(value) => {
+                                        setFocusedSliderValue(value);
+                                        // apply polygon based on slider value, if features exist
+                                        if (focusedFeatures) {
+                                            applyPolygon(focusedFeatures[value[0]]);
+                                            pauseSlider();
+                                        }
+                                    }}
+                                />
+                                <div className="relative h-6"
+                                    style={{ width: "calc(100%)" }}
+                                >
+                                    {focusedFeatures?.map((feature: any, index: any) => {
+                                        const percent = (index / (focusedFeatures.length - 1)) * 100;
+                                        return (
+                                            <div
+                                                key={index}
+                                                className="absolute flex flex-col items-center -translate-x-1/2"
+                                                style={{ left: `${percent}%` }}
+                                            >
+                                                <div className="w-px h-2 bg-muted-foreground/50"></div>
+                                                <span className={`text-xs w-10 mt-3`}>
+                                                    {index == 0 ? new Date(focusedEvent.fromdate).toLocaleDateString("en-US", {
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        year: "numeric"
+                                                    }) + " " : index == focusedFeatures.length - 1 ? focusedEvent.todate == Date.now() ? "Present" : " " + new Date(focusedEvent.todate).toLocaleDateString("en-US", {
+                                                        month: "short",
+                                                        day: "numeric",
+                                                        year: "numeric"
+                                                    }) : ""}
+                                                </span>
+                                            </div>
+                                        )
+                                    })
+                                    }
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
+                    : null}
                 <div className="pt-5 font-bold text-[14px] pl-4">Event Severity:</div>
                 <div className={`text-[14px] px-2 ml-4 rounded-md text-white font-extrabold`} style={{ backgroundColor: `var(--${focusedEvent.alertlevel?.toLowerCase()})` }}
                 >Level {focusedEvent.alertscore}</div>
@@ -924,7 +976,7 @@ function EventTracking() {
                 </div>
                 <div className='h-3/10 w-8/10 flex flex-col items-center justify-end'>
                     <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
-                        <div>{realtimeExposure.exposure.toUpperCase()}</div>
+                        <div>{realtimeObject[realtimeExposure.exposure].title.toUpperCase()} {realtimeObject[realtimeExposure.exposure].unit}</div>
                     </div>
                     <div className="h-1/10 w-full" style={{ background: `linear-gradient(to right, ${realtimeObject[realtimeExposure.exposure].colorScheme.map((e, i) => 'rgba(' + e.symbol.color.join(",") + ') ' + (i / realtimeObject[realtimeExposure.exposure].colorScheme.length) * 100 + "%," + ' rgba(' + e.symbol.color.join(",") + ') ' + ((i + 1) / realtimeObject[realtimeExposure.exposure].colorScheme.length) * 100 + "% ").join(",")})` }}></div>
                     <div className="h-[20px] w-full flex justify-between">

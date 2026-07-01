@@ -33,8 +33,10 @@ type AppState = {
   currentExposure: string
   currentMeasure: Measure
   currentThreshold: Threshold
-  dateRange: any
+  dateRange: DateRange
   eventFilter: string
+  countryFilter: string
+  countryCoordinates: { longitude: number, latitude: number }
 }
 
 type AppActions = {
@@ -45,11 +47,32 @@ type AppActions = {
   setExposure: Dispatch<SetStateAction<string>>
   setMeasure: Dispatch<SetStateAction<Measure>>
   setThreshold: Dispatch<SetStateAction<Threshold>>
-  setDateRange: Dispatch<SetStateAction<DateRange | undefined>>
+  setDateRange: Dispatch<SetStateAction<DateRange>>
   setEventFilter: Dispatch<SetStateAction<string>>
+  setCountryFilter: Dispatch<SetStateAction<string>>
+  setCountryCoordinates: Dispatch<SetStateAction<{ longitude: number, latitude: number }>>
 }
 
-export const AppStateContext = createContext<AppState | null>(null)
+ const today = new Date;
+
+
+export const AppStateContext = createContext<AppState>({
+  currentView: "Event tracking",
+  currentTime: 1980,
+  currentScenario: "rcp4p5",
+  currentHazard: "Coastal Flooding",
+  currentExposure: "Population",
+  currentMeasure: { name: "Flood Level", id: "CF_PW_EXP" },
+  currentThreshold: { name: "", threshold: "rp0005" },
+  dateRange: {
+    from: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
+    to: (new Date)
+  },
+  eventFilter: "All Events",
+  countryFilter: "AND",
+  countryCoordinates: { longitude: 42.55108741, latitude: 1.57672606 }
+
+})
 export const AppActionsContext = createContext<AppActions | null>(null)
 
 export function App() {
@@ -61,23 +84,24 @@ export function App() {
   const [currentExposure, setExposure] = useState<string>("Population")
   const [currentMeasure, setMeasure] = useState<Measure>({ name: "Flood Level", id: "CF_PW_EXP" })
   const [currentThreshold, setThreshold] = useState<Threshold>({ name: "", threshold: "rp0005" })
-  const today = new Date;
-  const [dateRange, setDateRange] = useState<DateRange | undefined>({
+  const [dateRange, setDateRange] = useState<DateRange>({
     from: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
     to: (new Date)
   });
   const [eventFilter, setEventFilter] = useState<string>("All Events");
+  const [countryFilter, setCountryFilter] = useState<string>("AND");
+  const [countryCoordinates, setCountryCoordinates] = useState<{ longitude: number, latitude: number }>({ longitude: 42.55108741, latitude: 1.57672606 });
 
   const state = useMemo<AppState>(() => ({
     currentView, currentTime, currentScenario, currentHazard,
     currentExposure, currentMeasure, currentThreshold, dateRange,
-    eventFilter
+    eventFilter, countryFilter, countryCoordinates
   }), [currentView, currentTime, currentScenario, currentHazard,
-       currentExposure, currentMeasure, currentThreshold, dateRange, eventFilter])
+       currentExposure, currentMeasure, currentThreshold, dateRange, eventFilter, countryFilter, countryCoordinates])
 
   const actions = useMemo<AppActions>(() => ({
     setView, setTime, setScenario, setHazard, setExposure, setMeasure, setThreshold,
-    setDateRange, setEventFilter
+    setDateRange, setEventFilter, setCountryFilter, setCountryCoordinates
   }), [])
 
 

@@ -83,8 +83,8 @@ export const Thresholds = () => {
     const measureId = config.thresholdToMeasure[thresholdKey];
     const measureName = measureMapper[measureId];
 
-    actions.setThreshold({ name: measureName, threshold: thresholdKey });
-    actions.setMeasure({ name: measureName, id: measureId });
+    actions?.setThreshold({ name: measureName, threshold: thresholdKey });
+    actions?.setMeasure({ name: measureName, id: measureId });
 
     //
     setThresholdSliderValue(value);
@@ -94,10 +94,10 @@ export const Thresholds = () => {
     console.log(value);
     switch (value) {
       case "Dry Days":
-        actions.setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
+        actions?.setMeasure({ name: "Dry Days", id: 'CDD_CROP_EXP' });
         break;
       case "SPEI Index":
-        actions.setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
+        actions?.setMeasure({ name: "SPEI Index", id: 'SPEI_CROP_EXP' });
         break;
     }
   }

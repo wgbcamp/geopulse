@@ -355,9 +355,9 @@ const thresholdToTitle: Record<string, string> = {
 }
 
 
-export const realtimeObject: Record<string, { url: Record<string,string>, colorScheme: Array<Record<string, any>> }> = {
+export const realtimeObject: Record<string, { url: Record<string,string>, colorScheme: Array<Record<string, any>>, title: string, unit: string }> = {
 
-    "Population": 
+    "Population":
     {
         url: {
             "Population": `${URL_RTBASE}/worldpop_population/ImageServer`,
@@ -411,63 +411,13 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 },
                 "label": "> 284"
             }
-        ]
-    },
-    "Vulnerable People":
-    {
-        url: { "Vulnerable People": `${URL_RTBASE}/worldpop_vulnerable_population/ImageServer` },
-        colorScheme: [
-            {
-                "minValue": 0.0,
-                "maxValue": 2.0,
-                "symbol": {
-                    "type": "simple-fill",
-                    "color": [0, 0, 4, 1.0]
-                },
-                "label": "< 2"
-            },
-            {
-                "minValue": 2.0,
-                "maxValue": 8.0,
-                "symbol": {
-                    "type": "simple-fill",
-                    "color": [10, 58, 74, 1.0]
-                },
-                "label": "8"
-            },
-            {
-                "minValue": 8.0,
-                "maxValue": 59.0,
-                "symbol": {
-                    "type": "simple-fill",
-                    "color": [27, 138, 138, 1.0]
-                },
-                "label": "59"
-            },
-            {
-                "minValue": 59.0,
-                "maxValue": 284.0,
-                "symbol": {
-                    "type": "simple-fill",
-                    "color": [94, 201, 98, 1.0]
-                },
-                "label": "284"
-            },
-            {
-                "minValue": 284.0,
-                "maxValue": 107609.0,
-                "symbol": {
-                    "type": "simple-fill",
-                    "color": [212, 255, 80, 1.0]
-                },
-                "label": "> 284"
-            }
-        ]
-
+        ],
+        title: "population count",
+        unit: ""
     },
     "Buildings":
     {
-       url: { "Buildings": `${URL_RTBASE}/gba_buildings_count/ImageServer` },
+        url: { "Buildings": `${URL_RTBASE}/gba_buildings_count/ImageServer` },
         colorScheme: [
             {
                 "minValue": 0.0,
@@ -514,8 +464,10 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 },
                 "label": "> 81"
             }
-        ]
- 
+        ],
+        title: "building count",
+        unit: ""
+
     },
     "Nightlights":
     {
@@ -551,11 +503,25 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 'symbol': { 'type': 'simple-fill', 'color': [255, 255, 255, 1.0] },
                 'label': '> 40'
             }
-        ]
+        ],
+        title: "night-time luminosity",
+        unit: "(nW/cm²/sr)"
     },
-   "GDP":
+    "GDP":
     {
-        url: { "GDP": `${URL_RTBASE}/imf_gdp_total_2021_logv3/ImageServer` },
+        url: { 
+            "GDP": `${URL_RTBASE}/imf_gdp_total_2021_logv3/ImageServer`,
+            "Agriculture": `${URL_RTBASE}`,
+            "Mining": `${URL_RTBASE}`,
+            "Manufacturing": `${URL_RTBASE}`,
+            "Construction": `${URL_RTBASE}`,
+            "Transportation & Warehousing": `${URL_RTBASE}`,
+            "Trade": `${URL_RTBASE}`,
+            "Finance": `${URL_RTBASE}`,
+            "Government": `${URL_RTBASE}`,
+            "Public Services": `${URL_RTBASE}`,
+            "Other Industries": `${URL_RTBASE}`
+        },
         colorScheme: [
             {
                 "minValue": 5.9,
@@ -602,8 +568,9 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 },
                 "label": "> $13.3M"
             }
-        ]
- 
+        ],
+        title: "gdp",
+        unit: "(Purchasing Power Parity, USD)"
     },
     "Urban GDP":
     {
@@ -654,8 +621,11 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 },
                 "label": "> $13.3M"
             }
-        ]
- 
+        ],
+        title: "urban gdp",
+        unit: "(Purchasing Power Parity, USD)"
+
+
     },
     "Cropland":
     {
@@ -667,7 +637,10 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 'symbol': { 'type': 'simple-fill', 'color': [168, 198, 108, 1] },
                 'label': ''
             }
-        ]
+        ],
+        title: "land cover class: cropland",
+        unit: ""
+
     },
     "Airports":
     {
@@ -679,7 +652,10 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 'symbol': { 'type': 'simple-fill', 'color': [255, 200, 0, 1] },
                 'label': ''
             }
-        ]
+        ],
+        title: "airports",
+        unit: ""
+
     },
     "Ports":
     {
@@ -691,7 +667,10 @@ export const realtimeObject: Record<string, { url: Record<string,string>, colorS
                 'symbol': { 'type': 'simple-fill', 'color': [255, 200, 0, 1] },
                 'label': ''
             }
-        ]
+        ],
+        title: "ports",
+        unit: ""
+
     }
 }
 

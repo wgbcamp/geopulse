@@ -8,6 +8,8 @@ import MapView from "@arcgis/core/views/MapView.js";
 import SceneView from "@arcgis/core/views/SceneView.js";
 import UniqueValueRenderer from "@arcgis/core/renderers/UniqueValueRenderer.js";
 
+import ScaleBar from "@arcgis/core/widgets/ScaleBar.js";
+
 import { gridObject } from '@/config/datasets';
 import ImageryTileLayer from '@arcgis/core/layers/ImageryTileLayer';
 
@@ -69,6 +71,15 @@ const state = useContext(AppStateContext);
       }
 
       view.current.ui.components = [];
+
+      const scaleBar = new ScaleBar({
+                view: view.current,
+                unit: "metric" // Options: "metric", "non-metric", or "dual"
+            });
+
+            view.current.ui.add(scaleBar, {
+                position: "bottom-right"
+            });
 
 
       reactiveUtils.watch(() =>

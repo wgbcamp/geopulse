@@ -27,10 +27,10 @@ export const Timeline = ({ currentTime, setTime }: any) => {
   }
 
   return (
-    <Item className='w-45 py-0 px-2'>
+    <Item className='w-full py-0 px-2'>
       <div className='w-full flex flex-col items-center'>
         <Slider
-          className='w-60 z-1 cursor-pointer bg-white'
+          className='w-full z-1 cursor-pointer bg-white'
           min={0}
           max={3}
           step={1}
@@ -38,7 +38,7 @@ export const Timeline = ({ currentTime, setTime }: any) => {
           onValueChange={handleValueChange}
         />
         <div className="relative h-6" 
-        style={{width: "calc(100% + 63px)"}}
+        style={{width: "calc(97%)"}}
         >
           {ticks.map((tick:any, index:any) => {
             const percent = (index / (ticks.length - 1)) * 100;
