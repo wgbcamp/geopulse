@@ -22,11 +22,22 @@ import {
     PopoverContent,
     PopoverTrigger,
 } from "@/components/ui/popover"
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+} from "@/components/ui/command"
+import { cn } from "@/lib/utils"
+import { Check, ChevronsUpDown } from "lucide-react"
 import { Calendar } from "@/components/ui/calendar"
 import { format } from 'date-fns';
 
 import { urlObject, scenarioMapper, measureMapper, eventTypes } from '@/config/datasets';
-import { countryByIso3 } from '@/config/isoCountries';
+import { isoCountries, countryByIso3 } from "@/config/isoCountries";
+
 
 import Hamburger from '../assets/Group 51.png'
 
@@ -56,6 +67,10 @@ export const Header = () => {
     };
     const [dataOptions, setDataOptions] = useState<boolean>(false);
     const [menuOptions, setMenuOptions] = useState<boolean>(false);
+
+    const [open, setOpen] = React.useState(false);
+    const [iso3, setIso3] = useState("AND");
+    
 
     const swapTable = (hazard: string, exposure: string, threshold: { name: string; threshold: any }, measure: { name: string; id: string }) => {
         const findMatchingScenario = new Promise((resolve) => {
@@ -286,31 +301,47 @@ export const Header = () => {
                         </Card>
                         {calendarComponent}
                         <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-22 xl:h-14.75 w-full px-2">
-                            <Popover open={countryFilterOpened} onOpenChange={() => setCountryFilterOpened(!countryFilterOpened)}>
-                                <PopoverTrigger asChild>
-                                    <div className="flex flex-row items-center w-95/100 h-14.75 justify-between cursor-pointer">
-                                        <div className="text-[14px] font-bold text-end flex items-center pl-2">{countryByIso3[state?.countryFilter] ?? "USA"}</div>
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <g transform={`rotate(${countryFilterOpened ? "180" : "0"}, 10, 10)`}>
-                                                <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
-                                            </g>
-                                        </svg>
-                                    </div>
-                                </PopoverTrigger>
-                                <PopoverContent className="w-56.25 h-100 p-0 my-1.25 rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)] overflow-auto">
-                                    <div className={`flex flex-row justify-center py-2.5 h-[calc(80px*${urlObject[state?.currentHazard][state?.currentExposure].scenarios.length})]`}>
-                                        <ItemGroup>
-                                            {Object.entries(countryByIso3).map(([x, y]) =>
-                                                <Item key={x} className={`cursor-pointer my-2 ${countryByIso3[state?.eventFilter] === countryByIso3[x] ? 'font-bold text-(--orange) underline underline-offset-1.25 decoration-0.5' : ""} transition-all duration-200 ease-in`} onClick={() => { actions?.setCountryFilter(x); doSomething(x) }}>
-                                                    <ItemContent>
-                                                        <ItemHeader>{countryByIso3[x]}</ItemHeader>
-                                                    </ItemContent>
-                                                </Item>
-                                            )}
-                                        </ItemGroup>
-                                    </div>
-                                </PopoverContent>
-                            </Popover>
+                            <Popover open={open} onOpenChange={setOpen}>
+                                            <PopoverTrigger asChild>
+                                                <Button
+                                                    variant="outline"
+                                                    role="combobox"
+                                                    aria-expanded={open}
+                                                    className="w-[200px] justify-between dark"
+                                                >
+                                                    {countryByIso3[iso3]}
+                                                    <ChevronsUpDown className="opacity-50" />
+                                                </Button>
+                                            </PopoverTrigger>
+                                            <PopoverContent className="w-[200px] p-0 dark">
+                                                <Command>
+                                                    <CommandInput placeholder="Search country..." className="h-9" />
+                                                    <CommandList>
+                                                        <CommandEmpty>Country not found.</CommandEmpty>
+                                                        <CommandGroup>
+                                                            {isoCountries.map((country) => (
+                                                                <CommandItem
+                                                                    key={country.iso3}
+                                                                    value={country.name}
+                                                                    onSelect={() => {
+                                                                        setOpen(false)
+                                                                        setIso3(country.iso3)
+                                                                    }}
+                                                                >
+                                                                    {country.name}
+                                                                    <Check
+                                                                        className={cn(
+                                                                            "ml-auto",
+                                                                            iso3 === country.iso3 ? "opacity-100" : "opacity-0"
+                                                                        )}
+                                                                    />
+                                                                </CommandItem>
+                                                            ))}
+                                                        </CommandGroup>
+                                                    </CommandList>
+                                                </Command>
+                                            </PopoverContent>
+                                        </Popover>     
                         </Card>
                     </div>
                     :

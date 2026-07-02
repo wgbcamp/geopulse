@@ -849,7 +849,7 @@ function EventTracking() {
                 <div className="h-full pb-20 md:pb-0 overflow-y-scroll flex flex-col justify-start" ref={eventRef}>
                     {events?.map((event: any) => (
                         <div key={event.attributes.htmldescription} className="p-2 border-b border-gray-300 items-start flex flex-col text-left">
-                            <h3 className="font-bold text-[14px] text-[var(--evenlighterblue)]">{event.attributes.country.toUpperCase()}</h3>
+                            <h3 className="font-bold text-[14px] text-[var(--accentblue-100)]">{event.attributes.country.toUpperCase()}</h3>
                             <h3 className="font-bold text-[16px]">{event.attributes.description}</h3>
                             <p className="text-[14px]">{new Date(event.attributes.fromdate).toLocaleDateString("en-US", {
                                 month: "long",
@@ -860,8 +860,18 @@ function EventTracking() {
                                 day: "numeric",
                                 year: "numeric"
                             })}</p>
-                            <div className="flex h-[25px] items-center justify-center font-bold cursor-pointer text-[var(--evenlighterblue)] border-solid border border-gray-400 rounded-sm px-[5px] mb-[6px] mt-[9px] text-[11px]" onClick={() => focusOnEvent(event.geometry, event.attributes)}>
-                                DETAILS
+                            <div className='flex w-full justify-between '>
+                                <div className="flex h-6.25 items-center justify-center font-bold cursor-pointer text-[var(--accentblue-100)] border-solid border border-gray-400 rounded-sm px-[5px] mb-[6px] mt-[9px] text-[11px]" onClick={() => focusOnEvent(event.geometry, event.attributes)}>
+                                    DETAILS
+                                </div>
+                                {event.attributes.iscurrent == "true" ?
+                                    <div className="flex justify-center items-center bg-(--accentred-100) rounded-sm shadow-lg/10 font-bold text-white px-[5px] mb-[6px] mt-[9px] text-[11px]">
+                                        <div>ONGOING</div>
+                                    </div>
+                                    :
+                                    null
+                                }
+                                
                             </div>
                         </div>
                     ))}
@@ -869,16 +879,22 @@ function EventTracking() {
                 <div className="h-[10px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold"></div>
             </div>
             <div className={`absolute bottom-0 right-0 md:top-40 md:bottom-[unset] ${eventPopup == "focused event" ? "visible" : "invisible"} h-40/100 md:h-70/100 w-full md:w-[325px] pt-3 shadow-lg/40 md:rounded-tl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
-                <div className="h-[37px] w-full flex items-center justify-between pl-4">
-                    <b className="bg-(--evenlighterblue) text-white text-[11px] px-3 py-1 rounded-xl">PAST EVENT</b>
-                    <div className='text-[14px] mr-2 text-(--evenlighterblue) font-bold cursor-pointer' onClick={() => unfocusEvent()}> Close details [X]</div>
+                <div className="h-71 w-full flex items-center justify-between pl-4">
+                    {focusedEvent.iscurrent == "true" ?
+                        <div className="flex h-6.25 justify-center  items-center bg-(--accentred-100) rounded-sm shadow-lg/10 font-bold text-white px-[5px] mb-[6px] mt-[9px] text-[11px]">
+                            <div>ONGOING</div>
+                        </div>
+                        :
+                        <b className="flex h-6.25 justify-center  items-center bg-(--accentblue-100) rounded-sm shadow-lg/10 font-bold text-white px-[5px] mb-[6px] mt-[9px] text-[11px]">PAST EVENT</b>
+                    }
+                    <div className='text-[14px] mr-2 text-(--accentblue-100) font-bold cursor-pointer' onClick={() => unfocusEvent()}> Close details [X]</div>
                 </div>
                 <div className="text-[20px] h-[38px] font-bold text-left flex w-full pt-2 pl-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
                 {focusedFeatures?.length > 1 ?
                     <div className='w-full'>
-                        <div className="pt-[20px] text-(--evenlighterblue) font-bold text-[12px] text-center w-full">Timeline</div>
+                        <div className="pt-[20px] text-(--accentblue-100) font-bold text-[12px] text-center w-full">Timeline</div>
                         <div className="flex flex-row justify-center items-start w-full pb-[36px]">
-                            <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--evenlighterblue) rounded-4xl">
+                            <div className="flex items-center justify-center text-[25px] w-[25px] h-[25px] mr-3 text-white bg-(--accentblue-100) rounded-4xl">
                                 {focusedSliderPlaying ? <FontAwesomeIcon icon={faPause} size="2xs" color="white" onClick={() => playEvent("pause")} /> : <FontAwesomeIcon icon={faPlay} size="2xs" color="white" onClick={() => playEvent("play")} />}
                             </div>
                             <div className="flex flex-col h-full w-7/10">
@@ -932,8 +948,12 @@ function EventTracking() {
                     </div>
                     : null}
                 <div className="pt-5 font-bold text-[14px] pl-4">Event Severity:</div>
+                <div></div>
                 <div className={`text-[14px] px-2 ml-4 rounded-md text-white font-extrabold`} style={{ backgroundColor: `var(--${focusedEvent.alertlevel?.toLowerCase()})` }}
-                >Level {focusedEvent.alertscore}</div>
+                >Level {focusedEvent.alertscore}
+                </div>
+                
+                
                   
                 <div className="pt-5 font-bold text-[14px] pl-4">Main economies affected:</div>
                 <div className='text-left text-[14px] pb-4 pl-4'>{focusedEvent.country} | <u className='cursor-pointer'>Download</u></div>
@@ -951,7 +971,7 @@ function EventTracking() {
                         )}
                     </div>                
                 </div>
-                <div className="pt-[24px] pb-5 text-(--evenlighterblue) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
+                <div className="pt-[24px] pb-5 text-(--accentblue-100) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
             <div className="absolute bottom-0 invisible md:visible h-[175px] w-[350px] bg-[rgba(0,0,0,0.85)] flex flex-col items-center justify-around"> 
                 <div className="w-8/10 h-5/10 flex flex-col items-center">
