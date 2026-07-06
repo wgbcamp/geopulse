@@ -29,17 +29,26 @@ function RouteComponent() {
                                 </div>
                                 <div className='w-full border-1 border-solid' ></div>
                                 <div className='flex flex-row'>
-                                    <div className='flex flex-col items-center'>
-                                        <strong>Gridded Capital Stock</strong>
-                                        <img width={150} src={GriddedCapitalStock}></img>
-                                        <div className='flex flex-col gap-y-4'>
-                                            <span>A ~1 km global estimate of the value of buildings and built assets, from the IMF, showing where physical capital is concentrated.</span>
-                                      <div className='flex'>
-                                          <strong>Papers:</strong>
+                              <div className='flex flex-col items-center'>
+                                  <strong>Gridded Capital Stock</strong>
+                                  <img width={150} src={GriddedCapitalStock}></img>
+                                  <div className='flex flex-col gap-y-4'>
+                                      <span>A ~1 km global estimate of the value of buildings and built assets, from the IMF, showing where physical capital is concentrated.</span>
+                                      <div className='flex flex-col'>
+                                          <strong>Papers:&nbsp;</strong>
                                           <span><i>[Add relevant papers(s) here.]</i></span>
                                       </div>
-                                        </div>
-                                    </div>
+                                      <div className='flex flex-col'>
+                                          <strong>Citation:&nbsp;</strong>
+                                          <span><i>Gridded Physical Capital Stock (forthcoming). International Monetary Fund. Accessed [date]. </i></span>
+                                      </div>
+                                      <div className='flex flex-col'>
+                                          <strong>Data:&nbsp;</strong>
+                                          <span><i>Global raster, 30 arc-second (~1 km at the equator), WGS84 (EPSG:4326). Available as a direct download.</i></span>
+                                      </div>
+                                    <Button className='w-36 h-7 bg-(--accentblue-60) rounded-md'>Download GeoTIFF</Button>
+                                  </div>
+                              </div>
                                     <div className='flex flex-col items-center'>
                                         <strong>Gridded GDP</strong>
                                         <img width={150} src={GriddedGDP}></img>
@@ -49,7 +58,6 @@ function RouteComponent() {
                                         </div>
                                     </div>
                                 </div>
-                                <Button className='w-28 h-7 bg-(--accentblue-60) rounded-sm'>Download Data</Button>
                             </div>
                         </div>
                         <div className='w-full flex justify-center'>

@@ -68,7 +68,7 @@ export const AppStateContext = createContext<AppState>({
     from: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
     to: (new Date)
   },
-  eventFilter: "All Events",
+  eventFilter: "AL",
   countryFilter: "AND",
   countryCoordinates: { longitude: 42.55108741, latitude: 1.57672606 }
 
@@ -88,7 +88,7 @@ export function App() {
     from: new Date(today.getFullYear(), today.getMonth() - 3, today.getDate()),
     to: (new Date)
   });
-  const [eventFilter, setEventFilter] = useState<string>("All Events");
+  const [eventFilter, setEventFilter] = useState<string>("AL");
   const [countryFilter, setCountryFilter] = useState<string>("AND");
   const [countryCoordinates, setCountryCoordinates] = useState<{ longitude: number, latitude: number }>({ longitude: 42.55108741, latitude: 1.57672606 });
 

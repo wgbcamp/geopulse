@@ -65,7 +65,7 @@ export const Header = () => {
         }
         setRiskOpened(newOpenState);
     };
-    const [dataOptions, setDataOptions] = useState<boolean>(false);
+    const [dataOptions, setDataOptions] = useState<boolean>(true);
     const [menuOptions, setMenuOptions] = useState<boolean>(false);
 
     const [open, setOpen] = React.useState(false);
@@ -105,9 +105,9 @@ export const Header = () => {
                                         {state?.dateRange.to ? format(state?.dateRange.to, "MMM d, yyyy") : <span>Select a date</span>}
                                     </section>
                                 </div>
-                                <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <g transform={`rotate(${calendarOpened ? "180" : "0"}, 10, 10)`}>
-                                        <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
+                                <svg width="12" height="12" viewBox="0 0 8 5" xmlns="http://www.w3.org/2000/svg">
+                                    <g transform={`rotate(${calendarOpened ? "180" : "0"}, 3.9375, 2.1753)`}>
+                                        <path d="M3.64746 4.23193L0.131836 0.716309C-0.0439453 0.558105 -0.0439453 0.294434 0.131836 0.118652C0.290039 -0.0395508 0.553711 -0.0395508 0.729492 0.118652L3.94629 3.33545L7.16309 0.118652C7.32129 -0.0395508 7.58496 -0.0395508 7.74316 0.118652C7.91895 0.276855 7.91895 0.558105 7.74316 0.716309L4.22754 4.23193C4.06934 4.39014 3.80566 4.39014 3.64746 4.23193Z" fill="black" />
                                     </g>
                                 </svg>
                             </div>
@@ -218,8 +218,8 @@ export const Header = () => {
                     </div>
                 </div>
             </div>
-            <div className='w-full xl:h-14.75 grid grid-cols-[1fr_1fr_50px] xl:grid-cols-[180px_300px_1fr_1fr] xl:col-start-2 xl:col-end-3'>
-                <div className='flex w-full'>
+            <div className={`w-full xl:h-14.75 grid grid-cols-[1fr_1fr_50px] ${location.pathname === "/compare" || location.pathname === "/grid" ? 'xl:grid-cols-[180px_300px_1fr]' : 'xl:grid-cols-[180px_600px_300px]' }  xl:col-start-2 xl:col-end-3`}>
+                <div className='flex w-full xl:col-start-1 xl:col-end-2'>
                     <Card className={`rounded-none p-0 flex flex-col items-center justify-center w-full gap-0 hover:bg-white transition-colors duration-200 ${location.pathname == "/eventtracking" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                         <div className='h-full w-full flex flex-col justify-end'>
                             <div className="text-[11px] font-bold text-(--primaryblack-90)">REAL-TIME</div>
@@ -233,53 +233,16 @@ export const Header = () => {
                         <div className={`h-1 w-full bg-(--orange) ${location.pathname == "/eventtracking" ? "opacity-100" : "opacity-0"}`}></div>
                     </Card>
                 </div>
-                <div className='h-14.75 flex'>
-                    <Card className={`shadow-none rounded-none xl:grow p-0 w-full h-full flex flex-col items-center justify-end gap-0 hover:bg-white transition-colors duration-200 ${location.pathname == "/compare" || location.pathname == "/grid" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
-                        <div className="text-[11px] font-bold text-(--primaryblack-90)">FORWARD LOOKING</div>
-                        <div className="flex flex-end flex-col w-full">
-                            <div className="flex flex-row justify-evenly items-start h-full">
-                                <Link to="/compare" activeOptions={{ exact: true }} className='flex flex-col justify-end cursor-pointer w-full' onClick={() => { actions?.setView("Compare"); }}>
-                                    <div className="flex flex-row h-8.75 items-center justify-center">
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M12.4219 16.4062C13.1641 14.9219 13.6719 12.8516 13.75 10.625H6.25C6.32812 12.8516 6.875 14.9219 7.61719 16.4062C8.47656 18.1641 9.41406 18.75 10 18.75C10.625 18.75 11.5234 18.1641 12.4219 16.4062ZM13.75 9.375C13.6719 7.14844 13.1641 5.11719 12.4219 3.59375C11.5234 1.83594 10.625 1.25 10 1.25C9.41406 1.25 8.47656 1.83594 7.61719 3.59375C6.875 5.11719 6.32812 7.14844 6.25 9.375H13.75ZM15 10.625C14.8828 13.7109 13.9844 16.6016 12.6953 18.3203C16.0156 17.2656 18.4766 14.2578 18.7109 10.625H15ZM18.7109 9.375C18.4766 5.78125 16.0156 2.77344 12.6953 1.67969C13.9844 3.39844 14.8828 6.28906 15 9.375H18.7109ZM5 9.375C5.11719 6.28906 6.01562 3.39844 7.30469 1.67969C3.98438 2.77344 1.52344 5.78125 1.28906 9.375H5ZM1.28906 10.625C1.52344 14.2578 3.98438 17.2656 7.30469 18.3203C6.01562 16.6016 5.11719 13.7109 5 10.625H1.28906ZM10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20Z" fill={`${location.pathname === "/compare" ? "var(--orange)" : "black"}`} />
-                                        </svg>
-                                        <div className={`text-sm ${location.pathname === "/compare" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5 pl-1`}>Compare</div>
-                                    </div>
-                                    <div className={`h-1 bg-(--orange) ${location.pathname === "/compare" ? "opacity-100" : "opacity-0"}`}></div>
-                                </Link>
-                                <div className='h-full flex items-center'>
-                                    <div className={`w-0.5 h-65/100 ${location.pathname === "/compare" || location.pathname === "/grid" ? "bg-(--primarygray-30)" : "bg-(--accentblue-60)"}`}></div>
-                                </div>
-                                <Link to="/grid" activeOptions={{ exact: true }} className='flex flex-col justify-end cursor-pointer w-full' onClick={() => { actions?.setView("Grid"); }}>
-                                    <div className="flex flex-row h-8.75 items-center justify-center">
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M3.67078 0.396729C1.86271 0.396729 0.396973 1.86246 0.396973 3.67054V16.3293C0.396973 18.1373 1.86271 19.6031 3.67078 19.6031H16.3295C18.1376 19.6031 19.6033 18.1373 19.6033 16.3293V3.67054C19.6033 1.86246 18.1376 0.396729 16.3295 0.396729H3.67078ZM16.3295 1.70625C17.4144 1.70625 18.2938 2.58569 18.2938 3.67054V4.3253L1.7065 4.3253V3.67054C1.7065 2.58569 2.58594 1.70625 3.67078 1.70625H16.3295ZM1.7065 5.63482L18.2938 5.63482V14.365L1.7065 14.365V5.63482ZM1.7065 16.3293V15.6745L18.2938 15.6745V16.3293C18.2938 17.4141 17.4144 18.2936 16.3295 18.2936H3.67078C2.58594 18.2936 1.7065 17.4141 1.7065 16.3293ZM13.9985 9.34514H6.00186L6.7792 8.47062C7.01945 8.20035 6.9951 7.78649 6.72483 7.54625C6.45455 7.30601 6.0407 7.33035 5.80045 7.60062L4.05442 9.56491C3.83391 9.81299 3.83391 10.1868 4.05442 10.4349L5.80045 12.3992C6.0407 12.6695 6.45455 12.6938 6.72483 12.4536C6.9951 12.2133 7.01945 11.7995 6.7792 11.5292L6.00184 10.6547H13.9985L13.2211 11.5292C12.9809 11.7995 13.0052 12.2133 13.2755 12.4536C13.5458 12.6938 13.9596 12.6695 14.1999 12.3992L15.9459 10.4349L15.9551 10.4243C16.047 10.3165 16.1045 10.1785 16.1107 10.0272C16.1114 10.0097 16.1115 9.99207 16.1108 9.9745C16.1048 9.8165 16.0427 9.67284 15.944 9.5628L14.1999 7.60062C13.9596 7.33035 13.5458 7.30601 13.2755 7.54625C13.0052 7.78649 12.9809 8.20035 13.2211 8.47062L13.9985 9.34514Z" fill={`${location.pathname === "/grid" ? "var(--orange)" : "black"}`} />
-                                        </svg>
-                                        <div className={`text-sm ${location.pathname === "/grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pl-1 pr-0.5`}>Grid</div>
-                                    </div>
-                                    <div className={`h-1 bg-(--orange) ${location.pathname === "/grid" ? "opacity-100" : "opacity-0"}`}></div>
-                                </Link>
-                            </div>
-                        </div>
-                    </Card>
-                </div>
-                <div className='bg-(--accentblue-30) w-full h-full flex justify-center items-center cursor-pointer xl:h-0 xl:w-0 xl:hidden'>
-                    <div className=" flex items-center flex-center" onClick={() => setDataOptions(false)} >
-                        <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M0.390625 1.67969C0 1.32812 0 0.703125 0.390625 0.351562C0.742188 0 1.32812 0 1.67969 0.351562L7.57812 6.25L13.4766 0.351562C13.8672 0 14.4531 0 14.8047 0.351562C15.1953 0.742188 15.1953 1.32812 14.8047 1.67969L8.90625 7.57812L14.8047 13.4766C15.1953 13.8281 15.1953 14.4531 14.8047 14.8047C14.4531 15.1562 13.8672 15.1562 13.4766 14.8047L7.57812 8.90625L1.67969 14.8047C1.32812 15.1562 0.742188 15.1562 0.390625 14.8047C0 14.4531 0 13.8281 0.390625 13.4766L6.28906 7.57812L0.390625 1.67969Z" fill="black" />
-                        </svg>
-                    </div>
-                </div>
                 {location.pathname == "/eventtracking" ?
-                    <div className={`flex flex-col xl:flex-row ${dataOptions ? 'h-full' : 'h-0'} w-full col-start-1 col-end-4 xl:col-start-3 xl:col-end-5 xl:max-w-150`}>
+                    <div className={`flex flex-col xl:flex-row ${dataOptions ? 'h-full' : 'h-0'} w-full col-start-1 col-end-4 xl:col-start-2 xl:col-end-3 `}>
                         <Card className="rounded-none p-0 flex flex-col items-center justify-center gap-0 h-22 xl:h-14.75 w-full px-2">
                             <Popover open={eventFilterOpened} onOpenChange={() => setEventFilterOpened(!eventFilterOpened)}>
                                 <PopoverTrigger asChild>
                                     <div className="flex flex-row items-center w-95/100 h-full justify-between cursor-pointer">
-                                        <div className="text-[14px] font-bold text-end flex items-center pl-2">{eventTypes[state?.eventFilter] ?? "All Events"}</div>
-                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <g transform={`rotate(${eventFilterOpened ? "180" : "0"}, 10, 10)`}>
-                                                <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
+                                        <div className="text-[14px] font-bold text-end flex items-center pl-2">{eventTypes[state?.eventFilter]}</div>
+                                        <svg width="12" height="12" viewBox="0 0 8 5" xmlns="http://www.w3.org/2000/svg">
+                                            <g transform={`rotate(${eventFilterOpened ? "180" : "0"}, 3.9375, 2.1753)`}>
+                                                <path d="M3.64746 4.23193L0.131836 0.716309C-0.0439453 0.558105 -0.0439453 0.294434 0.131836 0.118652C0.290039 -0.0395508 0.553711 -0.0395508 0.729492 0.118652L3.94629 3.33545L7.16309 0.118652C7.32129 -0.0395508 7.58496 -0.0395508 7.74316 0.118652C7.91895 0.276855 7.91895 0.558105 7.74316 0.716309L4.22754 4.23193C4.06934 4.39014 3.80566 4.39014 3.64746 4.23193Z" fill="black" />
                                             </g>
                                         </svg>
                                     </div>
@@ -288,7 +251,7 @@ export const Header = () => {
                                     <div className={`flex flex-row justify-center py-2.5 h-[calc(80px*${urlObject[state?.currentHazard][state?.currentExposure].scenarios.length})]`}>
                                         <ItemGroup>
                                             {Object.entries(eventTypes).map(([x, y]) =>
-                                                <Item key={x} className={`cursor-pointer my-2 ${eventTypes[state?.eventFilter] === eventTypes[x] ? 'font-bold text-(--orange) underline underline-offset-1.25 decoration-0.5' : ""} transition-all duration-200 ease-in`} onClick={() => state?.eventFilter == x ? actions?.setEventFilter("All Events") : actions?.setEventFilter(x)}>
+                                                <Item key={x} className={`cursor-pointer my-2 ${eventTypes[state?.eventFilter] === eventTypes[x] ? 'font-bold text-(--orange) underline underline-offset-1.25 decoration-0.5' : ""} transition-all duration-200 ease-in`} onClick={() => actions?.setEventFilter(x)}>
                                                     <ItemContent>
                                                         <ItemHeader>{eventTypes[x]}</ItemHeader>
                                                     </ItemContent>
@@ -307,7 +270,7 @@ export const Header = () => {
                                                     variant="outline"
                                                     role="combobox"
                                                     aria-expanded={open}
-                                                    className="w-[200px] justify-between light"
+                                                    className="w-95/100 justify-between light"
                                                 >
                                                     {countryByIso3[iso3]}
                                                     <ChevronsUpDown className="opacity-50" />
@@ -349,9 +312,46 @@ export const Header = () => {
                     :
                     null
                 }
+                <div className={`h-14.75 flex col-start-2 row-start-1  ${location.pathname == '/compare' || location.pathname == '/grid' ? 'xl:col-start-2 xl:col-end-3' : 'xl:col-start-3 xl:col-end-4'}`}>   
+                    <Card className={`shadow-none rounded-none xl:grow p-0 w-full h-full flex flex-col items-center justify-end gap-0 hover:bg-white transition-colors duration-200 ${location.pathname == "/compare" || location.pathname == "/grid" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
+                        <div className="text-[11px] font-bold text-(--primaryblack-90)">FORWARD LOOKING</div>
+                        <div className="flex flex-end flex-col w-full">
+                            <div className="flex flex-row justify-evenly items-start h-full">
+                                <Link to="/compare" activeOptions={{ exact: true }} className='flex flex-col justify-end cursor-pointer w-full' onClick={() => { actions?.setView("Compare"); }}>
+                                    <div className="flex flex-row h-8.75 items-center justify-center">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M12.4219 16.4062C13.1641 14.9219 13.6719 12.8516 13.75 10.625H6.25C6.32812 12.8516 6.875 14.9219 7.61719 16.4062C8.47656 18.1641 9.41406 18.75 10 18.75C10.625 18.75 11.5234 18.1641 12.4219 16.4062ZM13.75 9.375C13.6719 7.14844 13.1641 5.11719 12.4219 3.59375C11.5234 1.83594 10.625 1.25 10 1.25C9.41406 1.25 8.47656 1.83594 7.61719 3.59375C6.875 5.11719 6.32812 7.14844 6.25 9.375H13.75ZM15 10.625C14.8828 13.7109 13.9844 16.6016 12.6953 18.3203C16.0156 17.2656 18.4766 14.2578 18.7109 10.625H15ZM18.7109 9.375C18.4766 5.78125 16.0156 2.77344 12.6953 1.67969C13.9844 3.39844 14.8828 6.28906 15 9.375H18.7109ZM5 9.375C5.11719 6.28906 6.01562 3.39844 7.30469 1.67969C3.98438 2.77344 1.52344 5.78125 1.28906 9.375H5ZM1.28906 10.625C1.52344 14.2578 3.98438 17.2656 7.30469 18.3203C6.01562 16.6016 5.11719 13.7109 5 10.625H1.28906ZM10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20Z" fill={`${location.pathname === "/compare" ? "var(--orange)" : "black"}`} />
+                                        </svg>
+                                        <div className={`text-sm ${location.pathname === "/compare" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pr-0.5 pl-1`}>Compare</div>
+                                    </div>
+                                    <div className={`h-1 bg-(--orange) ${location.pathname === "/compare" ? "opacity-100" : "opacity-0"}`}></div>
+                                </Link>
+                                <div className='h-full flex items-center'>
+                                    <div className={`w-0.5 h-65/100 ${location.pathname === "/compare" || location.pathname === "/grid" ? "bg-(--primarygray-30)" : "bg-(--accentblue-60)"}`}></div>
+                                </div>
+                                <Link to="/grid" activeOptions={{ exact: true }} className='flex flex-col justify-end cursor-pointer w-full' onClick={() => { actions?.setView("Grid"); }}>
+                                    <div className="flex flex-row h-8.75 items-center justify-center">
+                                        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M3.67078 0.396729C1.86271 0.396729 0.396973 1.86246 0.396973 3.67054V16.3293C0.396973 18.1373 1.86271 19.6031 3.67078 19.6031H16.3295C18.1376 19.6031 19.6033 18.1373 19.6033 16.3293V3.67054C19.6033 1.86246 18.1376 0.396729 16.3295 0.396729H3.67078ZM16.3295 1.70625C17.4144 1.70625 18.2938 2.58569 18.2938 3.67054V4.3253L1.7065 4.3253V3.67054C1.7065 2.58569 2.58594 1.70625 3.67078 1.70625H16.3295ZM1.7065 5.63482L18.2938 5.63482V14.365L1.7065 14.365V5.63482ZM1.7065 16.3293V15.6745L18.2938 15.6745V16.3293C18.2938 17.4141 17.4144 18.2936 16.3295 18.2936H3.67078C2.58594 18.2936 1.7065 17.4141 1.7065 16.3293ZM13.9985 9.34514H6.00186L6.7792 8.47062C7.01945 8.20035 6.9951 7.78649 6.72483 7.54625C6.45455 7.30601 6.0407 7.33035 5.80045 7.60062L4.05442 9.56491C3.83391 9.81299 3.83391 10.1868 4.05442 10.4349L5.80045 12.3992C6.0407 12.6695 6.45455 12.6938 6.72483 12.4536C6.9951 12.2133 7.01945 11.7995 6.7792 11.5292L6.00184 10.6547H13.9985L13.2211 11.5292C12.9809 11.7995 13.0052 12.2133 13.2755 12.4536C13.5458 12.6938 13.9596 12.6695 14.1999 12.3992L15.9459 10.4349L15.9551 10.4243C16.047 10.3165 16.1045 10.1785 16.1107 10.0272C16.1114 10.0097 16.1115 9.99207 16.1108 9.9745C16.1048 9.8165 16.0427 9.67284 15.944 9.5628L14.1999 7.60062C13.9596 7.33035 13.5458 7.30601 13.2755 7.54625C13.0052 7.78649 12.9809 8.20035 13.2211 8.47062L13.9985 9.34514Z" fill={`${location.pathname === "/grid" ? "var(--orange)" : "black"}`} />
+                                        </svg>
+                                        <div className={`text-sm ${location.pathname === "/grid" ? "text-(--orange)" : "text-black"} font-bold text-end flex items-center pl-1 pr-0.5`}>Grid</div>
+                                    </div>
+                                    <div className={`h-1 bg-(--orange) ${location.pathname === "/grid" ? "opacity-100" : "opacity-0"}`}></div>
+                                </Link>
+                            </div>
+                        </div>
+                    </Card>
+                </div>
+                <div className='bg-(--accentblue-30) w-full h-full col-start-3 row-start-1 flex justify-center items-center cursor-pointer xl:h-0 xl:w-0 xl:hidden'>
+                    <div className=" flex items-center flex-center" onClick={() => setDataOptions(false)} >
+                        <svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M0.390625 1.67969C0 1.32812 0 0.703125 0.390625 0.351562C0.742188 0 1.32812 0 1.67969 0.351562L7.57812 6.25L13.4766 0.351562C13.8672 0 14.4531 0 14.8047 0.351562C15.1953 0.742188 15.1953 1.32812 14.8047 1.67969L8.90625 7.57812L14.8047 13.4766C15.1953 13.8281 15.1953 14.4531 14.8047 14.8047C14.4531 15.1562 13.8672 15.1562 13.4766 14.8047L7.57812 8.90625L1.67969 14.8047C1.32812 15.1562 0.742188 15.1562 0.390625 14.8047C0 14.4531 0 13.8281 0.390625 13.4766L6.28906 7.57812L0.390625 1.67969Z" fill="black" />
+                        </svg>
+                    </div>
+                </div>
                 {(location.pathname === "/compare" || location.pathname === "/grid") ?
-                    <div className={`flex flex-col xl:flex-row xl:w-auto ${dataOptions ? 'h-full' : 'h-0'} xl:h-14.75 overflow-hidden w-full col-start-1 col-end-4 xl:col-start-3 xl:col-end-5 xl:max-w-150`}>
-                        <Card id="hazardExposure" className="rounded-none border-0 p-0 flex flex-col h-22 xl:h-auto xl:w-58 px-2 items-center justify-center gap-0 ">
+                    <div className={`flex flex-col xl:flex-row xl:w-auto ${dataOptions ? 'h-full' : 'h-0'} xl:h-14.75 overflow-hidden w-full col-start-1 col-end-4 xl:col-start-3 xl:col-end-4 `}>
+                        <Card id="hazardExposure" className="rounded-none border-0 p-0 flex flex-col h-22 xl:h-auto xl:w-60 px-2 items-center justify-center gap-0 ">
                             <div className='w-95/100 border-b-2'>
                                 <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                                     <PopoverTrigger asChild>
@@ -406,7 +406,7 @@ export const Header = () => {
                                 </Popover>
                             </div>
                         </Card>
-                        <Card id="scenario" className="border-0 rounded-none p-0 flex flex-col h-22 xl:h-auto items-center justify-center gap-0 xl:w-35 px-2">
+                        <Card id="scenario" className="border-0 rounded-none p-0 flex flex-col h-22 xl:h-auto xl:w-50 items-center justify-center gap-0 px-2">
                             <div className='w-95/100 border-b-2'>
                                 <Popover open={scenarioOpened} onOpenChange={() => setScenarioOpened(!scenarioOpened)}>
                                     <PopoverTrigger asChild>
@@ -440,8 +440,8 @@ export const Header = () => {
                                 </Popover>
                             </div>
                         </Card>
-                        <div className='w-full flex bg-white'>
-                            <div id="timeline" className='h-22 xl:h-auto w-full xl:w-80 flex justify-center items-center px-2'>
+                        <div className='w-full xl:w-100 flex bg-white'>
+                            <div id="timeline" className='h-22 xl:h-auto w-full flex justify-center items-center px-2'>
                                 <div className='w-95/100 h-5/10'>
                                     <div className='rounded-none flex w-9/10  items-start flex-row gap-0 h-14.75 '>
                                         <svg className="mr-7" width="23" height="24" viewBox="0 0 23 24" fill="none" xmlns="http://www.w3.org/2000/svg">

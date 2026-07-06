@@ -452,7 +452,7 @@ function EventTracking() {
                 type: "simple",
                 symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
             },
-            definitionExpression: `${state?.eventFilter !== 'All Events' ? `eventtype='${state?.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
+            definitionExpression: `${state?.eventFilter !== 'AL' ? `eventtype='${state?.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
             OR
             todate >= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND todate <= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
             OR

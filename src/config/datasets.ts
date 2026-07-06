@@ -756,5 +756,6 @@ export const eventTypes: Record<string, string> = {
     "DR": "Droughts", 
     "FL": "Flooding", 
     "VO": "Volcanic Eruptions", 
-    "WF": "Wildfires"
+    "WF": "Wildfires",
+    "AL": "All Events"
 } 
