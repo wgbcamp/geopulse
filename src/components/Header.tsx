@@ -307,13 +307,13 @@ export const Header = () => {
                                                     variant="outline"
                                                     role="combobox"
                                                     aria-expanded={open}
-                                                    className="w-[200px] justify-between dark"
+                                                    className="w-[200px] justify-between light"
                                                 >
                                                     {countryByIso3[iso3]}
                                                     <ChevronsUpDown className="opacity-50" />
                                                 </Button>
                                             </PopoverTrigger>
-                                            <PopoverContent className="w-[200px] p-0 dark">
+                                            <PopoverContent className="w-[200px] p-0 light">
                                                 <Command>
                                                     <CommandInput placeholder="Search country..." className="h-9" />
                                                     <CommandList>
@@ -321,11 +321,13 @@ export const Header = () => {
                                                         <CommandGroup>
                                                             {isoCountries.map((country) => (
                                                                 <CommandItem
+                                                                    className="data-[selected=true]:bg-neutral-200"
                                                                     key={country.iso3}
                                                                     value={country.name}
                                                                     onSelect={() => {
                                                                         setOpen(false)
                                                                         setIso3(country.iso3)
+                                                                        actions?.setCountryFilter(country.iso3); doSomething(country.iso3)
                                                                     }}
                                                                 >
                                                                     {country.name}
