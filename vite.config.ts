@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => {
         "@": path.resolve(__dirname, "./src"),
       },
     },
-    base: '/geopulse-dev',
+    base: '/geopulse-dev/',
     test: {
       globals: true,
       css: {
