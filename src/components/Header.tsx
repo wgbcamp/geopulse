@@ -65,7 +65,7 @@ export const Header = () => {
         }
         setRiskOpened(newOpenState);
     };
-    const [dataOptions, setDataOptions] = useState<boolean>(true);
+    const [dataOptions, setDataOptions] = useState<boolean>(false);
     const [menuOptions, setMenuOptions] = useState<boolean>(false);
 
     const [open, setOpen] = React.useState(false);
@@ -312,7 +312,7 @@ export const Header = () => {
                     :
                     null
                 }
-                <div className={`h-14.75 flex col-start-2 row-start-1  ${location.pathname == '/compare' || location.pathname == '/grid' ? 'xl:col-start-2 xl:col-end-3' : 'xl:col-start-3 xl:col-end-4'}`}>   
+                <div className={`h-14.75 flex col-start-2 row-start-1  ${location.pathname == '/compare' || location.pathname == '/grid' ? 'xl:col-start-2 xl:col-end-3' : location.pathname == '/datamethodology' || location.pathname  ? 'xl:col-start-2 xl:col-end-3' : 'xl:col-start-3 xl:col-end-4'}`}>   
                     <Card className={`shadow-none rounded-none xl:grow p-0 w-full h-full flex flex-col items-center justify-end gap-0 hover:bg-white transition-colors duration-200 ${location.pathname == "/compare" || location.pathname == "/grid" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                         <div className="text-[11px] font-bold text-(--primaryblack-90)">FORWARD LOOKING</div>
                         <div className="flex flex-end flex-col w-full">

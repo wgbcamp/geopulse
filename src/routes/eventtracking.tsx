@@ -36,6 +36,7 @@ export const Route = createFileRoute('/eventtracking')({
 
 
 function EventTracking() {
+    const [popInState, setPopInState] = useState<string>("initial");
 
     const state = useContext(AppStateContext);
 
@@ -69,7 +70,6 @@ function EventTracking() {
     const eventFeatureLayer = useRef<FeatureLayer | null>(null);
     const pulseEls = useRef<{ el: HTMLDivElement; geometry: any }[]>([]);
 
-    const [popInState, setPopInState] = useState<string>("initial");
     const [layerSettingsPopup, setLayerSettingsPopup] = useState<boolean>(false); 
 
     const exposureLayerForGroup = useRef<any>(null);
@@ -799,7 +799,7 @@ function EventTracking() {
                         </div>
                         <div id='exposureContainer' className={`pointer-events-none has-[.pop-in]:pointer-events-auto flex gap-2 ml-10 flex-wrap max-w-5/10 items-center border-solid transition-all duration-300 text-white`}>
                             {e.categories.map((f: any, index: number) =>
-                                <div id={`exposure_category_${f}`} className={`exposure_ h-9 bg-black border-2 rounded-2xl px-5 opacity-0 cursor-pointer ${popInState == e.name ? 'pop-in' : popInState == "initial" ? '' : 'pop-out'} ${realtimeExposure.filter == f ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} style={{ animationDelay: index * 50 + 'ms' }} onClick={() => setRealtimeExposure({exposure: e.name, filter: f})}>
+                                <div id={`exposure_category_${f}`} className={`exposure_ h-9 bg-black border-2 rounded-2xl px-5 opacity-0 cursor-pointer ${popInState == e.name ? 'pop-in' : popInState == "initial" ? 'pop-default' : 'pop-out'} ${realtimeExposure.filter == f ? 'border-(--accentcyan-100)' : 'border-(--accentdarkblue-50)'}`} style={popInState == "initial" ? {animationDelay: index * 0 + 'ms'} : {animationDelay: index * 50 + 'ms'}} onClick={() => setRealtimeExposure({exposure: e.name, filter: f})}>
                                     <div className='h-9/10 flex justify-center items-center overflow-hidden'>
                                         <div className='text-white text-[12px] font-bold'>{f}</div>
                                     </div>
