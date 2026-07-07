@@ -218,7 +218,7 @@ export const Header = () => {
                     </div>
                 </div>
             </div>
-            <div className={`w-full xl:h-14.75 grid grid-cols-[1fr_1fr_50px] ${location.pathname === "/compare" || location.pathname === "/grid" ? 'xl:grid-cols-[180px_300px_1fr]' : 'xl:grid-cols-[180px_600px_300px]' }  xl:col-start-2 xl:col-end-3`}>
+            <div className={`w-full xl:h-14.75 grid grid-cols-[1fr_1fr_50px] ${location.pathname === "/compare" || location.pathname === "/grid" ? 'xl:grid-cols-[180px_300px_1fr]' : location.pathname == "/eventtracking" ? 'xl:grid-cols-[180px_600px_300px]' : 'xl:grid-cols-[180px_360px_1fr]' }  xl:col-start-2 xl:col-end-3`}>
                 <div className='flex w-full xl:col-start-1 xl:col-end-2'>
                     <Card className={`rounded-none p-0 flex flex-col items-center justify-center w-full gap-0 hover:bg-white transition-colors duration-200 ${location.pathname == "/eventtracking" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                         <div className='h-full w-full flex flex-col justify-end'>
@@ -312,7 +312,7 @@ export const Header = () => {
                     :
                     null
                 }
-                <div className={`h-14.75 flex col-start-2 row-start-1  ${location.pathname == '/compare' || location.pathname == '/grid' ? 'xl:col-start-2 xl:col-end-3' : location.pathname == '/datamethodology' || location.pathname  ? 'xl:col-start-2 xl:col-end-3' : 'xl:col-start-3 xl:col-end-4'}`}>   
+                <div className={`h-14.75 flex col-start-2 row-start-1 border-r ${location.pathname == '/compare' || location.pathname == '/grid' ? 'xl:col-start-2 xl:col-end-3' : location.pathname == '/eventtracking' ? 'xl:col-start-3 xl:col-end-4' : 'xl:col-start-2 xl:col-end-3'}`}>   
                     <Card className={`shadow-none rounded-none xl:grow p-0 w-full h-full flex flex-col items-center justify-end gap-0 hover:bg-white transition-colors duration-200 ${location.pathname == "/compare" || location.pathname == "/grid" ? 'bg-white' : 'bg-(--accentblue-30)'} border-0`}>
                         <div className="text-[11px] font-bold text-(--primaryblack-90)">FORWARD LOOKING</div>
                         <div className="flex flex-end flex-col w-full">
@@ -351,7 +351,7 @@ export const Header = () => {
                 </div>
                 {(location.pathname === "/compare" || location.pathname === "/grid") ?
                     <div className={`flex flex-col xl:flex-row xl:w-auto ${dataOptions ? 'h-full' : 'h-0'} xl:h-14.75 overflow-hidden w-full col-start-1 col-end-4 xl:col-start-3 xl:col-end-4 `}>
-                        <Card id="hazardExposure" className="rounded-none border-0 p-0 flex flex-col h-22 xl:h-auto xl:w-60 px-2 items-center justify-center gap-0 ">
+                        <Card id="hazardExposure" className="shadow-none rounded-none border-0 p-0 flex flex-col h-22 xl:h-auto xl:w-60 px-2 items-center justify-center gap-0 ">
                             <div className='w-95/100 border-b-2'>
                                 <Popover open={riskOpened} onOpenChange={handleOpenChange}>
                                     <PopoverTrigger asChild>
@@ -360,18 +360,17 @@ export const Header = () => {
                                                 <svg id="hazardIcon" width="21" height="19" viewBox="0 0 21 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                                                     <path d="M10.0781 0C10.625 0 11.1719 0.3125 11.4453 0.820312L19.8828 16.4453C20.1172 16.9141 20.1172 17.5 19.8438 18.0078C19.5703 18.4766 19.0625 18.75 18.5156 18.75H1.64062C1.05469 18.75 0.546875 18.4766 0.273438 18.0078C0 17.5 0 16.9141 0.234375 16.4453L8.67188 0.820312C8.94531 0.3125 9.49219 0 10.0781 0ZM10.0781 1.25C9.96094 1.25 9.84375 1.32812 9.80469 1.40625L1.36719 17.0312C1.28906 17.1484 1.28906 17.2656 1.36719 17.3438C1.40625 17.4609 1.52344 17.5 1.64062 17.5H18.5156C18.5938 17.5 18.7109 17.4609 18.7891 17.3438C18.8281 17.2656 18.8281 17.1484 18.7891 17.0312L10.3516 1.40625C10.2734 1.32812 10.1953 1.25 10.0781 1.25ZM10.0781 15.625C9.53125 15.625 9.14062 15.1953 9.14062 14.6875C9.14062 14.1797 9.53125 13.75 10.0781 13.75C10.5859 13.75 11.0156 14.1797 11.0156 14.6875C11.0156 15.1953 10.5859 15.625 10.0781 15.625ZM10.0781 6.875C10.5859 6.875 11.0156 7.34375 10.9766 7.85156L10.7031 11.9141C10.6641 12.2656 10.3906 12.5 10.0781 12.5C9.72656 12.5 9.45312 12.2656 9.45312 11.9141L9.14062 7.85156C9.10156 7.34375 9.53125 6.875 10.0781 6.875Z" fill='var(--orange)' />
                                                 </svg>
-
                                                 <div className='flex flex-col items-start pl-2'>
                                                     <div className="text-[14px] font-bold text-end flex items-center">{state?.currentHazard}</div>
                                                     <div className='w-28.75 h-0.5 bg-gray-300'></div>
                                                     <div className="text-[14px] font-bold text-end flex items-center">{state?.currentExposure}</div>
                                                 </div>
                                             </div>
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <g transform={`rotate(${riskOpened ? "180" : "0"}, 10, 10)`}>
-                                                    <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
-                                                </g>
-                                            </svg>
+                                            <svg width="12" height="12" viewBox="0 0 8 5" xmlns="http://www.w3.org/2000/svg">
+                                            <g transform={`rotate(${riskOpened ? "180" : "0"}, 3.9375, 2.1753)`}>
+                                                <path d="M3.64746 4.23193L0.131836 0.716309C-0.0439453 0.558105 -0.0439453 0.294434 0.131836 0.118652C0.290039 -0.0395508 0.553711 -0.0395508 0.729492 0.118652L3.94629 3.33545L7.16309 0.118652C7.32129 -0.0395508 7.58496 -0.0395508 7.74316 0.118652C7.91895 0.276855 7.91895 0.558105 7.74316 0.716309L4.22754 4.23193C4.06934 4.39014 3.80566 4.39014 3.64746 4.23193Z" fill="black" />
+                                            </g>
+                                        </svg>
                                         </div>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-75 p-0 py-5 my-1.25 rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)]">
@@ -406,7 +405,7 @@ export const Header = () => {
                                 </Popover>
                             </div>
                         </Card>
-                        <Card id="scenario" className="border-0 rounded-none p-0 flex flex-col h-22 xl:h-auto xl:w-50 items-center justify-center gap-0 px-2">
+                        <Card id="scenario" className="border-0 border-l border-r shadow-none rounded-none p-0 flex flex-col h-22 xl:h-auto xl:w-50 items-center justify-center gap-0 px-2">
                             <div className='w-95/100 border-b-2'>
                                 <Popover open={scenarioOpened} onOpenChange={() => setScenarioOpened(!scenarioOpened)}>
                                     <PopoverTrigger asChild>
@@ -417,11 +416,11 @@ export const Header = () => {
                                                 </svg>
                                                 <div className="text-[14px] font-bold text-end flex items-center pl-2">{scenarioMapper[state?.currentScenario]}</div>
                                             </div>
-                                            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                <g transform={`rotate(${scenarioOpened ? "180" : "0"}, 10, 10)`}>
-                                                    <path d="M10 18.75C14.8438 18.75 18.75 14.8438 18.75 10C18.75 5.15625 14.8438 1.25 10 1.25C5.15625 1.25 1.25 5.15625 1.25 10C1.25 14.8438 5.15625 18.75 10 18.75ZM10 0C15.5078 0 20 4.49219 20 10C20 15.5078 15.5078 20 10 20C4.49219 20 0 15.5078 0 10C0 4.49219 4.49219 0 10 0ZM5.19531 9.17969C4.96094 8.94531 4.96094 8.55469 5.19531 8.32031C5.42969 8.08594 5.82031 8.08594 6.05469 8.32031L10 12.2266L13.9453 8.32031C14.1797 8.08594 14.5703 8.08594 14.8047 8.32031C15.0781 8.55469 15.0781 8.94531 14.8047 9.17969L10.4297 13.5547C10.1953 13.8281 9.80469 13.8281 9.57031 13.5547L5.19531 9.17969Z" fill="black" />
-                                                </g>
-                                            </svg>
+                                            <svg width="12" height="12" viewBox="0 0 8 5" xmlns="http://www.w3.org/2000/svg">
+                                            <g transform={`rotate(${scenarioOpened ? "180" : "0"}, 3.9375, 2.1753)`}>
+                                                <path d="M3.64746 4.23193L0.131836 0.716309C-0.0439453 0.558105 -0.0439453 0.294434 0.131836 0.118652C0.290039 -0.0395508 0.553711 -0.0395508 0.729492 0.118652L3.94629 3.33545L7.16309 0.118652C7.32129 -0.0395508 7.58496 -0.0395508 7.74316 0.118652C7.91895 0.276855 7.91895 0.558105 7.74316 0.716309L4.22754 4.23193C4.06934 4.39014 3.80566 4.39014 3.64746 4.23193Z" fill="black" />
+                                            </g>
+                                        </svg>
                                         </div>
                                     </PopoverTrigger>
                                     <PopoverContent className="w-56.25 p-0 my-1.25 rounded-none shadow-[0_-10px_10px_-5px_rgba(0,0,0,0.1)]">

@@ -8,7 +8,7 @@ export const Route = createFileRoute('/about')({
 
 function About() {
 
-  return <div className={`mix-blend-hard-light h-full bg-(--accentdarkblue-70) transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+  return <div className={`mix-blend-hard-light h-full bg-[#000A5720] transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
             <div className={` flex justify-center w-full `}>
                 <div className="flex py-15 flex-col items-center lg:items-start gap-y-6 w-9/10 text-left text-white">
                     <section className='pt-14.75 text-[22px] w-full max-w-174 font-bold'>IMF GeoPulse: Track, Analyze, and Respond to Economic Risk</section>

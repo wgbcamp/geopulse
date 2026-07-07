@@ -12,7 +12,7 @@ export const Route = createFileRoute('/datamethodology')({
 })
 
 function RouteComponent() {
-    return <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-(--accentdarkblue-80) transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+    return <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-[#000A5720] transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
         <div className="flex py-15 flex-col items-center lg:items-start max-w-350 w-9/10 text-left text-white">
             <section className='pt-14.75 text-[26px] w-full max-w-174 font-bold'>Access the data that powers GeoPulse</section>
             <div className='flex flex-col gap-y-7'>
