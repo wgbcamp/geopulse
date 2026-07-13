@@ -12,7 +12,7 @@ export const Route = createFileRoute('/datamethodology')({
 })
 
 function RouteComponent() {
-    return <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-[#000A5720] transition-all bg-cover`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+    return <div className={`absolute flex justify-center overflow-auto w-full mix-blend-hard-light bg-[#000A5720] bg-fixed transition-all `} style={{ backgroundImage: `url(${MenuBackground})` }}>
         <div className="flex py-15 flex-col items-center lg:items-start max-w-350 w-9/10 text-left text-white">
             <section className='pt-14.75 text-[26px] w-full max-w-174 font-bold'>Access the data that powers GeoPulse</section>
             <div className='flex flex-col gap-y-7'>
@@ -86,9 +86,9 @@ function RouteComponent() {
                                 <p>GeoPulse draws its disaster events from the Global Disaster Alert and Coordination System (GDACS), a joint EC-JRC and UN OCHA service. For each event (earthquakes, tropical cyclones, floods, volcanic eruptions, droughts and more), GDACS publishes the affected-area polygons (earthquake shaking contours, cyclone wind-impact swaths, flood footprints, ash plumes), refreshed as new advisories arrive. We overlay these on our exposure layers inside each country’s borders to estimate the population, buildings, GDP, urban GDP and cropland (plus the airports and ports) caught within the affected area, updating the estimates as new advisories arrive and the disaster polygons are refined. The result is the per-event, per-country exposure shown on each Event Card.</p>
                             </div>
                         </div>
-                        
+
                     </div>
-                                                <div className='w-full border-1 border-solid' ></div>
+                    <div className='w-full border-1 border-solid' ></div>
 
                     <div className='w-full flex justify-center'>
                         <div className="w-full flex flex-col gap-y-7 text-[16px]">
@@ -115,20 +115,19 @@ function RouteComponent() {
                                         </div>
                                     </div>
                                 </div>
-                               
+
                             </div>
                         </div>
                     </div>
-                     <div className='flex flex-col gap-y-7'>
+                    <div className='flex flex-col gap-y-7'>
                         <span className='text-[22px]'><strong>Forward-looking Hazard Exposure Indicators </strong></span>
                         <div className='flex flex-col  items-center xl:flex-row gap-6'>
-                         
+
                             <div className='w-full xl:w-7/10'>
                                 <p>How today’s people and assets would be exposed to tomorrow’s climate hazards. Each indicator pairs a hazard with an exposure layer, and computes exposure at country (ADM0) and sub-national (ADM1) level. ADM1 units are the first-level sub-national regions within a country, such as states, provinces or départements.</p>
                             </div>
                         </div>
-                                                    <div className='w-full border-1 border-solid' ></div>
-
+                        <div className='w-full border-1 border-solid' ></div>
                     </div>
                     <div className='w-full flex justify-center'>
                         <div className="w-full flex flex-col gap-y-7 text-[16px]">
@@ -160,7 +159,7 @@ function RouteComponent() {
                                                     <div className='flex flex-col'>
                                                         <u>Population</u>
                                                         <u>Livestock</u>
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                                 <div className='flex flex-col w-full'>
                                                     <div className='flex gap-x-1'>
@@ -170,7 +169,7 @@ function RouteComponent() {
                                                     <div className='flex flex-col'>
                                                         <u>Population</u>
                                                         <u>Livestock</u>
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                                 <div className='flex flex-col w-full'>
                                                     <div className='flex gap-x-1'>
@@ -180,7 +179,7 @@ function RouteComponent() {
                                                     <div className='flex flex-col'>
                                                         <u>Population</u>
                                                         <u>Livestock</u>
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                                 <div className='flex flex-col w-full'>
                                                     <div className='flex gap-x-1'>
@@ -190,15 +189,15 @@ function RouteComponent() {
                                                     <div className='flex flex-col'>
                                                         <u>Population</u>
                                                         <u>Livestock</u>
-                                                    </div> 
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div><i>Each indicator opens its dataset page, where you can view its details, download the ADM0 / ADM1 tables, or access it through the ArcGIS REST API.</i></div>
                                         </div>
-                                
+
                                     </div>
                                 </div>
-                               
+
                             </div>
                         </div>
                     </div>

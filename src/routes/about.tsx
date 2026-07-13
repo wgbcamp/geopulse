@@ -8,11 +8,12 @@ export const Route = createFileRoute('/about')({
 
 function About() {
 
-  return <div className={`mix-blend-hard-light h-full bg-[#000A5720] transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
-            <div className={` flex justify-center w-full `}>
-                <div className="flex py-15 flex-col items-center lg:items-start gap-y-6 w-9/10 text-left text-white">
-                    <section className='pt-14.75 text-[22px] w-full max-w-174 font-bold'>IMF GeoPulse: Track, Analyze, and Respond to Economic Risk</section>
-                    <div className='flex flex-col gap-x-20 lg:flex-row leading-[21px]'>
+    return <div className={`mix-blend-hard-light h-full bg-[#000A5720] transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+        <div className={` flex justify-center`}>
+            <div className='w-9/10 flex justify-center'>
+                <div className="flex py-15 flex-col items-start gap-y-6 text-white">
+                    <section className='pt-14.75 text-[22px] font-bold'>IMF GeoPulse: Track, Analyze, and Respond to Economic Risk</section>
+                    <div className='flex flex-col gap-x-20 lg:flex-row leading-[21px] text-left'>
                         <div className='flex flex-col gap-y-5 max-w-[75ch]'>
                             <p>IMF GeoPulse is a geospatial platform that monitors physical risks to the economy, people, and our environment. The frequency and severity of damages from natural disasters such as floods, hurricanes, and wildfires have been increasing over time resulting in billions of dollars damage to economies and loss of human lives. As impacts often ripple through economies, including the financial systems, public finances, and trade, the first-order effects of most of these risks are highly localized.
                             </p>
@@ -54,7 +55,8 @@ function About() {
                         </div>
                     </div>
                 </div>
-
             </div>
+
+        </div>
         </div>
 }

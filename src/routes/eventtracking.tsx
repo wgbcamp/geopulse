@@ -77,75 +77,24 @@ function EventTracking() {
     const outlineLayer = useRef<GraphicsLayer>(null);
     const groupLayer = useRef<GroupLayer>(null);
 
-    // --- Pulse color helper ---
-    function getEventColor(attrs: any) {
-        const t = attrs.eventtype;
-        switch (t) {
-            case "EQ":
-                return "var(--green)";
-            case "TC":
-                return "var(--red)";
-            case "DR":
-                return "var(--purple)";
-            case "FL":
-                return "var(--cyan)";
-            case "VO":
-                return "var(--yellow)";
-            case "WF":
-                return "var(--orange)";
-            default:
-                return "#d9d9d9";
+    useEffect(() => {
+        view.current.on("click", async (event) => {
+            const response = await view.current.hitTest(event);
+            console.log(response);
+            response.results.forEach((a: any) => {
+                events.forEach((i: any) => {
+                    if (i.attributes.eventid == a.graphic.attributes.eventid) {
+                        focusOnEvent({ longitude: i.geometry.longitude, latitude: i.geometry.latitude }, i.attributes);
+                        if (!eventFeatureLayer.current) return;
+                        eventFeatureLayer.current.renderer.uniqueValueInfos = [];
+                    }
+                })
+            })  
+        })
+    }, [events]);
 
-        }
-    }
-
-    // useEffect(() => {
-    //     eventPopupRef.current = eventPopup;
-    // }, [eventPopup]);
-
-    // --- Sync pulse positions to screen coords ---
-    const syncPulses = useCallback(() => {
-        if (!view.current) return;
-        // const camera = view.current.camera;
-        // const R = 6371000;
-        // const camAlt = R + (camera?.position?.z ?? 0);
-        // cos of the horizon half-angle: points with dot < threshold are below the horizon
-        // const threshold = R / camAlt;
-
-        pulseEls.current.forEach((p) => {
-            const sp = view.current.toScreen(p.geometry);
-            if (sp) {
-                p.el.style.left = sp.x + "px";
-                p.el.style.top = sp.y + "px";
-            }
-
-            // Skip visibility management while an event is focused (those dots are hidden separately)
-            // if (eventPopupRef.current === "focused event") return;
-
-            // if (camera?.position && p.geometry.latitude != null
-            //         && camera.position.latitude != null && camera.position.longitude != null) {
-            //     const pLat = p.geometry.latitude * Math.PI / 180;
-            //     const pLon = p.geometry.longitude * Math.PI / 180;
-            //     const cLat = camera.position.latitude * Math.PI / 180;
-            //     const cLon = camera.position.longitude * Math.PI / 180;
-            //     const dot = Math.sin(pLat) * Math.sin(cLat)
-            //               + Math.cos(pLat) * Math.cos(cLat) * Math.cos(pLon - cLon);
-            //     p.el.style.visibility = dot > threshold ? "visible" : "hidden";
-            // }
-        });
-    }, []);
-
-    // --- Clear all pulse DOM elements ---
-    const clearPulses = useCallback(() => {
-        pulseEls.current.forEach(p => p.el.remove());
-        pulseEls.current = [];
-    }, []);
-
-    // --- Build pulse overlays from queried features ---
     const queryEvents = useCallback(() => {
         if (!eventFeatureLayer.current || !view.current || !pulseContainerRef.current) return;
-
-        clearPulses(); // remove all pulses when input changes
 
         const query = eventFeatureLayer.current!.createQuery();
         query.returnGeometry = true;
@@ -153,57 +102,20 @@ function EventTracking() {
         query.outSpatialReference = view.current.spatialReference;
         query.maxRecordCountFactor = 5;
 
-            eventFeatureLayer.current!.queryFeatures(query).then((result) => {
-                result.features.forEach((f: any) => {
-                    if (!f.geometry) return;
-                    const color = getEventColor(f.attributes);
-                    const phase = Math.random();
-                    const w = document.createElement("div");
-                    w.className = "pw";
-                    w.onclick = () => {
-                        focusOnEvent({ longitude: f.geometry.longitude, latitude: f.geometry.latitude },
-                            f.attributes)
-                    };
-
-                    // Three staggered rings
-                    const classes = ["pr", "pr pr2", "pr pr3"];
-                    const delays = [0, -1.8, -3.2];
-                    classes.forEach((cls, i) => {
-                        const r = document.createElement("div");
-                        r.className = cls;
-                        r.style.borderColor = color;
-                        r.style.animationDelay = `${-(phase * 3.6) + delays[i]}s`;
-                        w.appendChild(r)
-                    })
-
-                    // Center dot
-                    const d = document.createElement("div");
-                    d.className = "pd";
-                    d.style.background = color;
-                    w.appendChild(d);
-
-                    // hide event dots if an event is already focused
-                    if (eventPopup == "focused event") {
-                        w.style.visibility = "hidden";
-                    }
-
-                    pulseContainerRef.current!.appendChild(w);
-                    pulseEls.current.push({ el: w, geometry: f.geometry });
-                });
-                
+        eventFeatureLayer.current!.queryFeatures(query).then((result) => {
+            console.log(result);
+            result.features.forEach((f: any) => {
+                if (!f.geometry) return;
                 var x = result.features.map((feature) => {
                     return {
                         attributes: feature.attributes,
-                        geometry: feature.geometry 
+                        geometry: feature.geometry
                     }
                 }).sort((a, b) => b.attributes.fromdate - a.attributes.fromdate);
-
                 setEvents(x);
-                console.log(result);
-                syncPulses();
-            });
-            
-    }, [clearPulses, syncPulses, eventPopup]);
+            })
+        });
+    }, [eventPopup]);
 
     //event polygon feature layer
     const eventPolygonsLayer = new FeatureLayer({
@@ -315,15 +227,7 @@ function EventTracking() {
             resizeObserver.observe(ref.current);
 
             // remove all arcgis default ui components
-            view.current.ui.components = [];
-
-            // Wire up pulse sync to map interactions
-            view.current.watch("center", syncPulses);
-            view.current.watch("zoom", syncPulses);
-            view.current.watch("scale", syncPulses);
-            view.current.on("drag", syncPulses);
-            view.current.on("mouse-wheel", syncPulses);
-            view.current.watch("stationary", (v) => { if (v) syncPulses(); });
+            view.current.ui.components = [];      
         }
 
         // clean up
@@ -336,7 +240,7 @@ function EventTracking() {
              groupLayer.current?.destroy();
          }
    
-    }, [syncPulses]);
+    }, []);
 
        useEffect(() => {
 
@@ -429,6 +333,220 @@ function EventTracking() {
         }
     }
 
+    function generateCircleGeometry() {
+        return {
+            rings: [
+                [
+                    [8.5, 0],
+                    [7.02, 0.13],
+                    [5.59, 0.51],
+                    [4.25, 1.14],
+                    [3.04, 1.99],
+                    [1.99, 3.04],
+                    [1.14, 4.25],
+                    [0.51, 5.59],
+                    [0.13, 7.02],
+                    [0, 8.5],
+                    [0.13, 9.98],
+                    [0.51, 11.41],
+                    [1.14, 12.75],
+                    [1.99, 13.96],
+                    [3.04, 15.01],
+                    [4.25, 15.86],
+                    [5.59, 16.49],
+                    [7.02, 16.87],
+                    [8.5, 17],
+                    [9.98, 16.87],
+                    [11.41, 16.49],
+                    [12.75, 15.86],
+                    [13.96, 15.01],
+                    [15.01, 13.96],
+                    [15.86, 12.75],
+                    [16.49, 11.41],
+                    [16.87, 9.98],
+                    [17, 8.5],
+                    [16.87, 7.02],
+                    [16.49, 5.59],
+                    [15.86, 4.25],
+                    [15.01, 3.04],
+                    [13.96, 1.99],
+                    [12.75, 1.14],
+                    [11.41, 0.51],
+                    [9.98, 0.13],
+                    [8.5, 0],
+                ],
+            ],
+        };
+    }
+
+    const eventColor = (value: string) => {
+        let x;
+        switch (value) {
+            case "EQ":
+                x = [101, 141, 27, 255];
+                break;
+            case "TC":
+                x = [218, 41, 28, 255];
+                break;
+            case "DR":
+                x = [128, 49, 167, 255];
+                break;
+            case "FL":
+                x = [0, 176, 185, 255];
+                break;
+            case "VO":
+                x = [242, 169, 0, 255];
+                break;
+            case "WF":
+                x = [255, 130, 0, 255];
+                break;
+            default:
+                x = [217, 217, 217, 255];
+        }
+
+        return {
+            type: "cim", // autocasts as new CIMSymbol
+            data: {
+                type: "CIMSymbolReference",
+                primitiveOverrides: [
+                    {
+                        type: "CIMPrimitiveOverride",
+                        primitiveName: "strokeOverride",
+                        propertyName: "Color",
+                        valueExpressionInfo: {
+                            type: "CIMExpressionInfo",
+                            title: "Animation override",
+                            expression: `return 'rgba(${x[0]},${x[1]},${x[2]},${x[3]})';`,
+                            returnType: "Default",
+                        },
+                    },
+                ],
+                symbol: {
+                    type: "CIMPointSymbol",
+                    symbolLayers: [
+                        {
+                            type: "CIMVectorMarker",
+                            enable: true,
+                            animations: [
+                                {
+                                    type: "CIMSymbolAnimationScale",
+                                    primitiveName: "scaleOverride",
+                                    scaleFactor: 3,
+                                    animatedSymbolProperties: {
+                                        type: "CIMAnimatedSymbolProperties",
+                                        primitiveName: "animationOverride",
+                                        playAnimation: true,
+                                        randomizeStartTime: false,
+                                        repeatType: "Loop",
+                                        repeatDelay: 1,
+                                        duration: 1.8,
+                                        easing: "EaseOut",
+                                    },
+                                },
+                                {
+                                    type: "CIMSymbolAnimationTransparency",
+                                    toTransparency: 100,
+                                    animatedSymbolProperties: {
+                                        type: "CIMAnimatedSymbolProperties",
+                                        primitiveName: "animationOverride",
+                                        playAnimation: true,
+                                        randomizeStartTime: false,
+                                        repeatType: "Loop",
+                                        repeatDelay: 1,
+                                        duration: 1.8,
+                                        easing: "EaseIn",
+                                    },
+                                },
+                            ],
+                            size: 5,
+                            frame: {
+                                xmin: 0,
+                                ymin: 0,
+                                xmax: 17,
+                                ymax: 17,
+                            },
+                            markerGraphics: [
+                                {
+                                    type: "CIMMarkerGraphic",
+                                    geometry: generateCircleGeometry(),
+                                    symbol: {
+                                        type: "CIMPolygonSymbol",
+                                        symbolLayers: [
+                                            {
+                                                type: "CIMSolidStroke",
+                                                primitiveName: "strokeOverride",
+                                                enable: true,
+                                                width: 1,
+                                                color: [255, 255, 255, 0],
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                        },
+                        {
+                            type: "CIMVectorMarker",
+                            enable: true,
+                            size: 5,
+                            frame: {
+                                xmin: 0,
+                                ymin: 0,
+                                xmax: 17,
+                                ymax: 17,
+                            },
+                            markerGraphics: [
+                                {
+                                    type: "CIMMarkerGraphic",
+                                    geometry: generateCircleGeometry(),
+                                    symbol: {
+                                        type: "CIMPolygonSymbol",
+                                        symbolLayers: [
+                                            {
+                                                type: "CIMSolidFill",
+                                                enable: true,
+                                                color: x
+                                            },
+                                        ],
+                                    },
+                                },
+                            ],
+                            scaleSymbolsProportionally: true,
+                            respectFrame: true,
+                        },
+                    ],
+                },
+            },
+        }
+
+
+    }
+    const uniqueColorValues = [
+        {
+            value: "EQ",
+            symbol: eventColor("EQ"),
+        },
+        {
+            value: "TC",
+            symbol: eventColor("TC"),
+        },
+        {
+            value: "DR",
+            symbol: eventColor("DR"),
+        },
+        {
+            value: "FL",
+            symbol: eventColor("FL"),
+        },
+        {
+            value: "VO",
+            symbol: eventColor("VO"),
+        },
+        {
+            value: "WF",
+            symbol: eventColor("WF"),
+        },
+    ];
+
     useEffect(() => {
 
         if (!map.current) return;
@@ -449,8 +567,9 @@ function EventTracking() {
             url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/gdacs_events/FeatureServer",
             outFields: ["*"],
             renderer: {
-                type: "simple",
-                symbol: { type: "simple-marker", size: 0, color: [0,0,0,0] }
+                type: "unique-value",
+                field: "eventtype",
+                uniqueValueInfos: uniqueColorValues
             },
             definitionExpression: `${state?.eventFilter !== 'AL' ? `eventtype='${state?.eventFilter}' AND` : ''} (fromdate >= timestamp '${toTimestamp(new Date(state.dateRange.from))}' AND fromdate <= timestamp '${toTimestamp(new Date(state.dateRange.to))}'
             OR
@@ -467,7 +586,7 @@ function EventTracking() {
 
         map.current.add(eventFeatureLayer.current); // add events feature layer to map
 
-    }, [state?.dateRange.from, state?.dateRange.to, clearPulses, queryEvents, state?.eventFilter])
+    }, [state?.dateRange.from, state?.dateRange.to, state?.eventFilter])
 
     // query feature layer 
     async function highlightCountry(eventid: any, index?: number) {
@@ -620,17 +739,15 @@ function EventTracking() {
             setFocusedSliderPlaying(false); // reset playing state of slider when focusing on a new event
         }
     }
-
+ 
     const unfocusEvent = () => {
         setEventPopup("all events"); 
         setFocusedEvent(""); 
         removeBlur(); 
         pauseSlider();
-
-        // show event dots 
-        document.querySelectorAll<HTMLElement>(".pw").forEach(element => {
-            element.style.visibility = "visible";
-        }) 
+        if (!eventFeatureLayer.current) return;
+        console.log("DUD")
+        eventFeatureLayer.current.renderer.uniqueValueInfos = uniqueColorValues;
     }
 
     const exposuresArray: any = [
