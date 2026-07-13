@@ -996,7 +996,7 @@ function EventTracking() {
                 <div className="h-[10px] bg-[var(--darkblue)] flex items-center justify-center text-white font-bold"></div>
             </div>
             <div className={`absolute bottom-0 right-0 md:top-40 md:bottom-[unset] ${eventPopup == "focused event" ? "visible" : "invisible"} h-40/100 md:h-70/100 w-full md:w-[325px] pt-3 shadow-lg/40 md:rounded-tl-md flex flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
-                <div className="h-71 w-full flex items-center justify-between pl-4">
+                <div className="pt-3 w-full flex items-center justify-between pl-4">
                     {focusedEvent.iscurrent == "true" ?
                         <div className="flex h-6.25 justify-center  items-center bg-(--accentred-100) rounded-sm shadow-lg/10 font-bold text-white px-[5px] mb-[6px] mt-[9px] text-[11px]">
                             <div>ONGOING</div>
