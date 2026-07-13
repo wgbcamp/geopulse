@@ -77,7 +77,9 @@ export const Header = () => {
             if (urlObject[hazard][exposure].scenarios.find((element) => scenarioMapper[element] == scenarioMapper[state?.currentScenario])) {
                 resolve(true);
             } else {
-                resolve(actions?.setScenario(urlObject[state?.currentHazard][state?.currentExposure].scenarios[0]));
+                // this resolve should force the scenario back to the first value in the array
+                // resolve(actions?.setScenario(urlObject[state?.currentHazard][state?.currentExposure].scenarios[0]));
+                resolve(true);
             }
         });
 
