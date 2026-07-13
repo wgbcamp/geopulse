@@ -243,8 +243,8 @@ const state = useContext(AppStateContext);
         </text>
         <rect id="color9" x="148.539" y="127.924" width="26" height="26" transform="rotate(135 148.539 127.924)"
           fill="#e9e6f2" />
-        <rect id="color5" x="130.154" y="109.539" width="26" height="26" transform="rotate(135 130.154 109.539)"
-          fill="#9080bd" />
+        <rect id="color6" x="130.154" y="109.539" width="26" height="26" transform="rotate(135 130.154 109.539)"
+          fill="#E39BCC" />
         <rect id="color3" x="111.77" y="91.1543" width="26" height="26" transform="rotate(135 111.77 91.1543)"
           fill="#DE4FA6" />
         <rect id="color8" x="166.924" y="109.539" width="26" height="26" transform="rotate(135 166.924 109.539)"
@@ -257,8 +257,8 @@ const state = useContext(AppStateContext);
           fill="#2A1A89" />
         <rect id="color2" x="130.154" y="72.7695" width="26" height="26" transform="rotate(135 130.154 72.7695)"
           fill="#843598" />
-        <rect id="color6" x="148.539" y="91.1543" width="26" height="26" transform="rotate(135 148.539 91.1543)"
-          fill="#E39BCC" />
+        <rect id="color5" x="148.539" y="91.1543" width="26" height="26" transform="rotate(135 148.539 91.1543)"
+          fill="#9080bd" />
         <path
           d="M196.165 104.655C196.18 104.379 195.969 104.143 195.693 104.129L191.199 103.887C190.924 103.872 190.688 104.084 190.673 104.359C190.658 104.635 190.87 104.871 191.146 104.886L195.14 105.1L194.925 109.095C194.91 109.37 195.122 109.606 195.398 109.621C195.673 109.636 195.909 109.424 195.924 109.148L196.165 104.655ZM146.666 148.628L147 149L196 105L195.666 104.628L195.332 104.256L146.332 148.256L146.666 148.628Z"
           fill="black" />
@@ -266,7 +266,7 @@ const state = useContext(AppStateContext);
           d="M64.0002 101.5C63.7241 101.5 63.5002 101.724 63.5002 102L63.5002 106.5C63.5002 106.776 63.7241 107 64.0002 107C64.2764 107 64.5002 106.776 64.5002 106.5L64.5002 102.5L68.5002 102.5C68.7764 102.5 69.0002 102.276 69.0002 102C69.0002 101.724 68.7764 101.5 68.5002 101.5L64.0002 101.5ZM110.567 148.567L110.921 148.214L64.3538 101.647L64.0002 102L63.6467 102.354L110.214 148.921L110.567 148.567Z"
           fill="black" />
       </svg>
-      <div className='absolute bottom-0 right-0 flex flex-col items-start justify-end rounded-xs bg-white w-50 h-45'>
+      {/* <div className='absolute bottom-0 right-0 flex flex-col items-start justify-end rounded-xs bg-white w-50 h-45'>
         <div id="newLegend" onMouseLeave={() => hideTooltip()} className='w-full'>
           <div className='absolute bottom-40 w-full flex  justify-center'>
             <div id="tooltip" className='invisible opacity-0 shadow-xl/20 rounded-md flex h-15 w-40 items-center justify-center bg-(--accentdarkblue-80) transition-all delay-150 duration-300 ease-in-out'>
@@ -289,7 +289,7 @@ const state = useContext(AppStateContext);
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
