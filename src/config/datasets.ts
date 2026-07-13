@@ -51,9 +51,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { 
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -68,7 +68,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "RF_PW_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations.",
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; European Commission JRC, Global Human Settlement Layer (GHS-POP); and IMF staff calculations.",
         },
         "Buildings": {
             url: `${URL_BASE}/riverine_buildings_table/FeatureServer/0/query`,
@@ -79,9 +79,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { 
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -96,7 +96,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "RF_BLD_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; Global Building Atlas (TU Munich); and IMF staff calculations."
         },
         "GDP": {
             url: `${URL_BASE}/riverine_gdp_table/FeatureServer/0/query`,
@@ -107,9 +107,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { 
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -124,7 +124,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "RF_GDP_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; gridded GDP (Murakami, Yoshida & Yamagata, 2021), downscaled with VIIRS nighttime lights (EOG); and IMF staff calculations."
         },
         "Urban GDP": {
             url: `${URL_BASE}/riverine_ugdp_table/FeatureServer/0/query`,
@@ -135,9 +135,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: {
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -152,7 +152,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "RF_UGDP_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; gridded GDP (Murakami, Yoshida & Yamagata, 2021) masked to GHSL urban areas (EC JRC), downscaled with VIIRS nighttime lights (EOG); and IMF staff calculations."
         }
     },
     "Coastal Flooding":
@@ -166,9 +166,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { 
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -183,7 +183,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "CF_PW_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; European Commission JRC, Global Human Settlement Layer (GHS-POP); and IMF staff calculations."
         },
         "Buildings": {
             url: `${URL_BASE}/coastal_buildings_table/FeatureServer/0/query`,
@@ -194,9 +194,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { 
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -211,7 +211,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "CF_BLD_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; Global Building Atlas (TU Munich); and IMF staff calculations."
         },
         "GDP": {
             url: `${URL_BASE}/coastal_gdp_table/FeatureServer/0/query`,
@@ -222,9 +222,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { 
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -239,7 +239,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "CF_GDP_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; gridded GDP (Murakami, Yoshida & Yamagata, 2021), downscaled with VIIRS nighttime lights (EOG); and IMF staff calculations."
         },
         "Urban GDP": {
             url: `${URL_BASE}/coastal_ugdp_table/FeatureServer/0/query`,
@@ -250,9 +250,9 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: {
                     "rp0005": "20%",
                     "rp0010": "10%",  
-                    "rp0025": "2%",  
-                    "rp0050": "1%",  
-                    "rp0100": "0.4%",  
+                    "rp0025": "4%",  
+                    "rp0050": "2%",  
+                    "rp0100": "1%",  
                     "rp0500": "0.2%",  
                     "rp1000": "0.1%"
                 }
@@ -267,7 +267,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "rp0005": "CF_UGDP_EXP",
             },
             value: "PERCENT_",
-            source: "Sources: IMF Staff Calculations."
+            source: "Sources: World Resources Institute, Aqueduct Floods Hazard Maps v2; gridded GDP (Murakami, Yoshida & Yamagata, 2021) masked to GHSL urban areas (EC JRC), downscaled with VIIRS nighttime lights (EOG); and IMF staff calculations."
         }
     },
     "Drought":
@@ -277,7 +277,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
             measure: ["CDD_CROP_EXP", "SPEI_CROP_EXP"],
             scenarios: ["SSP126", "SSP245", "SSP370"],
             value: "MEDIAN",
-            source: "Sources: OECD."
+            source: "Sources: World Bank Climate Change Knowledge Portal (CMIP6 / WCRP modelling groups); Copernicus / ESA CCI Land Cover; Maes et al. (2025), OECD; and IMF staff calculations."
         }
     },
     "Temperature Extremes":
@@ -308,7 +308,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 "H_40": "HD_PW_EXP",
             },
             value: "MEDIAN",
-            source: "Sources: OECD."
+            source: "Sources: World Bank Climate Change Knowledge Portal (CMIP6 / WCRP modelling groups); European Commission JRC, Global Human Settlement Layer (GHS-POP); Maes et al. (2025), OECD; and IMF staff calculations."
         },
         "Livestock": {
             url: `${URL_BASE}/temperature_livestock_table/FeatureServer/0/query`,
@@ -319,7 +319,7 @@ export const urlObject: Record<string, Record<string, { url: string, measure: st
                 group: { "H_35": "> 35" }
             },
             value: "MEDIAN",
-            source: "Sources: OECD."
+            source: "Sources: World Bank Climate Change Knowledge Portal (CMIP6 / WCRP modelling groups); FAO, Gridded Livestock of the World v3 (GLW3); Maes et al. (2025), OECD; and IMF staff calculations."
             
         }
 
@@ -333,6 +333,30 @@ export const scenarioMapper: Record<string, string> = {
     SSP245: 'Disorderly',
     SSP370: 'Hot House'
 };
+
+// Physical-climate pathway codes behind each plain-language scenario name.
+export const scenarioCodeMapper: Record<string, string> = {
+    rcp4p5: 'RCP 4.5',
+    rcp8p5: 'RCP 8.5',
+    SSP126: 'SSP1-2.6',
+    SSP245: 'SSP2-4.5',
+    SSP370: 'SSP3-7.0'
+};
+
+// Display label combining the plain-language name with its code, e.g. "Orderly (RCP 4.5)".
+// Display-only: scenarioMapper stays the matching key and raw codes remain in data fields.
+export const scenarioLabel = (scenario: string): string =>
+    `${scenarioMapper[scenario]} (${scenarioCodeMapper[scenario]})`;
+
+// Canonical forward-looking time-period labels (methodology TIME_PERIOD).
+// Single source of truth shared by the time slider and the line-chart x-axis.
+// Index order matches the year steps: 0 = Historical (1980), 1 = 2030, 2 = 2050, 3 = 2080.
+export const timePeriodLabels: string[] = [
+    "Historical",
+    "Early century",
+    "Mid century",
+    "End century",
+];
 
 export const measureMapper: Record<string, string> = {
     HD_PW_EXP: "Hot Days",
@@ -679,76 +703,161 @@ export const comparisonTitles = (hazard: string, exposure: string, measure: stri
     const colorAxisTitleMapper: Record<string, Record<string, Record<string, string>>> = {
         "Temperature Extremes": {
             "Population": {
-                colorAxis: "Number of Days",
-                chart: `Population-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`,
+                colorAxis: `${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year`,
+                chart: `${countryByIso3[iso3]}: Population-weighted ${measureMapper[measure]} (${thresholdToTitle[threshold]}° C)`,
+                subtitle: `(${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year; trajectory across all time periods and scenarios)`,
             },
             "Livestock": {
-                colorAxis: "Number of Days",
-                chart: `Livestock-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`,
+                colorAxis: `${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year`,
+                chart: `${countryByIso3[iso3]}: Livestock-weighted ${measureMapper[measure]} (${thresholdToTitle[threshold]}° C)`,
+                subtitle: `(${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year; trajectory across all time periods and scenarios)`,
             },
             "GDP": {
-                colorAxis: "Number of Days",
-                chart: `GDP-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`,
+                colorAxis: `${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year`,
+                chart: `${countryByIso3[iso3]}: GDP-weighted ${measureMapper[measure]} (${thresholdToTitle[threshold]}° C)`,
+                subtitle: `(${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year; trajectory across all time periods and scenarios)`,
             },
             "Urban GDP": {
-                colorAxis: "Number of Days",
-                chart: `Urban GDP-weighted Number of ${measureMapper[measure]} at ${thresholdToTitle[threshold]}° Celsius: ${countryByIso3[iso3]}`,
+                colorAxis: `${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year`,
+                chart: `${countryByIso3[iso3]}: Urban GDP-weighted ${measureMapper[measure]} (${thresholdToTitle[threshold]}° C)`,
+                subtitle: `(${["H_20", "H_26", "H_32"].includes(threshold) ? "Nights" : "Days"} per year; trajectory across all time periods and scenarios)`,
             }
         },
         "Riverine Flooding": {
             "Population": {
-                colorAxis: "Percentage of Population",
-                chart: `Percentage of Population Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of population exposed",
+                chart: `${countryByIso3[iso3]}: Population Exposed to Riverine Flooding`,
+                subtitle: "(Percent of total population; trajectory across all time periods and scenarios)",
             },
             "Buildings": {
-                colorAxis: "Percentage of Buildings",
-                chart: `Percentage of Buildings Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of buildings exposed",
+                chart: `${countryByIso3[iso3]}: Buildings Exposed to Riverine Flooding`,
+                subtitle: "(Percent of total buildings; trajectory across all time periods and scenarios)",
             },
             "Builtup Area": {
-                colorAxis: "Builtup Area (Km²)",
-                chart: `Builtup Area (Km²) Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Builtup area exposed (Km²)",
+                chart: `${countryByIso3[iso3]}: Builtup Area (Km²) Exposed to Riverine Flooding`,
+                subtitle: "(Builtup area in Km²; trajectory across all time periods and scenarios)",
             },
             "GDP": {
-                colorAxis: "Percentage of GDP",
-                chart: `Percentage of GDP Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of GDP exposed",
+                chart: `${countryByIso3[iso3]}: GDP Exposed to Riverine Flooding`,
+                subtitle: "(Percent of total GDP; trajectory across all time periods and scenarios)",
             },
             "Urban GDP": {
-                colorAxis: "Percentage of Urban GDP",
-                chart: `Percentage of Urban GDP Exposed to Riverine Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of urban GDP exposed",
+                chart: `${countryByIso3[iso3]}: Urban GDP Exposed to Riverine Flooding`,
+                subtitle: "(Percent of total urban GDP; trajectory across all time periods and scenarios)",
             }
         },
         "Coastal Flooding": {
             "Population": {
-                colorAxis: "Percentage of Population",
-                chart: `Percentage of Population Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of population exposed",
+                chart: `${countryByIso3[iso3]}: Population Exposed to Coastal Flooding`,
+                subtitle: "(Percent of total population; trajectory across all time periods and scenarios)",
             },
             "Buildings": {
-                colorAxis: "Percentage of Buildings",
-                chart: `Percentage of Buildings Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of buildings exposed",
+                chart: `${countryByIso3[iso3]}: Buildings Exposed to Coastal Flooding`,
+                subtitle: "(Percent of total buildings; trajectory across all time periods and scenarios)",
             },
             "Builtup Area": {
-                colorAxis: "Builtup Area (Km²)",
-                chart: `Builtup Area (Km²) Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Builtup area exposed (Km²)",
+                chart: `${countryByIso3[iso3]}: Builtup Area (Km²) Exposed to Coastal Flooding`,
+                subtitle: "(Builtup area in Km²; trajectory across all time periods and scenarios)",
             },
             "GDP": {
-                colorAxis: "Percentage of GDP",
-                chart: `Percentage of GDP Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of GDP exposed",
+                chart: `${countryByIso3[iso3]}: GDP Exposed to Coastal Flooding`,
+                subtitle: "(Percent of total GDP; trajectory across all time periods and scenarios)",
             },
             "Urban GDP": {
-                colorAxis: "Percentage of Urban GDP",
-                chart: `Percentage of Urban GDP Exposed to Coastal Flooding: ${countryByIso3[iso3]}`,
+                colorAxis: "Percent of urban GDP exposed",
+                chart: `${countryByIso3[iso3]}: Urban GDP Exposed to Coastal Flooding`,
+                subtitle: "(Percent of total urban GDP; trajectory across all time periods and scenarios)",
             },
         },
         "Drought": {
             "Cropland": {
-                colorAxis: `${measureMapper[measure] == "Dry Days" ? "Number of Consecutive Dry Days" : "Cropland SPEI Index"}`,
-                chart: `${measureMapper[measure] == "Dry Days" ? ` Maximum Number of Consecutive Dry Days on Cropland: ${countryByIso3[iso3]}` : "Standardized Precipitation Evapotranspiration Index for Cropland"}`
+                colorAxis: `${measureMapper[measure] == "Dry Days" ? "Days per year" : "SPEI Index for cropland"}`,
+                chart: `${measureMapper[measure] == "Dry Days" ? `${countryByIso3[iso3]}: Maximum Number of Consecutive Dry Days on Cropland` : `${countryByIso3[iso3]}: Standardized Precipitation Evapotranspiration Index for Cropland`}`,
+                subtitle: `(${measureMapper[measure] == "Dry Days" ? "Days per year" : "Index value"}; trajectory across all time periods and scenarios)`
             }
         }
     }
 
     return colorAxisTitleMapper[hazard][exposure]
 }
+
+// Single page-level note for the Compare view. Content varies by indicator only.
+// Historical baselines: temperature Population 2005, Livestock 2010 (confirmed).
+// TODO(baseline-year): 2020 exposure layer and 2005 flood-historical baseline are still from the
+// mocks and unconfirmed (Open Question 1). Update once the team confirms.
+export const comparisonNote = (hazard: string, exposure: string, _measure: string, threshold: string): string[] => {
+    const isTmin = ["H_20", "H_26", "H_32"].includes(threshold);
+    const daysNights = isTmin ? "nights" : "days";
+
+    switch (hazard) {
+        case "Riverine Flooding":
+        case "Coastal Flooding": {
+            const years = threshold ? parseInt(threshold.replace(/[^0-9]/g, ""), 10) : undefined;
+            const annualProb = urlObject[hazard][exposure].threshold?.group[threshold];
+            return [
+                `Values shown for the ${years}-year return period (${annualProb} annual probability of flooding). ${exposure} is held at the observed 2020 layer (2005 for the historical baseline); only the flood hazard evolves across periods, so values isolate the effect of a changing climate. The historical value is common to both scenarios. See the indicator methodology note for details.`,
+                "Scenario names (Orderly / Disorderly) are display conventions referring to the physical-climate pathways RCP 4.5 and RCP 8.5. Downloadable tables report the scenario codes (historical, rcp4p5, rcp8p5).",
+            ];
+        }
+        case "Temperature Extremes": {
+            const avgClause = exposure === "Population" ? " — i.e. what the average resident experiences" : "";
+            const historicalYear = exposure === "Livestock" ? "2010" : "2005";
+            return [
+                `Values shown for the selected hazard type. The measure is the ${exposure.toLowerCase()}-weighted mean number of ${daysNights} per year meeting the threshold${avgClause}. ${exposure} is held at the observed 2020 layer (${historicalYear} for the historical baseline); only the temperature hazard evolves across periods, so values isolate the effect of a changing climate. The historical value is common to all scenarios. See the indicator methodology note for details.`,
+                "Scenario names (Orderly / Disorderly / Hot House) are display conventions referring to the physical-climate pathways SSP1-2.6, SSP2-4.5 and SSP3-7.0. Downloadable tables report the scenario codes (historical, ssp126, ssp245, ssp370).",
+            ];
+        }
+        case "Drought":
+            return [
+                "Values shown for the selected measure on cropland. Cropland exposure is held fixed; only the drought hazard evolves across periods, so values isolate the effect of a changing climate. The historical value is common to all scenarios. See the indicator methodology note for details.",
+                "A dry day is defined as a day with less than 1 mm of accumulated precipitation.",
+                "Scenario names (Orderly / Disorderly / Hot House) are display conventions referring to the physical-climate pathways SSP1-2.6, SSP2-4.5 and SSP3-7.0. Downloadable tables report the scenario codes (historical, ssp126, ssp245, ssp370).",
+            ];
+        default:
+            return [];
+    }
+};
+
+// Context line under the map title: the map is a single-period, single-scenario snapshot,
+// so it carries the current selection state (unit; scenario; return period [Method B]; time period).
+export const comparisonMapContext = (
+    hazard: string,
+    exposure: string,
+    measure: string,
+    threshold: string,
+    scenario: string,
+    time: number,
+    iso3: string
+): string => {
+    const parts: string[] = [];
+
+    // unit — reuse the legend title so wording stays consistent
+    parts.push(comparisonTitles(hazard, exposure, measure, threshold, iso3).colorAxis);
+
+    // return period — Method B (flooding) only
+    if (urlObject[hazard][exposure].threshold?.type === "RETURN_PERIOD" && threshold) {
+        const years = parseInt(threshold.replace(/[^0-9]/g, ""), 10);
+        parts.push(`${years}-year return period`);
+    }
+
+    // scenario — omit for the scenario-independent historical period; include the code in parens
+    const isHistorical = time === 1980;
+    if (!isHistorical && scenarioMapper[scenario]) parts.push(scenarioLabel(scenario));
+
+    // time period
+    const timeIndex = [1980, 2030, 2050, 2080].indexOf(time);
+    if (timePeriodLabels[timeIndex]) parts.push(timePeriodLabels[timeIndex]);
+
+    return `(${parts.join("; ")})`;
+};
 
 export const eventTypes: Record<string, string> = {
     "AL": "All Events",

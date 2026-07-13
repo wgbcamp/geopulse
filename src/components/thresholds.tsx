@@ -28,8 +28,6 @@ import {Beach20FilledIcon} from "@/components/icons/fluent-beach-20-filled"
 import {WeatherSnowflake20FilledIcon} from "@/components/icons/fluent-weather-snowflake-20-filled"
 import {WeatherSunny20FilledIcon} from "@/components/icons/fluent-weather-sunny-20-filled"
 
-const floodingTicks = [20, 10, 4, 2, 1, 0.4, 0.2, 0.1];
-
 const labels = [
   {
     name: "ICING DAYS", position: 0, icon: WeatherSnowflake20FilledIcon, color: "#4FADD0", svg: "",
@@ -114,7 +112,7 @@ export const Thresholds = () => {
     </div>;
   
   const temperatureSliderComponent = 
-          <div className="absolute w-[370px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
+          <div className="absolute w-[370px] h-[125px] left-1/2 top-[135px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
           style={{
             background:
               "linear-gradient(174.18deg, #0084FF 7.23%, rgba(92, 92, 92, 0) 95.52%)",
@@ -175,7 +173,7 @@ export const Thresholds = () => {
         </div>;
 
   const floodingSliderComponent =
-    <div className="absolute w-[370px] h-[125px] left-1/2 top-[175px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
+    <div className="absolute w-[370px] h-[125px] left-1/2 top-[135px] -translate-x-1/2 -translate-y-1/2 p-[1px] rounded-xl"
       style={{
         background:
           "linear-gradient(174.18deg, #0084FF 7.23%, rgba(92, 92, 92, 0) 95.52%)",
@@ -207,7 +205,7 @@ export const Thresholds = () => {
                     <div className="w-px h-2 bg-muted-foreground/50"></div>
                     <span className={`text-xs w-[42px] mt-0.5 ${tick === state.currentThreshold.threshold ? "font-bold text-[black] text-foreground" : "text-muted-foreground"}`}>
                       <div className='font-bold'>{tick}</div>
-                      <div className='font-bold'>{index == 0 ? 'High' : index == Object.values(thresholdGroup).length - 1 ? "Low" : <br></br>}</div>
+                      <div className={`font-bold whitespace-nowrap ${index == 0 ? 'flex flex-col items-start' : index == Object.values(thresholdGroup).length - 1 ? 'flex flex-col items-end' : ''}`}>{index == 0 ? <><span>More</span><span>frequent</span></> : index == Object.values(thresholdGroup).length - 1 ? <><span>Rarer,</span><span>more severe</span></> : <br></br>}</div>
                     </span>
                   </div>
                 )

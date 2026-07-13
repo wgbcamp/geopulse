@@ -7,18 +7,17 @@ import {
 
 import { Slider } from "@/components/ui/slider"
 
+import { timePeriodLabels } from "@/config/datasets"
+
 //riverine flooding vs population 2080 is renamed to 2100
 const tileLayerURLs = [
-  { hazard: "Riverine Flooding", exposure: "Population", time: 1980, string: "Historical", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer" },
-  { hazard: "Riverine Flooding", exposure: "Population", time: 2030, string: "Early Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2030/VectorTileServer" },
-  { hazard: "Riverine Flooding", exposure: "Population", time: 2050, string: "Mid-Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2050/VectorTileServer" },
-  { hazard: "Riverine Flooding", exposure: "Population", time: 2080, string: "End-Century", url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2080/VectorTileServer" }
+  { hazard: "Riverine Flooding", exposure: "Population", time: 1980, url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_historical_1980/VectorTileServer" },
+  { hazard: "Riverine Flooding", exposure: "Population", time: 2030, url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2030/VectorTileServer" },
+  { hazard: "Riverine Flooding", exposure: "Population", time: 2050, url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2050/VectorTileServer" },
+  { hazard: "Riverine Flooding", exposure: "Population", time: 2080, url: "https://tiles.arcgis.com/tiles/weJ1QsnbMYJlCHdG/arcgis/rest/services/riverine_flood_grid_people_rcp4p5_2080/VectorTileServer" }
 ];
 
-const ticks: any = [];
-tileLayerURLs.forEach(layer => {
-  ticks.push(layer.string);
-})
+const ticks = timePeriodLabels;
 
 export const Timeline = ({ currentTime, setTime }: any) => {
 
@@ -49,7 +48,7 @@ export const Timeline = ({ currentTime, setTime }: any) => {
                 style={{ left: `${percent}%`}}
               >
                 <div className="w-px h-2 bg-muted-foreground/50"></div>
-                <span className={`text-xs w-20 mt-0.5 ${tick === tileLayerURLs[index]?.string && currentTime === tileLayerURLs[index]?.time ? "font-bold" : " font-normal"}`}>
+                <span className={`text-xs w-20 mt-0.5 ${tick === timePeriodLabels[index] && currentTime === tileLayerURLs[index]?.time ? "font-bold" : " font-normal"}`}>
                   {tick}
                 </span>
               </div>

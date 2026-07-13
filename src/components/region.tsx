@@ -21,9 +21,9 @@ import {
 import { Exporting } from '@highcharts/react/options/Exporting';
 
 import { countryByIso3 } from '@/config/isoCountries';
-import { urlObject, scenarioMapper, comparisonTitles } from '@/config/datasets';
+import { urlObject, scenarioMapper, scenarioLabel, comparisonTitles, comparisonMapContext, timePeriodLabels } from '@/config/datasets';
 
-export const Region = ({ defaultIso3, geoJson }: any) => {
+export const Region = ({ defaultIso3, geoJson, regionId, sharedYMax, onDataMax }: any) => {
     const state = useContext(AppStateContext);
 
     type Feature = Record<string, any>;
@@ -47,7 +47,6 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
 
     const [currentSubnational, setSubnational] = useState<Record<any, any>>({refAreaName: null, refArea: null, iso3: null});
 
-    const [yAxisRange, setyAxisRange] = useState<{min: number, max: number, tickInterval: any}>({min: 0, max: 0, tickInterval: undefined});
 
     // set global highcharts chart styling options
     Highcharts.setOptions({
@@ -59,16 +58,24 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                 fontFamily: 'Arial'
             },
         },
+        lang: {
+            contextButtonTitle: 'Export'
+        },
         exporting: {
             buttons: {
                 contextButton: {
                     symbol: 'download',
-                    symbolSize: 20,      // default is 12, increase as needed
-                    symbolX: 30,         // adjust position to keep it centered
-                    symbolY: 42,
+                    symbolSize: 24,
+                    // Center the symbol inside a box that wraps it, so the whole icon is the hit area.
+                    symbolX: 14,
+                    symbolY: 14,
+                    width: 28,
+                    height: 28,
+                    y: 35,
                     theme: {
                         fill: 'transparent',
                         stroke: 'none',
+                        cursor: 'pointer',
                         states: {
                             hover: {
                                 fill: 'transparent',
@@ -80,7 +87,7 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                             }
                         }
                     } as any,
-                    symbolStroke: '#a3a3a3',
+                    symbolStroke: 'none',
                     symbolFill: '#a3a3a3'
                 }
             }
@@ -88,21 +95,54 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
     });
 
     Highcharts.SVGRenderer.prototype.symbols.download = function (x: number, y: number, w: number, h: number) {
-        const path = [
-            // Arrow stem
-            'M', x + w * 0.5, y,
-            'L', x + w * 0.5, y + h * 0.7,
-            // Arrow head
-            'M', x + w * 0.3, y + h * 0.5,
-            'L', x + w * 0.5, y + h * 0.7,
-            'L', x + w * 0.7, y + h * 0.5,
-            // Box
-            'M', x, y + h * 0.9,
-            'L', x, y + h,
-            'L', x + w, y + h,
-            'L', x + w, y + h * 0.9
+        // Provided download-data icon, transformed from its 13x14 viewBox onto (x, y, w, h).
+        // V/H commands are pre-expanded to L; even coord index = x, odd = y within each segment.
+        // Fit with padding and preserved aspect ratio so edges aren't clipped or stretched.
+        const pad = 0.1;
+        const scale = Math.min((w * (1 - pad)) / 13, (h * (1 - pad)) / 14);
+        const offX = x + (w - 13 * scale) / 2;
+        const offY = y + (h - 14 * scale) / 2;
+        const sx = (v: number) => offX + v * scale;
+        const sy = (v: number) => offY + v * scale;
+        const segments: (string | number)[][] = [
+            ['M', 7, 0.875], ['L', 7, 6.64453], ['L', 8.12109, 5.49609],
+            ['C', 8.47656, 5.16797, 9.02344, 5.16797, 9.37891, 5.49609],
+            ['C', 9.70703, 5.85156, 9.70703, 6.39844, 9.37891, 6.75391],
+            ['L', 6.75391, 9.37891],
+            ['C', 6.39844, 9.70703, 5.85156, 9.70703, 5.49609, 9.37891],
+            ['L', 2.87109, 6.75391],
+            ['C', 2.54297, 6.39844, 2.54297, 5.85156, 2.87109, 5.49609],
+            ['C', 3.22656, 5.16797, 3.77344, 5.16797, 4.12891, 5.49609],
+            ['L', 5.25, 6.64453], ['L', 5.25, 0.875],
+            ['C', 5.25, 0.382812, 5.63281, 0, 6.125, 0],
+            ['C', 6.61719, 0, 7, 0.382812, 7, 0.875],
+            ['Z'],
+            ['M', 1.75, 8.75], ['L', 3.03516, 8.75], ['L', 4.56641, 10.3086],
+            ['C', 5.44141, 11.1562, 6.80859, 11.1562, 7.68359, 10.3086],
+            ['L', 9.21484, 8.75], ['L', 10.5, 8.75],
+            ['C', 11.457, 8.75, 12.25, 9.54297, 12.25, 10.5],
+            ['L', 12.25, 11.375],
+            ['C', 12.25, 12.332, 11.457, 13.125, 10.5, 13.125],
+            ['L', 1.75, 13.125],
+            ['C', 0.792969, 13.125, 0, 12.332, 0, 11.375],
+            ['L', 0, 10.5],
+            ['C', 0, 9.54297, 0.792969, 8.75, 1.75, 8.75],
+            ['Z'],
+            ['M', 10.0625, 10.2812],
+            ['C', 9.70703, 10.2812, 9.40625, 10.582, 9.40625, 10.9375],
+            ['C', 9.40625, 11.293, 9.70703, 11.5938, 10.0625, 11.5938],
+            ['C', 10.418, 11.5938, 10.7188, 11.293, 10.7188, 10.9375],
+            ['C', 10.7188, 10.582, 10.418, 10.2812, 10.0625, 10.2812],
+            ['Z'],
         ];
-        return path;
+        const path: (string | number)[] = [];
+        segments.forEach((seg) => {
+            path.push(seg[0]);
+            for (let i = 1; i < seg.length; i++) {
+                path.push(i % 2 === 1 ? sx(seg[i] as number) : sy(seg[i] as number));
+            }
+        });
+        return path as any;
     };
 
 
@@ -213,12 +253,7 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
         return tableData;
     }
 
-    var lineChartXLabels: string[] = [
-        "Historical",
-        "Early Century",
-        "Mid-Century",
-        "End-Century",
-    ];
+    var lineChartXLabels: string[] = timePeriodLabels;
 
     type MeasureRange = {
         maxValue: number;
@@ -338,19 +373,28 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
         return { adm1Data, adm0ChartData, mapLegendValueRange }
     }
 
+    // Report this panel's current data max (across the visible scenario series) up to the parent,
+    // so both panels can share a single dynamic y-scale.
     useEffect(() => {
-        switch(state?.currentMeasure.id) {
-            case "SPEI_CROP_EXP": setyAxisRange({min: -2.5, max: 2.5, tickInterval: 0.5})
-                break;
-            case "ID_PW_EXP":
-            case "TN_PW_EXP":
-            case "HD_PW_EXP":
-            case "HD_LW_EXP": setyAxisRange({min: 0, max: 365, tickInterval: 25})
-                break;
-            default: setyAxisRange({min: 0, max: 100, tickInterval: undefined})
-        }
-    }, [state?.currentMeasure]);
-    
+        if (!onDataMax) return;
+        const scenarios = urlObject[state?.currentHazard]?.[state?.currentExposure]?.scenarios ?? [];
+        const values = scenarios
+            .flatMap((s: string) => lineChartData[s] ?? [])
+            .filter((v: any) => typeof v === 'number' && isFinite(v));
+        onDataMax(regionId, values.length ? Math.max(...values) : 0);
+    }, [lineChartData]);
+
+
+    // High-contrast contour for the selected subnational unit, applied via Highcharts' native
+    // point state (same mechanism as hover) so the outline renders complete and on top.
+    const SUBNATIONAL_HIGHLIGHT = '#22D3EE';
+
+    // SPEI keeps its fixed diverging scale; every other measure uses the shared, dynamic max
+    // (floor 0, upper bound = joint max across both panels).
+    const isSPEI = state?.currentMeasure.id === "SPEI_CROP_EXP";
+    const yMin = isSPEI ? -2.5 : 0;
+    const yMax = isSPEI ? 2.5 : (sharedYMax && sharedYMax > 0 ? sharedYMax : undefined);
+    const yTick = isSPEI ? 0.5 : undefined;
 
     return (
         <Card className="bg-[#1E1E1E] w-full dark flex items-center justify-center shadow-md">
@@ -366,12 +410,41 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                     backgroundColor: 'RGBA(0,0,0,0)',
                                     animation: false,
                                     events: {
+                                        // Re-raise the selected region above its neighbours after every redraw
+                                        // so its full contour renders (React re-renders reset the z-order).
+                                        redraw: function (this: any) {
+                                            const pt = this.series?.[0]?.points?.find(
+                                                (p: any) => p.GID_1 === currentSubnational.refArea
+                                            );
+                                            if (pt?.graphic) pt.graphic.toFront();
+                                        }
                                     },
-                                    height: 550
+                                    height: 550,
+                                    spacingTop: 20
+                                },
+                                title: {
+                                    text: (currentSubnational.refAreaName ? currentSubnational.refAreaName + ", " : "")
+                                        + comparisonTitles(state?.currentHazard, state?.currentExposure, state?.currentMeasure.id, state?.currentThreshold.threshold, iso3).chart + " by Region",
+                                    align: 'left',
+                                    x: 18,
+                                    style: {
+                                        color: "white",
+                                        fontWeight: "bold",
+                                        fontSize: '16px'
+                                    }
+                                },
+                                subtitle: {
+                                    text: comparisonMapContext(state?.currentHazard, state?.currentExposure, state?.currentMeasure.id, state?.currentThreshold.threshold, state?.currentScenario, state?.currentTime, iso3),
+                                    align: 'left',
+                                    x: 16,
+                                    style: {
+                                        color: "#999999",
+                                        fontSize: '13px'
+                                    }
                                 },
                                 caption: {
                                     text: `${urlObject[state?.currentHazard][state?.currentExposure].source}`,
-                                    align: 'right',
+                                    align: 'left',
                                     style: {
                                         color: "#999999"
                                     }
@@ -490,11 +563,13 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                                 },
                                             }
                                         },
-                                        allowPointSelect: false,
+                                        allowPointSelect: true,
                                         states: {
                                             select: {
-
-                                            }
+                                                color: null,
+                                                borderColor: SUBNATIONAL_HIGHLIGHT,
+                                                borderWidth: 2
+                                            } as any
                                         },
                                         events: {
 
@@ -521,7 +596,7 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                     },
                                     caption: {
                                         text: `${urlObject[state?.currentHazard][state?.currentExposure].source}`,
-                                        align: 'right',
+                                        align: 'left',
                                         style: {
                                             color: "#999999"
                                         }
@@ -546,8 +621,8 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                         itemMarginBottom: 3,
                                     },
                                     title: {
-                                        text: comparisonTitles(state?.currentHazard, state?.currentExposure, state?.currentMeasure.id, state?.currentThreshold.threshold, iso3).chart
-                                            + (currentSubnational.refAreaName ? " (" + currentSubnational.refAreaName + ")" : ""),
+                                        text: (currentSubnational.refAreaName ? currentSubnational.refAreaName + ", " : "")
+                                            + comparisonTitles(state?.currentHazard, state?.currentExposure, state?.currentMeasure.id, state?.currentThreshold.threshold, iso3).chart,
                                         align: 'left',
                                         style: {
                                             color: "white",
@@ -560,7 +635,7 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                         minScale: 1
                                     },
                                     subtitle: {
-                                        text: "(Exposure quantity)",
+                                        text: comparisonTitles(state?.currentHazard, state?.currentExposure, state?.currentMeasure.id, state?.currentThreshold.threshold, iso3).subtitle,
                                         x: 16,
                                         style: {
                                             color: "#999999",
@@ -589,7 +664,7 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                     },
                                     series: urlObject[state?.currentHazard][state?.currentExposure].scenarios.map((scenario: string) => ({
                                         type: 'line',
-                                        name: scenarioMapper[scenario],
+                                        name: scenarioLabel(scenario),
                                         data: lineChartData[scenario],
                                         color: lineChartStyleMapper[scenario].color,
                                         marker: {
@@ -638,10 +713,11 @@ export const Region = ({ defaultIso3, geoJson }: any) => {
                                             }
                                         }
                                     }}
-                                    min={yAxisRange.min}
-                                    max={yAxisRange.max}
+                                    min={yMin}
+                                    max={yMax}
+                                    endOnTick={!isSPEI}
                                     allowDecimals={true}
-                                    tickInterval={yAxisRange.tickInterval}
+                                    tickInterval={yTick}
                                 />
                                 <Exporting />
                             </Chart>
