@@ -85,8 +85,6 @@ function EventTracking() {
                 events.forEach((i: any) => {
                     if (i.attributes.eventid == a.graphic.attributes.eventid) {
                         focusOnEvent({ longitude: i.geometry.longitude, latitude: i.geometry.latitude }, i.attributes);
-                        if (!eventFeatureLayer.current) return;
-                        eventFeatureLayer.current.renderer.uniqueValueInfos = [];
                     }
                 })
             })  
@@ -704,6 +702,9 @@ function EventTracking() {
         document.querySelectorAll<HTMLElement>(".pw").forEach(element => {
             element.style.visibility = "hidden";
         }) 
+
+        if (!eventFeatureLayer.current) return;
+        eventFeatureLayer.current.renderer.uniqueValueInfos = [];
     }
 
     // play through the event by incrementing the slider value which updates the position
