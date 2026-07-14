@@ -8,7 +8,7 @@ export const Route = createFileRoute('/about')({
 
 function About() {
 
-    return <div className={`mix-blend-hard-light h-full bg-[#000A5720] transition-all bg-cover overflow-auto`} style={{ backgroundImage: `url(${MenuBackground})` }}>
+    return <div className={`h-full bg-[#1a2868] bg-fixed transition-all overflow-auto`} style={{ backgroundImage: `linear-gradient(90deg, rgba(26,40,104,0.95) 0%, rgba(26,40,104,0.95) 52%, rgba(26,40,104,0.74) 100%), url(${MenuBackground})`, backgroundSize: 'cover' }}>
         <div className={` flex justify-center`}>
             <div className='w-9/10 flex justify-center'>
                 <div className="flex py-15 flex-col items-start gap-y-6 text-white">
