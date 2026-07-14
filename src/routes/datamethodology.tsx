@@ -48,7 +48,7 @@ function RouteComponent() {
                                             <strong>Data:&nbsp;</strong>
                                             <span><i>Global raster, 30 arc-second (~1 km at the equator), WGS84 (EPSG:4326). Download the .zip file with the total physical capital stock and individual files for residential vs. non-residential.</i></span>
                                         </div>
-                                        <Button className='h-7 bg-(--accentblue-60) text-[#0a1240] font-semibold rounded-md'>Download GeoTIFF</Button>
+                                        <Button className='h-7 bg-(--accentblue-60) text-white rounded-md hover:bg-(--accentblue-60) hover:opacity-90 cursor-pointer'>Download GeoTIFF</Button>
                                     </div>
                                 </div>
                                 <div className='flex flex-col gap-y-4 items-center xl:w-5/10'>
@@ -68,7 +68,7 @@ function RouteComponent() {
                                             <strong>Data:&nbsp;</strong>
                                             <span>Global ~1 km rasters, WGS84, reconciled to WEO national totals. Download the .zip file with the total GDP and the ten industry layers <i>(Agriculture (AGR); Mining & Oil and Gas (MIN); Manufacturing (MAN); Construction (CON); Transportation & Warehousing (TRAN); Trade (TRAD); Finance, Insurance & Real Estate (FIN); Government & Public Administration (GOV); Public Services (PUB); Other Industries (OTH))</i> GeoTIFF files.</span>
                                         </div>
-                                        <Button className=' h-7 bg-(--accentblue-60) text-[#0a1240] font-semibold rounded-md'>Download GeoTIFFs</Button>
+                                        <Button className=' h-7 bg-(--accentblue-60) text-white rounded-md hover:bg-(--accentblue-60) hover:opacity-90 cursor-pointer'>Download GeoTIFFs</Button>
                                     </div>
                                 </div>
                             </div>
@@ -109,8 +109,8 @@ function RouteComponent() {
                                             <span><i>Per-event hazard polygons with attached exposure attributes (population, buildings, GDP, urban GDP, cropland, airports, ports) by country. Refreshed daily as new GDACS advisories arrive. Download event exposure tables or connect live through the ArcGIS REST API.</i></span>
                                         </div>
                                         <div className='flex flex-col xl:flex-row gap-3'>
-                                            <Button className='h-7 bg-(--accentblue-60) text-[#0a1240] font-semibold rounded-md'>View Details and Download</Button>
-                                            <Button className='h-7 bg-(--accentblue-60) text-[#0a1240] font-semibold rounded-md'>Access API</Button>
+                                            <Button className='h-7 bg-(--accentblue-60) text-white rounded-md hover:bg-(--accentblue-60) hover:opacity-90 cursor-pointer'>View Details and Download</Button>
+                                            <Button className='h-7 bg-(--accentblue-60) text-white rounded-md hover:bg-(--accentblue-60) hover:opacity-90 cursor-pointer'>Access API</Button>
                                         </div>
                                     </div>
                                 </div>
