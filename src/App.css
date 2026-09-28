@@ -68,6 +68,14 @@ html {
   height: 0;
 }
 
+.esri-widget__heading  {
+  text-align: left;
+}
+
+.esri-feature__content-node {
+  text-align: left;
+}
+
 .pw {
     position: absolute;
     transform: translate(-50%, -50%);

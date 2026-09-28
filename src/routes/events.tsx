@@ -58,7 +58,7 @@ import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
 import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 
 // dataset object configurations
-import { realtimeObject } from '@/config/datasets';
+import { realtimeObject, eventTypes } from '@/config/datasets';
 import { countryByIso3 } from "@/config/isoCountries";
 
 export const Route = createFileRoute('/events')({
@@ -131,7 +131,35 @@ function Events() {
                     }
                 })
             })
-        })
+            view.current.closePopup();
+        });
+
+        view.current.on("pointer-move", async (event) => {
+            const response = await view.current.hitTest(event);
+            
+            const hasFeatureLayer = response.results.some(result => result.layer instanceof FeatureLayer);
+            if (hasFeatureLayer) {
+                document.body.style.cursor = "pointer";
+                response.results.forEach((a: any) => {
+                    console.log(response.results);
+                    if (a.graphic) {
+                        events.forEach((i: any) => {
+                            if (i.attributes.eventid == a.graphic.attributes.eventid) {
+                                view.current.openPopup({
+                                    location: i.geometry,
+                                    title: i.attributes.description,
+                                    content: eventTypes[i.attributes.eventtype].type,
+                                });
+                            }
+                        })
+                        return;
+                    }
+                });
+            } else {
+                document.body.style.cursor = "default";
+                view.current.closePopup();
+            }        
+        });
     }, [events]);
 
     const queryEvents = useCallback(() => {
@@ -254,7 +282,17 @@ function Events() {
                     minZoom: Math.floor(minZoom),
                     maxZoom: 11,
                 },
-                popupEnabled: false
+                popup: {
+                    dockEnabled: false,
+                    viewModel: {
+                        includeDefaultActions: false
+                    },
+                    dockOptions: {
+                        position: "top-left",
+                        breakpoint: false,
+                        buttonEnabled: false,
+                    }
+                }
             });
 
             // use this for updating symbol sizes
@@ -1156,10 +1194,10 @@ function Events() {
                     </div>
                 </div>
             </div>
-            <div className={`absolute z-2 bottom-65 md:bottom-0 md:transition-[right] md:duration-300 md:ease-in-out ${eventPopup == "all events" ? "md:right-0" : "md:-right-100 invisible"} md:visible max-h-full md:h-85/100 w-full md:w-[325px] flex flex-col bg-white md:shadow-[inset_0px_-16px_10px_-10px_rgba(0,0,0,0.35)] cursor-default draggable`} style={{
+            <div className={`absolute z-2 bottom-65 md:bottom-0 md:transition-[right] md:duration-300 md:ease-in-out ${eventPopup == "all events" ? "md:right-0" : "md:-right-100 invisible"} md:visible max-h-full md:h-85/100 w-full md:w-[350px] flex flex-col bg-white md:shadow-[inset_0px_-16px_10px_-10px_rgba(0,0,0,0.35)] cursor-default draggable`} style={{
                 "--drag-y": `${y}px`,
                 touchAction: "none"
-            }}>
+                }}>
                 <div onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={(e) => onPointerUp(e)}>
                     <div className='h-4 w-full flex items-end justify-center md:hidden'>
                         <div className='w-15 h-1 bg-(--accentcoolgray-60) rounded-xl'></div>
@@ -1199,7 +1237,7 @@ function Events() {
                     ))}
                 </div>
             </div>
-            <div className={`absolute bottom-0 right-0 md:transition-all md:duration-300 md:ease-in-out ${eventPopup == "focused event" ? "md:right-0 visible" : "md:-right-100 invisible"} h-5/10 md:h-85/100 w-full md:w-[325px] pt-3 shadow-lg/40 md:rounded-tl-md flex gap-5 flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
+            <div className={`absolute bottom-0 right-0 md:transition-all md:duration-300 md:ease-in-out ${eventPopup == "focused event" ? "md:right-0 visible" : "md:-right-100 invisible"} h-5/10 md:h-85/100 w-full md:w-[350px] pt-3 shadow-lg/40 md:rounded-tl-md flex gap-5 flex-col items-start bg-white cursor-default transition-all ease-in-out duration-300 overflow-y-auto`}>
                 <div className="w-full flex items-center justify-between px-4">
                     {focusedEvent.iscurrent == "true" ?
                         <div className="flex h-6.25 justify-center  items-center bg-(--accentred-100) rounded-sm shadow-lg/10 font-bold text-white px-[5px] mb-[6px] mt-[9px] text-[11px]">
