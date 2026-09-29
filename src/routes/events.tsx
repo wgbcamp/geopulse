@@ -33,7 +33,6 @@ import Exposures from '../assets/Layers.svg';
 // 3rd party icons
 import { Check } from "lucide-react"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlay } from "@fortawesome/free-solid-svg-icons";
 import { faPause } from "@fortawesome/free-solid-svg-icons";
 
 // arcgis geographic data layers
@@ -55,7 +54,6 @@ import PointSymbol3D from "@arcgis/core/symbols/PointSymbol3D.js";
 import ObjectSymbol3DLayer from "@arcgis/core/symbols/ObjectSymbol3DLayer.js";
 import SimpleRenderer from "@arcgis/core/renderers/SimpleRenderer";
 import SimpleMarkerSymbol from "@arcgis/core/symbols/SimpleMarkerSymbol";
-import * as reactiveUtils from "@arcgis/core/core/reactiveUtils.js";
 
 // dataset object configurations
 import { realtimeObject, eventTypes } from '@/config/datasets';
@@ -113,17 +111,12 @@ function Events() {
     const outlineLayer = useRef<GraphicsLayer>(null);
     const groupLayer = useRef<GroupLayer>(null);
 
-    // function getMinZoom(containerWidth: number, containerHeight: number): number {
-    //             const minZoomX = Math.log2(containerWidth / 256);
-    //             const minZoomY = Math.log2(containerHeight / 256);
-    //             return Math.max(minZoomX, minZoomY);
-    //         }
-
-    // const [currentZoom, setCurrentZoom] = useState(Math.max(2, getMinZoom(window.innerWidth, window.innerHeight)))
     useEffect(() => {
+
+        // Register click events on the mapView. If the eventid of the symbol graphic
+        // matches an eventid in the events array, load the event polygon and exposure values
         view.current.on("click", async (event) => {
             const response = await view.current.hitTest(event);
-            console.log(response);
             response.results.forEach((a: any) => {
                 events.forEach((i: any) => {
                     if (i.attributes.eventid == a.graphic.attributes.eventid) {
@@ -131,28 +124,31 @@ function Events() {
                     }
                 })
             })
+            // close symbol popup
             view.current.closePopup();
         });
 
+        // Register pointer movement on the mapView. Check if the mouse cursor overlaps a
+        // symbol graphic and the symbol graphic contains an object with a FeatureLayer
+        // layer. If true, check if the eventid of the symbol graphic matches an eventid
+        // in the events array and set mouse cursor to pointer style. Otherwise, close
+        // any open popup and set mouse cursor to default style.
         view.current.on("pointer-move", async (event) => {
             const response = await view.current.hitTest(event);
-            
             const hasFeatureLayer = response.results.some(result => result.layer instanceof FeatureLayer);
             if (hasFeatureLayer) {
                 document.body.style.cursor = "pointer";
                 response.results.forEach((a: any) => {
-                    console.log(response.results);
                     if (a.graphic) {
                         events.forEach((i: any) => {
                             if (i.attributes.eventid == a.graphic.attributes.eventid) {
                                 view.current.openPopup({
                                     location: i.geometry,
-                                    title: i.attributes.description,
-                                    content: eventTypes[i.attributes.eventtype].type,
+                                    title: i.attributes.description
                                 });
+                                return;
                             }
                         })
-                        return;
                     }
                 });
             } else {
@@ -162,6 +158,8 @@ function Events() {
         });
     }, [events]);
 
+    // Every time the eventPopup changes, return the results of the query of the events feature 
+    // layer, sorted by end date, then set the events on the events sidebar and the mapView.
     const queryEvents = useCallback(() => {
         if (!eventFeatureLayer.current || !view.current || !pulseContainerRef.current) return;
 
@@ -171,12 +169,8 @@ function Events() {
         query.outSpatialReference = view.current.spatialReference;
         query.maxRecordCountFactor = 5;
 
-        // track how many server attempts have been made
-        let attempts = 0;
-
         function runQuery() {
             eventFeatureLayer.current!.queryFeatures(query).then((result) => {
-                console.log(result);
                 result.features.forEach((f: any) => {
                     if (!f.geometry) return;
                     var x = result.features.map((feature) => {
@@ -184,21 +178,12 @@ function Events() {
                             attributes: feature.attributes,
                             geometry: feature.geometry
                         }
-                    }).sort((a, b) => Math.floor(Date.parse(b.attributes.fromdate) / 1000) - Math.floor(Date.parse(a.attributes.fromdate) / 1000));
+                    }).sort((a, b) => Math.floor(Date.parse(b.attributes.todate) / 1000) - Math.floor(Date.parse(a.attributes.todate) / 1000));
                     setEvents(x);
                 })
             })
                 .catch(error => {
-                    if (attempts <= 10) {
-                        console.log("Unable to perform query. Too many requests. Sending request again.", error);
-                        attempts++;
-                        runQuery();
-                    } else {
-                        console.log("Unable to perform query. Too many requests. Please try again later.", error);
-                        unfocusEvent();
-                        alert("Unable to perform query. Too many requests. Please try again later.");
-                    }
-                    
+                    alert(error + " Unable to perform query. Too many requests. Please try again later.");
                 }
             );
         }
@@ -206,20 +191,21 @@ function Events() {
         runQuery();
     }, [eventPopup]);
 
-    //event polygon feature layer
+    // gdacs event polygon feature layer
     const eventPolygonsLayer = new FeatureLayer({
         url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/geopulse_episodes/FeatureServer"
     });
 
+    // country exposures feature layer
     const countryExposures = new FeatureLayer({
         url: "https://services9.arcgis.com/weJ1QsnbMYJlCHdG/arcgis/rest/services/geopulse_exposures_by_country/FeatureServer"
     });
 
+    // implements language-sensitive number formatting
     const fmt = new Intl.NumberFormat('en', {
         notation: 'compact',
         maximumFractionDigits: 1,
     });
-
 
     useEffect(() => {
         if (ref.current) {
@@ -228,6 +214,13 @@ function Events() {
             baseLayer.current = new VectorTileLayer({
                 url: "https://cdn.arcgis.com/sharing/rest/content/items/d7397603e9274052808839b70812be50/resources/styles/root.json",
                 title: "base"
+            });
+
+             // vector tile layer displaying country boundaries
+            boundariesLayer.current = new VectorTileLayer({
+                url: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
+                title: "boundaries",
+                opacity: 0.25
             });
 
             // graphics layer displaying the polygon of the focused event, only drawn when overlapping with the top layer
@@ -242,13 +235,6 @@ function Events() {
                 title: "outline",
             });
 
-            // vector tile layer displaying country boundaries
-            boundariesLayer.current = new VectorTileLayer({
-                url: "https://cdn.arcgis.com/sharing/rest/content/items/e8ecee3086f34b06b85229d832a1c14a/resources/styles/root.json",
-                title: "boundaries",
-                opacity: 0.25
-            });
-
             // group layer that will only be shown when an event is in focus
             groupLayer.current = new GroupLayer({
                 layers: [
@@ -257,27 +243,39 @@ function Events() {
                 ]
             });
 
-            // stack three layers by default
+            // assign the layers to the map class
             map.current = new Map({
                 layers: [baseLayer.current, boundariesLayer.current, groupLayer.current]
             });
 
-            // calculate minimum zoom level based on input
+            // calculate minimum zoom level for map based on browser viewport dimensions
             function getMinZoom(containerWidth: number, containerHeight: number): number {
                 const minZoomX = Math.log2(containerWidth / 256);
                 const minZoomY = Math.log2(containerHeight / 256);
                 return Math.max(minZoomX, minZoomY);
             }
-
             const minZoom = getMinZoom(window.innerWidth, window.innerHeight);
 
-            // default map properties
+            // Observe the width and height of the browser viewport to enforce minimum 
+            // zoom level
+            const resizeObserver = new ResizeObserver((entries) => {
+                const { width, height } = entries[0].contentRect;
+                const newMinZoom = getMinZoom(width, height);
+                view.current.constraints.minZoom = Math.floor(newMinZoom);
+
+                if (view.current.zoom < newMinZoom) {
+                    view.current.zoom = newMinZoom;
+                }
+            });
+            resizeObserver.observe(ref.current);
+
+            // assign properties to mapView
+            if (!state) return;
             view.current = new MapView({
                 container: ref.current,
                 map: map.current,
                 zoom: Math.max(2, minZoom),
-                // center: [-40.9465, 0.775],
-                center: [state?.countryCoordinates.longitude, state?.countryCoordinates.latitude],
+                center: [state.countryCoordinates.longitude, state.countryCoordinates.latitude],
                 constraints: {
                     minZoom: Math.floor(minZoom),
                     maxZoom: 11,
@@ -295,81 +293,32 @@ function Events() {
                 }
             });
 
-            // use this for updating symbol sizes
-            // reactiveUtils.watch(
-            //     () => view.current.zoom,
-            //     (newZoom) => {
-            //         console.log("Zoom level changed to:", newZoom);
-            //         eventFeatureLayer.current.renderer.uniqueValueInfos = uniqueColorValues;
-            //         setCurrentZoom(newZoom);
-            //     }
-            // );
-            if (scaleBarRef.current) {
-                scaleBarRef.current.view = view.current;
-            }
-
-            // force the view view.current.center to the yLimit whenever the user reaches the limit
-            const WORLD_HALF_HEIGHT = 20037508.34; // Web Mercator y at ±85.05°
-
-            // reactiveUtils.watch(
-            //     () => view.current.extent,
-            //     (extent) => {
-            //         if (!extent) return;
-
-            //         const halfViewHeight = extent.height / 2;
-            //         const yLimit = Math.max(0, WORLD_HALF_HEIGHT - halfViewHeight);
-
-            //         if (Math.abs(view.current.center.y) > yLimit) {
-            //             const clamped = view.current.center.clone();
-            //             clamped.y = Math.sign(clamped.y) * yLimit;
-            //             view.current.goTo({target: clamped}, {duration: 0});
-            //         }
-            //     }
-            // );
-
-            // resize minimum zoom level when viewport is resized
-            const resizeObserver = new ResizeObserver((entries) => {
-                const { width, height } = entries[0].contentRect;
-                const newMinZoom = getMinZoom(width, height);
-                view.current.constraints.minZoom = Math.floor(newMinZoom);
-
-                if (view.current.zoom < newMinZoom) {
-                    view.current.zoom = newMinZoom;
-                }
-            });
-            resizeObserver.observe(ref.current);
+            // assign the mapView properties to the scalebar zoom measurement
+            scaleBarRef.current.view = view.current;
 
             // remove all arcgis default ui components
             view.current.ui.components = [];
         }
 
-        // clean up
+        // clean up mapView between state changes
         return () => {
             view.current.destroy();
-            baseLayer.current?.destroy();
-            boundariesLayer.current?.destroy();
-            graphicsLayer.current?.destroy();
-            outlineLayer.current?.destroy();
-            groupLayer.current?.destroy();
         }
-
     }, []);
 
+    // When realtimeExposure value changes, remove exposure layer from map and from group layer
+    // that is stacked with the event polygons. Remove existing exposure layers, add new exposure 
+    // layers, and reorder them. Blur base layer and exposure layer outside of event polygon to 
+    // achieve blurring effect outside of event polygon.
     useEffect(() => {
-
         if (!map.current || !groupLayer.current) return;
 
         // Remove existing exposure layers if they exist
-        if (exposureLayer.current) {
             map.current.remove(exposureLayer.current);
-            exposureLayer.current.destroy();
-        }
-
-        if (exposureLayerForGroup.current) {
             groupLayer.current.remove(exposureLayerForGroup.current);
-            exposureLayerForGroup.current.destroy();
-        }
+        
 
+        // Set up renderer classes depending on the exposure type
         const url = realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter];
         const classBreaksRenderer = new ClassBreaksRenderer({
             field: "Value",
@@ -379,11 +328,10 @@ function Events() {
             symbol: new SimpleMarkerSymbol({
                 size: 3,
                 color: [255, 200, 0],
-                outline: "null"
             })
         });
 
-        // assign exposure layer values based on realtime exposure value 
+        // assign layers based on exposure type
         switch (realtimeExposure.exposure) {
             case "Airports":
             case "Ports":
@@ -414,8 +362,10 @@ function Events() {
                 break;
         }
 
-        // add and reorder exposure layers
-        if (groupLayer.current && exposureLayer.current && exposureLayerForGroup.current && graphicsLayer.current && baseLayer.current) {
+        // Add and reorder exposure layers to achieve the correct masking effect if the layers
+        // used to display the event polygons exist. Layers are ordered such that the exposure 
+        // feature layer remains at the bottom, while the graphics layer sits above, with the 2nd exposure layer is at the top.
+        if (graphicsLayer.current && baseLayer.current) {
             map.current.layers.add(exposureLayer.current);
             map.current.reorder(exposureLayer.current, 2);
             groupLayer.current.add(exposureLayerForGroup.current);
@@ -429,10 +379,19 @@ function Events() {
         }
     }, [realtimeExposure])
 
+    // remove all blur effects when removing focus from an event
     const removeBlur = () => {
         if (baseLayer.current && exposureLayer.current && graphicsLayer.current && outlineLayer.current) {
             baseLayer.current.effect = ""; // remove css filters from layers if no event is focused
-            exposureLayer.current.effect = "";
+            switch (realtimeExposure.exposure) {
+                case "Airports":
+                case "Ports":
+                    exposureLayer.current.effect = "bloom(1.8, 0.85px, 0.4)";
+                    break;
+                default:
+                    exposureLayer.current.effect = "";
+                    break;
+            }
             graphicsLayer.current.graphics.removeAll(); // remove graphics from graphics layers
             outlineLayer.current.graphics.removeAll();
             setFocusedFeatures(null); // reset focused features in state
@@ -832,13 +791,15 @@ function Events() {
             };
 
             features.forEach((x: any) => {
-                const graphicClone = x.clone();
-                graphicClone.symbol = graphicsSymbol;
-                graphicsLayer.current?.graphics.add(graphicClone);
+                // if (x.attributes.weight == 1) {
+                    const graphicClone = x.clone();
+                    graphicClone.symbol = graphicsSymbol;
+                    graphicsLayer.current?.graphics.add(graphicClone);
 
-                const outlineClone = x.clone();
-                outlineClone.symbol = outlineSymbol;
-                outlineLayer.current?.graphics.add(outlineClone);
+                    const outlineClone = x.clone();
+                    outlineClone.symbol = outlineSymbol;
+                    outlineLayer.current?.graphics.add(outlineClone);
+                // }
             })
 
             baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
@@ -1053,15 +1014,6 @@ function Events() {
         }
     ]
 
-    const hazardsArray = [
-        { type: "Earthquake", color: "var(--green)" },
-        { type: "Tropical Cyclone", color: "var(--red)" },
-        { type: "Drought", color: "var(--purple)" },
-        { type: "Flooding", color: "var(--cyan)" },
-        { type: "Volcano", color: "var(--yellow)" },
-        { type: "Wildfire", color: "var(--orange)" }
-    ];
-
     const toggleLayerSettingsPopup = (value: boolean) => {
         if (window.innerWidth < 768) {
             setLayerSettingsPopup(value);
@@ -1108,34 +1060,8 @@ function Events() {
         });
     }, [state?.countryCoordinates]);
 
-    function switchTo3D(value) {
-
-        if (value.key == "h") {
-            exposureLayer.current = new FeatureLayer({
-                url: realtimeObject[realtimeExposure.exposure].url[realtimeExposure.filter],
-                renderer: new SimpleRenderer({
-                    symbol: new PointSymbol3D({
-                        symbolLayers: [new ObjectSymbol3DLayer({
-                            resource: {
-                                primitive: "cube"
-                            },
-                            material: {
-                                color: "#00E9FF"
-                            },
-                            anchor: "bottom",
-                            width: 60000,
-                            depth: 60000,
-                            height: 60000
-                        })]
-                    })
-                }),
-                title: "exposure"
-            });
-        }
-    }
-
     return (
-        <div className="w-full h-full relative overflow-hidden" onKeyDown={switchTo3D}>
+        <div className="w-full h-full relative overflow-hidden">
             <div className='w-full h-full'>
                 <div className="w-full h-full flex justify-start pt-15" ref={ref}></div>
                 <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden" ref={pulseContainerRef}>
@@ -1248,7 +1174,7 @@ function Events() {
                     }
                     <div className='text-[14px] mr-2 text-(--accentblue-100) font-bold cursor-pointer' onClick={() => unfocusEvent()}> Close details [X]</div>
                 </div>
-                <div className="text-[20px] h-[38px] font-bold text-left flex w-full px-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 27).trimEnd() + "..." : focusedEvent.description}</div>
+                <div className="text-[20px] h-[38px] font-bold text-left flex w-full px-4">{focusedEvent.description?.length > 25 ? focusedEvent.description.slice(0, 32).trimEnd() + "..." : focusedEvent.description}</div>
                 {focusedFeatures?.length > 1 ?
                     <div className='w-full'>
                         <div className="text-(--accentblue-100) font-bold text-[12px] text-center w-full">Timeline</div>
@@ -1393,7 +1319,7 @@ function Events() {
                     </div>
                 </div>
                 <div className="pt-5 flex flex-row w-full text-[12px] font-bold justify-around border-t-1 px-4">
-                    <div className='flex flex-col w-40 items-between text-left'>
+                    <div className='flex flex-col w-60 items-between text-left'>
                         <div className='pb-2 border-solid border-b-1'>LAYER</div>
                         {exposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) =>
                             <div key={e.name} className='h-[45px] text-[14px] font-medium border-solid border-b-1 flex items-center '>{e.name}</div>
@@ -1405,30 +1331,17 @@ function Events() {
                             <div key={e.name} className='h-[45px] text-[14px] font-medium border-solid border-b-1 flex items-center border-l-1 pl-3'>{focusedCountryExposures ? fmt.format(focusedCountryExposures[focusedCountryExposures.indexOf(focusedCountryExposures.find((c: any) => c.attributes.areaid == currentCountryExposure))]?.attributes[e.id]) + " " + e.suffix : "N/A"}</div>     
                         )}
                     </div>
+                    {currentCountryExposure !== "ALL" ? <div className='w-full text-left'>
+                        <div className='pb-2 border-solid border-b-1 pl-3'>PERCENTAGE</div>
+                        {exposuresArray.filter((a) => a.name !== "Nightlights").map((e: any) =>
+                            <div key={e.name + '_pct'} className='h-[45px] text-[14px] font-medium border-solid border-b-1 flex items-center border-l-1 pl-3'>{focusedCountryExposures ? fmt.format(focusedCountryExposures[focusedCountryExposures.indexOf(focusedCountryExposures.find((c: any) => c.attributes.areaid == currentCountryExposure))]?.attributes[e.id + '_pct']) + " " + "%" : "N/A"}</div>     
+                        )}
+                    </div> : null}
+                    
                 </div>
                 <div className="pt-[24px] pb-5 text-(--accentblue-100) font-bold text-[12px] text-center w-full"><u className='cursor-pointer'>Explore Methodology</u></div>
             </div>
             <div className="absolute bottom-0 invisible md:visible h-20 w-[350px] bg-[rgba(0,0,0,0.85)] flex flex-col items-center justify-around">
-                {/* <div className="w-8/10 h-5/10 flex flex-col items-center">
-                    <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
-                        <div>EVENT TYPES</div>
-                    </div>
-                    <div className='h-full w-full text-white flex flex-col'>
-                        <div className="grid grid-cols-2 grid-rows-3 gap-2">
-                            {hazardsArray.map((h, i) =>
-                                <div key={i} className='flex'>
-                                    <div className='flex justify-center border-1 rounded-4xl w-4 h-4' style={{ borderColor: h.color }}>
-                                        <div className='flex items-center justify-center'>
-                                            <div className="rounded-4xl w-[7px] h-[7px]" style={{ background: h.color }}></div>
-                                        </div>
-                                    </div>
-                                    <div className="mx-2 text-[10px] tracking-wide">{h.type.toUpperCase()}</div>
-                                </div>
-                            )}
-                        </div>
-
-                    </div>
-                </div> */}
                 <div className='w-8/10 flex flex-col items-center justify-end'>
                     <div className="flex text-white w-full font-extrabold tracking-wide text-[12px] pb-[10px]">
                         <div>{realtimeObject[realtimeExposure.exposure].title.toUpperCase()} {realtimeObject[realtimeExposure.exposure].unit}</div>
