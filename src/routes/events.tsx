@@ -772,34 +772,49 @@ function Events() {
             graphicsLayer.current.graphics.removeAll();
             outlineLayer.current.graphics.removeAll();
 
-            let graphicsSymbol = {
-                type: "simple-fill",
-                color: "rgba(255, 255, 255, 1)",
-                outline: {
-                    color: "#7E0063",
-                    width: "2px"
-                },
-            };
+            function polygonStyle(value: any) {
+                var outlineColor: string = "";
+                var color: string = "";
+                var style: string = "";
+                switch (value.attributes.weight) {
+                    case 0:
+                        outlineColor = "#FFFF00";
+                        color = "125, 125, 0";
+                        style = "long-dash";
+                        break;
+                    case 1:
+                        outlineColor = "#7E0063";
+                        color = "62, 28, 52";
+                        style = "solid";
+                }
 
-            let outlineSymbol = {
-                type: "simple-fill",
-                color: "rgba(0, 0, 0, 0.3)",
-                outline: {
-                    color: "#7E0063",
-                    width: "2px"
-                },
-            };
+                const graphicClone = value.clone();
+                graphicClone.symbol = {
+                    type: "simple-fill",
+                    color: `rgba(${color}, 1)`,
+                    outline: {
+                        color: outlineColor,
+                        width: "2px",
+                        style: style
+                    }
+                }
+                graphicsLayer.current?.graphics.add(graphicClone);
+
+                const outlineClone = value.clone();
+                outlineClone.symbol = {
+                    type: "simple-fill",
+                    color: `rgba(${color}, 1)`,
+                    outline: {
+                        color: outlineColor,
+                        width: "2px",
+                        style: style
+                    }
+                };
+                outlineLayer.current?.graphics.add(outlineClone);
+            }
 
             features.forEach((x: any) => {
-                // if (x.attributes.weight == 1) {
-                    const graphicClone = x.clone();
-                    graphicClone.symbol = graphicsSymbol;
-                    graphicsLayer.current?.graphics.add(graphicClone);
-
-                    const outlineClone = x.clone();
-                    outlineClone.symbol = outlineSymbol;
-                    outlineLayer.current?.graphics.add(outlineClone);
-                // }
+                polygonStyle(x);
             })
 
             baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
