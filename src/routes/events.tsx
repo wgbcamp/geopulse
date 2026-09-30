@@ -107,8 +107,8 @@ function Events() {
     const [layerSettingsPopup, setLayerSettingsPopup] = useState<boolean>(false);
 
     const exposureLayerForGroup = useRef<any>(null);
-    const maskingLayer = useRef<GraphicsLayer>(null);
-    const eventLayer = useRef<GraphicsLayer>(null);
+    const unweightedEventLayer = useRef<GraphicsLayer>(null);
+    const weightedEventLayer = useRef<GraphicsLayer>(null);
     const groupLayer = useRef<GroupLayer>(null);
 
     useEffect(() => {
@@ -224,13 +224,13 @@ function Events() {
             });
 
             // graphics layer that masks-in the event exposures feature layer
-            maskingLayer.current = new GraphicsLayer({
-                blendMode: "destination-in",
+            unweightedEventLayer.current = new GraphicsLayer({
+                blendMode: "destination-atop",
                 title: "graphics",
             });
 
             // graphics layer that displays the event polygon
-            eventLayer.current = new GraphicsLayer({
+            weightedEventLayer.current = new GraphicsLayer({
                 blendMode: "normal",
                 title: "outline",
             });
@@ -238,8 +238,8 @@ function Events() {
             // group layer that will only be shown when an event is in focus
             groupLayer.current = new GroupLayer({
                 layers: [
-                    maskingLayer.current,
-                    eventLayer.current
+                    unweightedEventLayer.current,
+                    weightedEventLayer.current
                 ]
             });
 
@@ -365,13 +365,13 @@ function Events() {
         // Add and reorder exposure layers to achieve the correct masking effect if the layers
         // used to display the event polygons exist. Layers are ordered such that the exposure 
         // feature layer remains at the bottom, while the graphics layer sits above, with the 2nd exposure layer is at the top.
-        if (maskingLayer.current && baseLayer.current && eventLayer.current) {
+        if (unweightedEventLayer.current && baseLayer.current && weightedEventLayer.current) {
             map.current.layers.add(exposureLayer.current);
             groupLayer.current.add(exposureLayerForGroup.current);
             map.current.reorder(exposureLayer.current, 1);
-            groupLayer.current.layers.reorder(exposureLayerForGroup.current, 1);
-            groupLayer.current.layers.reorder(maskingLayer.current, 2);
-            groupLayer.current.layers.reorder(eventLayer.current, 0);
+            groupLayer.current.layers.reorder(exposureLayerForGroup.current, 0);
+            groupLayer.current.layers.reorder(unweightedEventLayer.current, 1);
+            groupLayer.current.layers.reorder(weightedEventLayer.current, 2);
 
             console.log("LOOK", groupLayer.current.layers)
 
@@ -385,7 +385,7 @@ function Events() {
 
     // remove all blur effects when removing focus from an event
     const removeBlur = () => {
-        if (baseLayer.current && exposureLayer.current && maskingLayer.current && eventLayer.current) {
+        if (baseLayer.current && exposureLayer.current && unweightedEventLayer.current && weightedEventLayer.current) {
             baseLayer.current.effect = ""; // remove css filters from layers if no event is focused
             switch (realtimeExposure.exposure) {
                 case "Airports":
@@ -396,8 +396,8 @@ function Events() {
                     exposureLayer.current.effect = "";
                     break;
             }
-            maskingLayer.current.graphics.removeAll(); // remove graphics from graphics layers
-            eventLayer.current.graphics.removeAll();
+            unweightedEventLayer.current.graphics.removeAll(); // remove graphics from graphics layers
+            weightedEventLayer.current.graphics.removeAll();
             setFocusedFeatures(null); // reset focused features in state
             setFocusedSliderValue([0]); // reset focused slider value
         }
@@ -762,9 +762,9 @@ function Events() {
 
     const applyPolygon = (features: any) => {
         console.log("sS: ", features);
-        if (features && maskingLayer.current && baseLayer.current && groupLayer.current && eventLayer.current) {
-            maskingLayer.current.graphics.removeAll();
-            eventLayer.current.graphics.removeAll();
+        if (features && unweightedEventLayer.current && baseLayer.current && groupLayer.current && weightedEventLayer.current) {
+            unweightedEventLayer.current.graphics.removeAll();
+            weightedEventLayer.current.graphics.removeAll();
 
             function polygonStyle(value: any) {
                 var outlineColor: string = "";
@@ -773,54 +773,45 @@ function Events() {
                 switch (value.attributes.weight) {
                     case 0:
                         outlineColor = "#FFFF00";
-                        color = "125, 125, 0";
+                        color = "rgba(125, 125, 0, 0.4)";
                         style = "long-dash";
                         break;
                     case 1:
                         outlineColor = "#7E0063";
-                        color = "62, 28, 52";
+                        color = "rgba(62, 28, 52, 1)";
                         style = "solid";
                 }
 
                 let polygonClone = value.clone();
                 polygonClone.symbol = {
                     type: "simple-fill",
-                    color: `rgba(${color}, 1)`,
+                    color: color,
                     outline: {
                         color: outlineColor,
                         width: "2px",
                         style: style
                     }
                 }
-                maskingLayer.current?.graphics.add(polygonClone);
 
-                polygonClone = value.clone();
-                polygonClone.symbol = {
-                    type: "simple-fill",
-                    color: `rgba(${color}, 1)`,
-                    outline: {
-                        color: outlineColor,
-                        width: "2px",
-                        style: style
-                    }
-                };
-                eventLayer.current?.graphics.add(polygonClone);
+                switch (value.attributes.weight) {
+                    case 0:
+                        weightedEventLayer.current?.graphics.add(polygonClone);
+                        break;
+                    case 1:
+                        unweightedEventLayer.current?.graphics.add(polygonClone);
+                }            
             }
 
             features.forEach((x: any) => {
-                polygonStyle(x);
+                // if (x.attributes.weight == 1) {
+                    polygonStyle(x);
+                // }
+                
             })
 
             baseLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map base layer
             exposureLayer.current.effect = "blur(6px) brightness(0.7) grayscale(0.8)"; // blur, darken, and greyscale map exposure layer
             groupLayer.current.effect = "brightness(1) drop-shadow(0, 0px, 12px, #7E0063)"; // brighten and add drop shadow to the group layer
-
-            // view.current.goTo(features[0].geometry.extent);
-
-            // eventPolygonsLayer.queryExtent().then((res) => {
-            //     console.log(res.extent);
-            //     view.current.goTo(res.extent);
-            // })
         }
     }
 
