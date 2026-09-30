@@ -107,8 +107,8 @@ function Events() {
     const [layerSettingsPopup, setLayerSettingsPopup] = useState<boolean>(false);
 
     const exposureLayerForGroup = useRef<any>(null);
-    const graphicsLayer = useRef<GraphicsLayer>(null);
-    const outlineLayer = useRef<GraphicsLayer>(null);
+    const maskingLayer = useRef<GraphicsLayer>(null);
+    const eventLayer = useRef<GraphicsLayer>(null);
     const groupLayer = useRef<GroupLayer>(null);
 
     useEffect(() => {
@@ -223,14 +223,14 @@ function Events() {
                 opacity: 0.25
             });
 
-            // graphics layer displaying the polygon of the focused event, only drawn when overlapping with the top layer
-            graphicsLayer.current = new GraphicsLayer({
+            // graphics layer that masks-in the event exposures feature layer
+            maskingLayer.current = new GraphicsLayer({
                 blendMode: "destination-in",
                 title: "graphics",
             });
 
-            // graphics layer displaying the outline of the event
-            outlineLayer.current = new GraphicsLayer({
+            // graphics layer that displays the event polygon
+            eventLayer.current = new GraphicsLayer({
                 blendMode: "normal",
                 title: "outline",
             });
@@ -238,8 +238,8 @@ function Events() {
             // group layer that will only be shown when an event is in focus
             groupLayer.current = new GroupLayer({
                 layers: [
-                    graphicsLayer.current,
-                    outlineLayer.current
+                    maskingLayer.current,
+                    eventLayer.current
                 ]
             });
 
@@ -365,11 +365,15 @@ function Events() {
         // Add and reorder exposure layers to achieve the correct masking effect if the layers
         // used to display the event polygons exist. Layers are ordered such that the exposure 
         // feature layer remains at the bottom, while the graphics layer sits above, with the 2nd exposure layer is at the top.
-        if (graphicsLayer.current && baseLayer.current) {
+        if (maskingLayer.current && baseLayer.current && eventLayer.current) {
             map.current.layers.add(exposureLayer.current);
-            map.current.reorder(exposureLayer.current, 2);
             groupLayer.current.add(exposureLayerForGroup.current);
-            groupLayer.current.layers.reorder(graphicsLayer.current, 2);
+            map.current.reorder(exposureLayer.current, 1);
+            groupLayer.current.layers.reorder(exposureLayerForGroup.current, 1);
+            groupLayer.current.layers.reorder(maskingLayer.current, 2);
+            groupLayer.current.layers.reorder(eventLayer.current, 0);
+
+            console.log("LOOK", groupLayer.current.layers)
 
             // if an event is focused and focusedFeatures exists, apply blur, darken, and greyscale to layers outside of the group layer
             if (focusedFeatures?.length > 0) {
@@ -381,7 +385,7 @@ function Events() {
 
     // remove all blur effects when removing focus from an event
     const removeBlur = () => {
-        if (baseLayer.current && exposureLayer.current && graphicsLayer.current && outlineLayer.current) {
+        if (baseLayer.current && exposureLayer.current && maskingLayer.current && eventLayer.current) {
             baseLayer.current.effect = ""; // remove css filters from layers if no event is focused
             switch (realtimeExposure.exposure) {
                 case "Airports":
@@ -392,13 +396,14 @@ function Events() {
                     exposureLayer.current.effect = "";
                     break;
             }
-            graphicsLayer.current.graphics.removeAll(); // remove graphics from graphics layers
-            outlineLayer.current.graphics.removeAll();
+            maskingLayer.current.graphics.removeAll(); // remove graphics from graphics layers
+            eventLayer.current.graphics.removeAll();
             setFocusedFeatures(null); // reset focused features in state
             setFocusedSliderValue([0]); // reset focused slider value
         }
     }
 
+    // generate arcs for circle shapes that dot the mapView to show events
     function generateCircleGeometry() {
         return {
             rings: [
@@ -451,6 +456,7 @@ function Events() {
         var h = Abs(Sin(g.x * 12.9898 + g.y * 78.233 + ${seed}) * 43758.5453);
         return ${min} + (h - Floor(h)) * ${range};`;
 
+    // event
     const eventColor = (value: string) => {
         let x;
         switch (value) {
@@ -713,9 +719,6 @@ function Events() {
         newQuery.outFields = ["*"];
         newQuery.where = `eventid = ${eventid}`;
 
-        // track how many server attempts have been made
-        let attempts = 0;
-
         function runQuery() {
             eventPolygonsLayer.queryFeatures(newQuery).then((result) => {
                 console.log("events: ", result);
@@ -750,17 +753,8 @@ function Events() {
                 applyPolygon(ascendingFeatures[ascendingFeatures.length - 1]); // Apply the polygon styling from the first feature (or the specified index)
             })
                 .catch(error => {
-                    if (attempts <= 10) {
                         console.log("Unable to perform query. Too many requests. Sending request again.", error);
-                        attempts++;
-                        runQuery();
-                    } else {
-                        console.log("Unable to perform query. Too many requests. Please try again later.", error);
-                        unfocusEvent();
-                        alert("Unable to perform query. Too many requests. Please try again later.");
-                    }
-                    
-                })
+                });
         }
         runQuery();
 
@@ -768,9 +762,9 @@ function Events() {
 
     const applyPolygon = (features: any) => {
         console.log("sS: ", features);
-        if (features && graphicsLayer.current && baseLayer.current && groupLayer.current && outlineLayer.current) {
-            graphicsLayer.current.graphics.removeAll();
-            outlineLayer.current.graphics.removeAll();
+        if (features && maskingLayer.current && baseLayer.current && groupLayer.current && eventLayer.current) {
+            maskingLayer.current.graphics.removeAll();
+            eventLayer.current.graphics.removeAll();
 
             function polygonStyle(value: any) {
                 var outlineColor: string = "";
@@ -788,8 +782,8 @@ function Events() {
                         style = "solid";
                 }
 
-                const graphicClone = value.clone();
-                graphicClone.symbol = {
+                let polygonClone = value.clone();
+                polygonClone.symbol = {
                     type: "simple-fill",
                     color: `rgba(${color}, 1)`,
                     outline: {
@@ -798,10 +792,10 @@ function Events() {
                         style: style
                     }
                 }
-                graphicsLayer.current?.graphics.add(graphicClone);
+                maskingLayer.current?.graphics.add(polygonClone);
 
-                const outlineClone = value.clone();
-                outlineClone.symbol = {
+                polygonClone = value.clone();
+                polygonClone.symbol = {
                     type: "simple-fill",
                     color: `rgba(${color}, 1)`,
                     outline: {
@@ -810,7 +804,7 @@ function Events() {
                         style: style
                     }
                 };
-                outlineLayer.current?.graphics.add(outlineClone);
+                eventLayer.current?.graphics.add(polygonClone);
             }
 
             features.forEach((x: any) => {
