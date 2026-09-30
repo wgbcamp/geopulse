@@ -36,7 +36,8 @@ type AppState = {
   countryFilter: string
   countryCoordinates: Coordinates
   dataExplainerOpen: boolean
-  dataExplainerView: string
+  dataExplainerView: string,
+  loadingOverlay: boolean | string
 }
 
 // this object sets types for the set state actions
@@ -54,6 +55,7 @@ type AppActions = {
   setCountryCoordinates: Dispatch<SetStateAction<Coordinates>>
   setDataExplainerState: Dispatch<SetStateAction<boolean>>
   setDataExplainerView: Dispatch<SetStateAction<string>>
+  setLoadingOverlay: Dispatch<SetStateAction<boolean | string>>
 }
 
 // create context for state values and set state actions
@@ -81,16 +83,19 @@ export function App() {
   const [countryCoordinates, setCountryCoordinates] = useState<Coordinates>({ longitude: 42.55108741, latitude: 1.57672606 })
   const [dataExplainerOpen, setDataExplainerState] = useState(false);
   const [dataExplainerView, setDataExplainerView] = useState("Event Tracking");
+  const [loadingOverlay, setLoadingOverlay] = useState<string | boolean>("initial");
 
   const state = {
     currentView, currentTime, currentScenario, currentHazard,
     currentExposure, currentMeasure, currentThreshold, dateRange,
-    eventFilter, countryFilter, countryCoordinates, dataExplainerOpen, dataExplainerView
+    eventFilter, countryFilter, countryCoordinates, dataExplainerOpen, dataExplainerView,
+    loadingOverlay
   };
 
   const actions = {
     setView, setTime, setScenario, setHazard, setExposure, setMeasure, setThreshold,
-    setDateRange, setEventFilter, setCountryFilter, setCountryCoordinates, setDataExplainerState, setDataExplainerView
+    setDateRange, setEventFilter, setCountryFilter, setCountryCoordinates, setDataExplainerState, setDataExplainerView,
+    setLoadingOverlay
   };
 
 

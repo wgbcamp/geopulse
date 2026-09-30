@@ -1,13 +1,15 @@
-import { createRootRoute, Link, Outlet, HeadContent, Navigate } from '@tanstack/react-router'
-import { TanStackRouterDevtools } from '@tanstack/react-router-devtools'
+import { createRootRoute, Outlet, HeadContent, Navigate } from '@tanstack/react-router'
 
 import { Header } from '../components/Header';
 import DataExplainer from '@/components/dataExplainer';
+import LoadingOverlay from '@/components/loadingOverlay';
 
 const RootComponent = () => {
   return (
     <>
+
       <HeadContent />
+      <LoadingOverlay />
       <DataExplainer />
       <Header />
       <Outlet />

@@ -88,6 +88,9 @@ function Events() {
 
     const [otherCountryDropdownStatus, setOtherCountryDropdownStatus] = useState<any>(false);
 
+    const [eventLoaded, setEventLoaded] = useState<boolean>(false);
+    const [polygonsLoaded, setPolygonsLoaded] = useState<boolean>(false);
+
     const ref = useRef(null);
     const scaleBarRef = useRef<any>(null);
     const eventRef = useRef<HTMLDivElement | null>(null);
@@ -183,7 +186,8 @@ function Events() {
                 })
             })
                 .catch(error => {
-                    alert(error + " Unable to perform query. Too many requests. Please try again later.");
+                    console.log(error);
+                    alert("Unable to perform query. Too many requests. Please try again later.");
                 }
             );
         }
@@ -751,9 +755,12 @@ function Events() {
                 }
 
                 applyPolygon(ascendingFeatures[ascendingFeatures.length - 1]); // Apply the polygon styling from the first feature (or the specified index)
+                setPolygonsLoaded(true);
             })
                 .catch(error => {
-                        console.log("Unable to perform query. Too many requests. Sending request again.", error);
+                    console.log(error);
+                    alert("Unable to perform query. Too many requests. Please try again later.");
+                    setPolygonsLoaded(true);
                 });
         }
         runQuery();
@@ -821,6 +828,7 @@ function Events() {
 
     // focuses view on the event selected
     const focusOnEvent = async (coors: { longitude: number, latitude: number }, attributes: any) => {
+        actions?.setLoadingOverlay(true);
         pauseSlider();
         removeBlur(); // remove blur from previous event if it exists
         setFocusedSliderValue([0]); // reset slider value to 0 when focusing on a new event
@@ -837,9 +845,6 @@ function Events() {
         newQuery.returnGeometry = true;
         newQuery.outFields = ["*"];
         newQuery.where = `eventid = ${attributes.eventid}`;
-
-        // track how many server attempts have been made
-        let attempts = 0;
 
         // TESTING
         function runQuery() {
@@ -858,18 +863,13 @@ function Events() {
                 if (!eventFeatureLayer.current) return;
 
                 eventFeatureLayer.current.renderer.uniqueValueInfos = [];
+                setEventLoaded(true);
             })
                 .catch(error => {
-                    if (attempts <= 10) {
-                        console.log("Unable to perform query. Too many requests. Sending request again.", error);
-                        runQuery();
-                        attempts++;
-                    } else {
-                        console.log("Unable to perform query. Too many requests. Please try again later.", error);
-                        unfocusEvent();
-                        alert("Unable to perform query. Too many requests. Please try again later.");
-                    }
-
+                    console.log(error);
+                    alert("Unable to perform query. Too many requests. Please try again later.");
+                    unfocusEvent();
+                    setEventLoaded(true);
                 })
         }
 
@@ -1060,6 +1060,14 @@ function Events() {
         });
     }, [state?.countryCoordinates]);
 
+    useEffect(() => {
+        if (polygonsLoaded && eventLoaded) {
+            actions?.setLoadingOverlay(false);
+            setPolygonsLoaded(false);
+            setEventLoaded(false);
+        }
+    }, [polygonsLoaded, eventLoaded])
+    
     return (
         <div className="w-full h-full relative overflow-hidden">
             <div className='w-full h-full'>
@@ -1361,7 +1369,7 @@ function Events() {
                 </div>
             </div>
             <arcgis-scale-bar
-                className='calcite-mode-dark z-150 absolute top-30 right-5 md:top-auto md:right-auto md:bottom-1 md:left-90 max-w-21'
+                className='calcite-mode-dark z-15 absolute top-30 right-5 md:top-auto md:right-auto md:bottom-1 md:left-90 max-w-21'
                 ref={scaleBarRef}
                 bar-style="line"
                 unit="metric"
