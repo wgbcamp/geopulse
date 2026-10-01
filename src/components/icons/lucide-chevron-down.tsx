@@ -25,7 +25,7 @@ export function ChevronDownIcon({
       className={className}
       {...props}
     >
-      <path d="m6 9l6 6l6-6"/>
+      <path d="m6 9l6 6l6-6" />
     </svg>
   );
 }

@@ -22,6 +22,6 @@
     "moduleResolution": "Bundler", // added for arcgis
     "resolveJsonModule": true, // added for arcgis
     "target": "ES2023", // added for arcgis
-     "skipLibCheck": true, // added for arcgis
-  },
+    "skipLibCheck": true // added for arcgis
+  }
 }

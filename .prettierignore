@@ -1,0 +1,7 @@
+# Ignore artifacts:
+build
+dist
+.tanstack
+.husky
+src/components/icons
+src/components/ui

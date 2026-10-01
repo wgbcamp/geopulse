@@ -25,7 +25,8 @@ export function InfoIcon({
       className={className}
       {...props}
     >
-      <circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/>
+      <circle cx="12" cy="12" r="10" />
+      <path d="M12 16v-4m0-4h.01" />
     </svg>
   );
 }
