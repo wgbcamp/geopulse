@@ -834,9 +834,9 @@ function Events() {
         var style: string = "";
         switch (value.attributes.weight) {
           case 0:
-            outlineColor = "#FFFF00";
-            color = "rgba(125, 125, 0, 0.4)";
-            style = "long-dash";
+            outlineColor = "#FF000050";
+            color = "rgba(0, 0, 0, 0)";
+            style = "solid";
             break;
           case 1:
             outlineColor = "#7E0063";
