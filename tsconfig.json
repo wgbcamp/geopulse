@@ -1,6 +1,6 @@
 {
   "files": [],
-  "include": ["src", "*.ts"], // added for arcgis
+  "include": ["src", "*.ts", "public/GADM_ADMIN1.ts"], // added for arcgis
   "references": [
     {
       "path": "./tsconfig.app.json"
@@ -22,6 +22,6 @@
     "moduleResolution": "Bundler", // added for arcgis
     "resolveJsonModule": true, // added for arcgis
     "target": "ES2023", // added for arcgis
-     "skipLibCheck": true, // added for arcgis
-  },
+    "skipLibCheck": true // added for arcgis
+  }
 }

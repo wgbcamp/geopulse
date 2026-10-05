@@ -9,12 +9,10 @@
     "composite": true, // added for arcgis
     "skipLibCheck": true,
 
-        "baseUrl": ".",
-        "paths": {
-          "@/*": [
-            "./src/*"
-          ]
-        },
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -32,5 +30,5 @@
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
   },
-  "include": ["src"]
+  "include": ["src", "public/GADM_ADMIN1.ts"]
 }

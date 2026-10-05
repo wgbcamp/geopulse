@@ -4,8 +4,7 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: 
-
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -13,7 +12,7 @@ permissions:
   id-token: write
 
 jobs:
-  build:  
+  build:
     runs-on: ubuntu-latest
     environment: github-pages
 
@@ -31,7 +30,7 @@ jobs:
 
       - name: Build site
         run: npm run build
-        env: 
+        env:
           VITE_BASE: ${{ vars.VITE_BASE }}
 
       - name: Upload static files as artifact

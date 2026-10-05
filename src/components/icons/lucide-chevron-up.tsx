@@ -25,7 +25,7 @@ export function ChevronUpIcon({
       className={className}
       {...props}
     >
-      <path d="m18 15l-6-6l-6 6"/>
+      <path d="m18 15l-6-6l-6 6" />
     </svg>
   );
 }

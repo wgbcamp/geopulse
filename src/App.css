@@ -1,39 +1,42 @@
 html {
   height: 100%;
-  background-color: #1E1E1E;
-  font-family: 'Avenir Next', sans-serif;
-}
-
-body {
-  background-color: black;
+  background-color: #1e1e1e;
+  font-family: "Avenir Next", sans-serif;
 }
 
 #root {
   margin: 0 auto;
   text-align: center;
   height: 100dvh;
-    background-color: #1E1E1E;
+  background-color: #1e1e1e;
   --unselectedview: #c7dff7;
-  color-scheme: dark;
 
-  
-  --orange: #FF8200;
-  --primaryblue: rgb(0,76,151);
-  --darkblue: #1F3764;
-  --lightblue: #2C4F92;
-  --evenlighterblue: #4982F2;
+  --orange: #ff8200;
+  --primaryblue: rgb(0, 76, 151);
+  --darkblue: #1f3764;
+  --lightblue: #2c4f92;
+  --evenlighterblue: #4982f2;
   --darkblue: rgb(30, 75, 146);
   --gray: #dadada;
-  --accentgreen: #78BE20;
-  --green: #658D1B;
-  --yellow: #F2A900;
-  --red: #DA291C;
-  --purple: #8031A7;
-  --cyan: #00B0B9;
+  --accentgreen: #78be20;
+  --green: #658d1b;
+  --yellow: #f2a900;
+  --red: #da291c;
+  --purple: #8031a7;
+  --cyan: #00b0b9;
+}
+
+#dataExplainer td,
+th {
+  padding: 10px;
 }
 
 .esri-view .esri-view-surface--touch-none:focus::after {
   outline: none !important;
+}
+
+.esri-view-attribution {
+  z-index: -50;
 }
 
 .esri-scale-bar__label {
@@ -46,12 +49,11 @@ body {
   padding-left: 5px;
 }
 
-.esri-scale-bar__line {   
+.esri-scale-bar__line {
   background-color: rgba(44, 46, 49, 0.8);
   border-color: #ffffff;
   border: solid 1px #ffffff;
   border-top: 0;
-
 }
 
 .esri-scale-bar__line:before {
@@ -62,44 +64,56 @@ body {
   all: unset;
 }
 
+.esri-attribution__powered-by {
+  height: 0;
+}
+
+.esri-widget__heading {
+  text-align: left;
+}
+
+.esri-feature__content-node {
+  text-align: left;
+}
+
 .pw {
-    position: absolute;
-    transform: translate(-50%, -50%);
-    height: 10px;
-    width: 10px;
-    pointer-events: all;
+  position: absolute;
+  transform: translate(-50%, -50%);
+  height: 10px;
+  width: 10px;
+  pointer-events: all;
 }
 
 .pd {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .pr {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    border-width: 1px;
-    border-style: solid;
-    animation: slowRing 3.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-width: 1px;
+  border-style: solid;
+  animation: slowRing 3.6s cubic-bezier(0.2, 0.6, 0.4, 1) infinite;
 }
 
 .pr2 {
-    animation-delay: -1.8s !important;
+  animation-delay: -1.8s !important;
 }
 
 .pr3 {
-    animation-delay: -3.2s !important;
-    border-width: 0.5px;
+  animation-delay: -3.2s !important;
+  border-width: 0.5px;
 }
 
 .pop-in {
@@ -139,12 +153,61 @@ body {
 }
 
 @keyframes slowRing {
-    0%   { transform: translate(-50%, -50%) scale(1);   opacity: 0.7; }
-    60%  { opacity: 0.25; }
-    100% { transform: translate(-50%, -50%) scale(6.5); opacity: 0; }
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.7;
+  }
+  60% {
+    opacity: 0.25;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(6.5);
+    opacity: 0;
+  }
 }
 
-@media (max-width: 768px) {
-  .draggable { transform: translateY(var(--drag-y)); }
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
+.fadeIn {
+  animation: fadeIn 0.5s forwards;
+}
+
+@keyframes fadeOut {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    z-index: -10;
+  }
+}
+
+.fadeOut {
+  animation: fadeOut 0.5s forwards;
+}
+
+@keyframes rotate {
+  0% {
+    rotate: 0deg;
+  }
+  100% {
+    rotate: 360deg;
+  }
+}
+
+.rotate {
+  animation: rotate 2.5s forwards ease-in-out infinite;
+}
+
+@media (max-width: 767px) {
+  .draggable {
+    transform: translateY(var(--drag-y));
+  }
+}
